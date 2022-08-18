@@ -35,6 +35,14 @@ def init_wrk():
     return True
 
 
+def delete_wrk():
+    """ Delete workspace folder: UI and metadata """
+    if Path(WORKSPACE_DIR).is_dir():
+        shutil.rmtree(WORKSPACE_DIR)
+        logging.warning("Workspace UI deleted!")
+    return
+
+
 def init_supervisord():
     """ ->> bool
     Ensure folder for supervisord and for UI app logs exist

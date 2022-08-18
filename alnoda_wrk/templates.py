@@ -1,6 +1,6 @@
 app_page_str = """
 <div class="quickstart-wrapper">
-  {% set page_apps = get_page_apps('my_apps') %}
+  {% set page_apps = get_page_apps('PAGE_NAME_REPLACE') %}
   {% for tool in page_apps %}
     <div>
         <a href="{{ tool.app_url }}" target="_blank" rel="noopener noreferrer">

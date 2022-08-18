@@ -29,6 +29,7 @@ styles:
       background: "#1E1E1E"
       title: "#9CDCFE"
       text: "#9CDCFE"
+      subtitle: "#eab676"
   common_colors:
     header: "#FFFFFF"
     nav: "#eab676"
@@ -46,7 +47,7 @@ pages:
   admin:
     - name: CRONICLE
       port: 8033 # allowed strictly between 8031 - 8040
-      title: Blast Radius
+      title: Cronicle scheduler
       description: "Schedule jobs, manage schedules, observe and monitor executions"
       image: cronicle.jpg
   my_apps:

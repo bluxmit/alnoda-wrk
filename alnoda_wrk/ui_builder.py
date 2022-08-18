@@ -254,12 +254,15 @@ def update_home_page(wrk_params, conf_dir_path):
     # Check if wrk_params have additions to the home page
     if 'pages' in wrk_params and 'home' in wrk_params['pages']:
         logging.info(f"Updating Home page with {','.join([p['name'] for p in wrk_params['pages']['home']])}")
+        # move image assets into the proper page asset folder
+        move_page_assets(wrk_params, conf_dir_path, 'home', mkdocs_home_page_assets_dir)
+        # enrich apps of wrk_params['home'] - prepend 'assets/home/' to the image (important! do this after images move)
+        for app in wrk_params['pages']['home']:
+            app['image'] = os.path.join("assets", "home", app['image'])
         # update and owerwrite ui_apps
         ui_apps = read_ui_conf() 
         ui_apps = update_ui_page_from_wrk_params(ui_apps, wrk_params, 'home')
         update_ui_conf(ui_apps)
-        # move image assets into the proper page asset folder
-        move_page_assets(wrk_params, conf_dir_path, 'home', mkdocs_home_page_assets_dir)
     return ui_apps
 
 
@@ -285,7 +288,7 @@ def update_other_pages(wrk_params, conf_dir_path):
             # make sure .md file exists
             app_page_md_file = os.path.join(mkdocs_other_page_assets_dir, f'{another_page}.md')
             with open(app_page_md_file, "w") as md_file:
-                md_file.write(app_page_str)
+                md_file.write(app_page_str.replace('PAGE_NAME_REPLACE', another_page))
             # make sure mkdocs.yml has an entry for the page
             mkdocs_dict = get_mkdocs_yml()
             ptitle = another_page.replace("_"," ").capitalize()

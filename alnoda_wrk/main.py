@@ -1,5 +1,5 @@
 import typer
-from .builder import init_wrk, build_workspace
+from .builder import init_wrk, build_workspace, delete_wrk
 from .meta_about import *
 
 app = typer.Typer()
@@ -12,6 +12,16 @@ def init():
     """
     typer.echo("Initializing $HOME/.wrk")
     init_wrk()
+    return
+
+
+@app.command()
+def delete():
+    """
+    Delete local .wrk folder
+    """
+    typer.echo("Deleting $HOME/.wrk")
+    delete_wrk()
     return
 
 
