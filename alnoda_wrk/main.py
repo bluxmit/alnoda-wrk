@@ -13,7 +13,7 @@ def init():
     init_wrk()
 
 
-@app.command()
+@app.command(conf_dir_path)
 def build():
     """
     Build workspace

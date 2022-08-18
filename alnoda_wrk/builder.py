@@ -1,8 +1,4 @@
 import os 
-# os.chdir('/home/project/workspace-cli/wrcli/wrk_build')
-# this_path = '/home/project/workspace-cli/wrcli/wrk_build'
-# conf_file = "/home/project/workspace-cli/tests/conf_parse/workspace-opt-field-miss-val.yaml"
-# conf_dir_path = "/home/project/workspace-cli/tests/conf_parse/workspace-dirs/correct"
 import logging
 import json, yaml
 from pathlib import Path

@@ -4,10 +4,6 @@ in the orkspace folder. Update pages, styles, images, logos etc.
 """
 import os 
 import shutil
-# os.chdir('/home/project/workspace-cli/wrcli/build')
-# this_path = '/home/project/workspace-cli/wrcli/build'
-# conf_file = "/home/project/workspace-cli/tests/conf_parse/workspace-opt-field-miss-val.yaml"
-# conf_dir_path = "/home/project/workspace-cli/tests/conf_parse/workspace-dirs/correct"
 import logging
 import json, yaml
 from pathlib import Path

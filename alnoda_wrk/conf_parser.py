@@ -8,7 +8,6 @@ import yaml
 import re
 from cerberus import Validator
 schema = eval(open(Path(__file__).with_name('config_schema.py'), 'r').read())
-# schema = eval(open(Path('/home/project/workspace-cli/wrcli/wrk_build/config_schema.py'), 'r').read())
 
 REQUIRED_KEYS = {
     'name': 'Workspace requires name. Please add to the workspace.yaml a key "name"',
