@@ -114,9 +114,9 @@ def update_workspace_name(new_name):
     """ str ->>
     Update name of this workspace
     """
-    # update meta with the new workspace
+    # update meta with the new workspace name
     update_meta(name=new_name)
-    # update about page with the new description
+    # update about page with the new name
     refresh_about_from_meta() 
     return
 
@@ -125,9 +125,9 @@ def update_workspace_version(new_version):
     """ str/int/float ->>
     Update name of this workspace
     """
-    # update meta with the new workspace
+    # update meta with the new workspace version
     update_meta(version=new_version)
-    # update about page with the new description
+    # update about page with the new version
     refresh_about_from_meta() 
     return
 
@@ -138,6 +138,17 @@ def update_workspace_author(new_author):
     """
     # update meta with the new author
     update_meta(author=new_author)
+    # update about page with the new author
+    refresh_about_from_meta() 
+    return
+
+
+def update_workspace_description(new_description):
+    """ str ->>
+    Update author of this workspace
+    """
+    # update meta with the new description
+    update_meta(description=new_description)
     # update about page with the new description
     refresh_about_from_meta() 
     return

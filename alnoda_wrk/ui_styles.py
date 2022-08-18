@@ -25,7 +25,7 @@ styles_str = """
 {% endif %}
 
 {% if 'dark' in styles %} 
-[data-md-color-scheme="workspace"] {
+[data-md-color-scheme="workspace-dark"] {
 {% if 'primary' in styles['dark'] %} 
     --md-primary-fg-color:        {{ styles.dark.primary }};
 {% endif %}

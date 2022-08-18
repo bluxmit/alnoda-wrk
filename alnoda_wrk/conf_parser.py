@@ -183,6 +183,9 @@ def read_conf_dir(conf_dir_path):
     :return: files in the config folder
     :rtype: list
     """
+    # First of all, check such folder even exists
+    if not Path(conf_dir_path).is_dir():
+        raise Exception(f"Folder {conf_dir_path} does not exist!")
     # Search Directories Recursively
     #files = list(filter(lambda x: x.is_file(), Path(conf_dir_path).rglob('*')))  # incl. subdirs
     files = list(filter(lambda x: x.is_file(), Path(conf_dir_path).iterdir()))    # only one dir

@@ -9,7 +9,7 @@ import json, yaml
 from pathlib import Path
 from jinja2 import Template
 from distutils.dir_util import copy_tree
-from .globals import WORKSPACE_UI_DIR
+from .globals import *
 from .ui_styles import styles_str
 from .templates import app_page_str
 from .meta_about import update_meta, refresh_about_from_meta
@@ -290,9 +290,10 @@ def update_other_pages(wrk_params, conf_dir_path):
             mkdocs_dict = get_mkdocs_yml()
             ptitle = another_page.replace("_"," ").capitalize()
             page_entry = {ptitle: os.path.join('pages', f'{another_page}.md')}
-            pd = [p for p in mkdocs_dict['nav'] if another_page in p.keys()]
+            pd = [p for p in mkdocs_dict['nav'] if ptitle in p.keys()]  #<- does workspace has this page already?
             if len(pd) == 0: 
                 mkdocs_dict['nav'].append(page_entry)
+                mkdocs_dict['nav'] = sorted(mkdocs_dict['nav'], key=lambda x: WORKSPACE_PAGES_ODER.get(list(x.keys())[0],8))
             update_mkdocs_yml(mkdocs_dict)
     return
 
