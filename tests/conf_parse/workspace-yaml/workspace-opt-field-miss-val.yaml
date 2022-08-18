@@ -1,0 +1,68 @@
+---
+# mandatory
+name: Awesome workspace
+doc_url: link to the documentation page
+author: bluxmit
+version: 4.0
+description: |
+  # Workspace for awesome work. 
+  Portable containerized development environment for awesome challenges
+  *(created by authentic-apostol, authentic.apostol@gmail.com)*
+
+# optional
+# (Quickstart UI icons)
+logo: 
+favicon: dark-icon.svg
+
+# optional:
+# (Quickstart UI appearance)
+styles:
+  font: Roboto  # chose any from https://fonts.google.com/
+  colors:
+    light:
+      primary: "#252525"
+      accent: "#19758F"
+      background: "#F5F7F7"
+    dark:
+      primary: "#3C3C3C"
+      accent: "#E77260"
+      background: "#1E1E1E"
+      title: "9CDCFE"
+      text: "9CDCFE"
+
+# optional:
+# (tools to add to the Quickstart UI)
+pages:
+  home:
+    - name: REDIS_COMMANDER
+      port: 8032 # allowed strictly between 8031 - 8040
+      path: /
+      title: Redis Commander
+      description: "Redis web management tool"
+      image: redis-commander.png
+  admin:
+    - name: CRONICLE
+      port: 8033 # allowed strictly between 8031 - 8040
+      title: Blast Radius
+      description: "Schedule jobs, manage schedules, observe and monitor executions"
+      image: Blast-radius.png
+  my_apps:
+    - name: ANSIBLE_ARA
+      port: 8031  # allowed strictly between 8031 - 8040
+      title: Ansible Ara
+      description: Monitor Ansible plays
+      image: ara.png
+
+# optional:
+# (applications and services to launch every time workspace starts)
+start:
+  - name: ANSIBLE_ARA
+    cmd: "ara-manage runserver 0.0.0.0:8031"
+  - name: CRONICLE
+    folder: "/opt/cronicle"
+    cmd: "rm /opt/cronicle/logs/cronicled.pid || true; cd /opt/cronicle; . env/bin/activate; /opt/cronicle/bin/control.sh setup; /opt/cronicle/bin/control.sh start"
+  - name: REDIS_COMMANDER
+    folder: "/opt/redis-commander"
+    cmd: ". env/bin/activate && redis-commander --port=8029"
+
+

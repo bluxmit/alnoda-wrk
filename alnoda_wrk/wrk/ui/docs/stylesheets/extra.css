@@ -1,0 +1,17 @@
+[data-md-color-scheme="workspace"] {
+  --md-primary-fg-color:        #2A2D2E;
+  --md-accent-fg-color:         #E77260;
+
+  --md-default-bg-color:        #E9EAE6;
+  --md-default-fg-color--light: #E77260;
+}
+
+[data-md-color-scheme="workspace-dark"] {
+  --md-primary-fg-color:        #3C3C3C;
+  --md-accent-fg-color:         #E77260;
+  
+  --md-default-bg-color:        #1E1E1E;
+  --md-default-fg-color--light: #9CDCFE;
+  --md-typeset-color:           #9CDCFE;
+  --md-typeset-a-color:         #9CDCFE;
+}
