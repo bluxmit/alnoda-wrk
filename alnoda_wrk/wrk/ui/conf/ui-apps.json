@@ -10,7 +10,7 @@
             "port": 8022,
             "title": "Terminal",
             "description": "Full-fledged WEB-based Command Line Interface",
-            "image": "assets/home/Terminal.png"
+            "image": "assets/home/terminal.png"
         },
         "FILEBROWSER": {
             "port": 8023,
