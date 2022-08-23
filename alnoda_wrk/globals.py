@@ -9,3 +9,24 @@ WORKSPACE_HOME_PAGES = ["home", "admin", "my_apps"]
 WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 9, "Docs": 10}
 # external os text editor for interactive inputs
 TEXT_EDITOR = "nano"
+
+
+def safestring(s, length=15):
+    """ str, int ->> str 
+    Creates a 'safe' string - no spaces, special characters, all lowercase. 
+    Such a string can be used for example in supervisord app name, env var, as variable, etc.
+
+    :param name: string to make 'safe'
+    :type name: str
+    :param length: max length of the string
+    :type length: int
+    :return: safe string - no spaces, special characters, all lowercase
+    :rtype: str
+    """
+    # use isalnum
+    s = ''.join(e for e in s if e.isalnum())
+    # make all lowercase
+    s = s.lower()
+    # make sure string has max length 
+    s = s[:length]
+    return s

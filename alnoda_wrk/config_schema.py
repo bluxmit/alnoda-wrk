@@ -87,6 +87,11 @@
                             'required': False,
                             'type': 'string',
                         },
+                        'code': 
+                        {
+                            'required': False,
+                            'type': 'string',
+                        },
                     }
                 },
             },
@@ -131,13 +136,12 @@
                     {
                         'required': True,
                         'type': 'string',
-                        'regex': r'[0-9a-zA-Z_]+'
                     },
                     'port': 
                     {
                         'required': True,
                         'type': 'integer',
-                        'min': 8031,
+                        'min': 8020,
                         'max': 8040,
                     },
                     'path': 
@@ -187,6 +191,28 @@
                 {
                     'required': False,
                     'type': 'string',
+                },
+                'env_vars': 
+                {
+                    'required': False,
+                    'type': 'list',
+                    'schema':
+                    {
+                        'type': 'dict',
+                        'schema': 
+                        {
+                            'name': 
+                            {
+                                'required': True,
+                                'type': 'string',
+                            },
+                            'value': 
+                            {
+                                'required': True,
+                                'type': 'string',
+                            }
+                        }
+                    }
                 },
             }
         }

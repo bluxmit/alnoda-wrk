@@ -1,53 +1,24 @@
-
 styles_str = """
-{% if 'light' in styles %} 
 [data-md-color-scheme="workspace"] {
-{% if 'primary' in styles['light'] %} 
-    --md-primary-fg-color:        {{ styles.light.primary }};
-{% endif %}
-{% if 'accent' in styles['light'] %} 
-    --md-accent-fg-color:        {{ styles.light.accent }};
-{% endif %}
-
-{% if 'background' in styles['light'] %} 
-    --md-default-bg-color:        {{ styles.light.background }};
-{% endif %}
-{% if 'subtitle' in styles['light'] %} 
-    --md-default-fg-color--light:        {{ styles.light.subtitle }};
-{% endif %}
-{% if 'text' in styles['light'] %} 
-    --md-typeset-color:        {{ styles.light.text }};
-{% endif %}
-{% if 'title' in styles['light'] %} 
-    --md-typeset-a-color:        {{ styles.light.title }};
-{% endif %}
+    --md-primary-fg-color:          {{ styles.light.primary|default('#2A2D2E') }};
+    --md-accent-fg-color:           {{ styles.light.accent|default('#E77260') }};
+    --md-default-bg-color:          {{ styles.light.background|default('#E9EAE6') }};
+    --md-default-fg-color--light:   {{ styles.light.subtitle|default('#E77260') }};
+    --md-typeset-color:             {{ styles.light.text|default('#1C1C1C') }};
+    --md-typeset-a-color:           {{ styles.light.title|default('#1C1C1C') }};
+    --md-code-bg-color:             {{ styles.light.code_background|default('#D2D2D2') }};
+    --md-code-fg-color:             {{ styles.light.code_text|default('#D2D2D2') }};
 }
-{% endif %}
-
-{% if 'dark' in styles %} 
 [data-md-color-scheme="workspace-dark"] {
-{% if 'primary' in styles['dark'] %} 
-    --md-primary-fg-color:        {{ styles.dark.primary }};
-{% endif %}
-{% if 'accent' in styles['dark'] %} 
-    --md-accent-fg-color:        {{ styles.dark.accent }};
-{% endif %}
-
-{% if 'background' in styles['dark'] %} 
-    --md-default-bg-color:        {{ styles.dark.background }};
-{% endif %}
-{% if 'subtitle' in styles['dark'] %} 
-    --md-default-fg-color--light:        {{ styles.dark.subtitle }};
-{% endif %}
-{% if 'text' in styles['dark'] %} 
-    --md-typeset-color:        {{ styles.dark.text }};
-{% endif %}
-{% if 'title' in styles['dark'] %} 
-    --md-typeset-a-color:        {{ styles.dark.title }};
-{% endif %}
+    --md-primary-fg-color:          {{ styles.dark.primary|default('#3C3C3C') }};
+    --md-accent-fg-color:           {{ styles.dark.accent|default('#E77260') }};
+    --md-default-bg-color:          {{ styles.dark.background|default('#1E1E1E') }};
+    --md-default-fg-color--light:   {{ styles.dark.subtitle|default('#9CDCFE') }};
+    --md-typeset-color:             {{ styles.dark.text|default('#9CDCFE') }};
+    --md-typeset-a-color:           {{ styles.dark.title|default('#9CDCFE') }};
+    --md-code-bg-color:             {{ styles.dark.code_background|default('#D2D2D2') }};
+    --md-code-fg-color:             {{ styles.dark.code_text|default('#bfbfbf') }};
 }
-{% endif %}
-
 
 {% if 'common_colors' in styles %}
 {% if 'header' in styles['common_colors'] %}
@@ -55,10 +26,9 @@ styles_str = """
     color: {{ styles.common_colors.header }}; !important;
     }
 {% endif %}
-{% if 'nav' in styles['common_colors'] %}
+{% endif %}
+
 .md-nav__link--active {
-    color: {{ styles.common_colors.nav }} !important;
+    color: {{ styles.common_colors.nav|default('#eab676') }} !important;
 }
-{% endif %}
-{% endif %}
 """

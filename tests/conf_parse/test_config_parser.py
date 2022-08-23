@@ -52,26 +52,6 @@ def test_valid_schema():
     wrk_params = read_test_conf('workspace-correct.yaml')
     assert validate_schema(wrk_params)
 
-def test_invalid_app_name_space():
-    """ Example of the wrong workspace.yaml with app name has space
-    Styles are optionsl
-    Should check schema validation is OK
-    """
-    wrk_params = read_test_conf('workspace-app-name-space.yaml')
-    with pytest.raises(Exception) as e:
-        assert validate_schema(wrk_params)
-    assert e.type == Exception
-
-def test_invalid_app_name_dash():
-    """ Example of the wrong workspace.yaml with app name has space
-    Styles are optionsl
-    Should check schema validation is OK
-    """
-    wrk_params = read_test_conf('workspace-app-name-dash.yaml')
-    with pytest.raises(Exception) as e:
-        assert validate_schema(wrk_params)
-    assert e.type == Exception
-
 def test_invalid_schema_miss_descr():
     """ Example of the improper workspace yaml
     Should check schema validation is not OK 

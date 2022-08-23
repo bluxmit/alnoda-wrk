@@ -4,6 +4,11 @@
 
   --md-default-bg-color:        #E9EAE6;
   --md-default-fg-color--light: #E77260;
+  --md-typeset-color:           #1C1C1C;
+  --md-typeset-a-color:         #1C1C1C;
+  
+  --md-code-bg-color:           #D2D2D2;
+  --md-code-fg-color:           #4d4c4c;
 }
 
 [data-md-color-scheme="workspace-dark"] {
@@ -14,4 +19,7 @@
   --md-default-fg-color--light: #9CDCFE;
   --md-typeset-color:           #9CDCFE;
   --md-typeset-a-color:         #9CDCFE;
+  
+  --md-code-bg-color:           #D2D2D2;
+  --md-code-fg-color:           #bfbfbf; 
 }

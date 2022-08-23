@@ -12,12 +12,40 @@ from .templates import supervisord_template
 
 SUPERVISORD_FOLDER = "/etc/supervisord"
 VAR_LOG_FOLDER = "/var/log/workspace/"
+MKDOCS_REQUIREMENTS_DIR = os.path.join(WORKSPACE_DIR, 'requires')
+mkdocs_file = os.path.join(MKDOCS_REQUIREMENTS_DIR, 'mkdocs.txt')
+mkdocs_deps_file = os.path.join(MKDOCS_REQUIREMENTS_DIR, 'deps.txt')
+
+
+def install_mkdocs_deps():
+    """ Install mkdocs dependencies with pipx """
+    # Try to uninstall mkdocs (we want to update the version if any)
+    try:
+        uninstall_mkdocs = os.popen("pipx uninstall mkdocs").read()
+        logging.debug(uninstall_mkdocs)
+    except Exception as e:
+        logging.debug(f"Error uninstalling mkdocs: {e}")
+    # Read mkdocs and mkdocs-requirements
+    with open(mkdocs_file) as f:
+        mkdocs = f.read()
+    with open(mkdocs_deps_file) as f:
+        mkdocs_requirements = f.readlines()
+    # Install new mkdocs & dependencies with pipx
+    install_mkdocs_res = os.popen(f"pipx install {mkdocs}").read()
+    logging.debug(install_mkdocs_res)
+    for dependency in mkdocs_requirements:
+        install_mkdocs_deps_res = os.popen(f"pipx inject mkdocs {dependency}").read()
+        logging.debug(install_mkdocs_deps_res)
+    return
 
 
 def init_wrk():
     """  ->> bool
     Check if this workspace has UI folder. If not copy the 
     boilerplate - the default starting UI
+
+    :return: whether workspace was successfully initialized
+    :rtype: bool
     """
     logging.debug(f'checking workspace initialized in folder {WORKSPACE_DIR}')
     try:
@@ -32,6 +60,7 @@ def init_wrk():
     except Exception as e:
         logging.warning(f"Something went wrong. Is workspace folder deleted? Error: {e}")
         return False
+    install_mkdocs_deps() #<- install all dependencies for mkdocs
     return True
 
 
@@ -46,6 +75,9 @@ def delete_wrk():
 def init_supervisord():
     """ ->> bool
     Ensure folder for supervisord and for UI app logs exist
+
+    :return: whether supervisord was successfully initialized
+    :rtype: bool
     """
     logging.debug(f'Making sure folder {SUPERVISORD_FOLDER} for supervisord exists')
     try:
@@ -62,7 +94,7 @@ def init_supervisord():
     return True
 
 
-def create_supervisord_file(name, cmd, folder=None):
+def create_supervisord_file(name, cmd, folder=None, env_vars=None):
     """ str, str, str ->> 
     Add supervisord command and file to start an application
 
@@ -72,10 +104,13 @@ def create_supervisord_file(name, cmd, folder=None):
     :type cmd: str
     :param folder: folder in where application should be started
     :type folder: str
+    :param env_vars: env var definitions, i.e. ["TERM=xterm", "EDITOR=mc"]
+    :type env_vars: list
     """
     init_supervisord() # <- make sure folders exist
     params = {"name": name, "cmd": cmd}
     if folder: params["folder"] = folder
+    if env_vars: params["env_vars"] = env_vars
     tm = Template(supervisord_template)
     supervisord_file = tm.render(params)
     # write file to the supervisord folder
@@ -96,6 +131,14 @@ def create_startup_applications(wrk_params):
     """
     if 'start' in wrk_params:
         for startup_app in wrk_params['start']:
+            # make sure app name is 'safe' for supervisord name
+            startup_app['name'] = safestring(startup_app['name'])
+            # transform env_vars (if provided into list) from list of dicts into list of strings
+            if 'env_vars' in startup_app:
+                tr_env_vars = []
+                for ev in startup_app['env_vars']:
+                    tr_env_vars.append(ev["name"]+"="+ev["value"])
+                startup_app['env_vars'] = tr_env_vars
             create_supervisord_file(**startup_app)
     return
         

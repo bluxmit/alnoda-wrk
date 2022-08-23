@@ -1,9 +1,19 @@
 import typer
-from .builder import init_wrk, build_workspace, delete_wrk
+from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
+from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
 
 app = typer.Typer()
 
+
+@app.command()
+def deps():
+    """ 
+    Install/Update mkdocs dependencies
+    """
+    install_mkdocs_deps()
+    return
+    
 
 @app.command()
 def init():
@@ -54,6 +64,10 @@ def update(what, value):
     """
     if what == "name":
         update_workspace_name(value)
+        # update mkdocs.yml too
+        mkyml = get_mkdocs_yml()
+        mkyml["site_name"] = value
+        update_mkdocs_yml(mkyml)
     elif what == "version":
         update_workspace_version(value)
     elif what == "author":

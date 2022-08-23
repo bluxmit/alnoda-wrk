@@ -3,6 +3,7 @@ from unittest.mock import patch
 from pathlib import Path
 from alnoda_wrk.conf_parser import *
 from alnoda_wrk.ui_builder import *
+from alnoda_wrk.globals import safestring
 import yaml, json
 import os, shutil
 from datetime import date
@@ -169,8 +170,8 @@ def test_wrk_build(monkeypatch):
     supervisord_folder = "/tmp/supervisord"
     assert os.path.isdir("/tmp/supervisord"), "Supevisord folder must be created"
     assert os.path.isdir("/tmp/log"), "UI app log folder must be created"
-    assert os.path.isfile(f"{supervisord_folder}/REDIS_COMMANDER.conf"), f"REDIS_COMMANDER.cof file must be added"
-    with open(f"{supervisord_folder}/REDIS_COMMANDER.conf", "r") as f:
+    assert os.path.isfile(f"{supervisord_folder}/{safestring('REDIS_COMMANDER')}.conf"), f"supervisord conf file for REDIS_COMMANDER must be added"
+    with open(f"{supervisord_folder}/{safestring('REDIS_COMMANDER')}.conf", "r") as f:
         superv_rediscomm = f.read()
     assert ". env/bin/activate && redis-commander --port=8029" in superv_rediscomm, "Startup command for REDIS_COMMANDER was not added"
     # clear test results

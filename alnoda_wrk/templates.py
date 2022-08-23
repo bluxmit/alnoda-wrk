@@ -33,8 +33,7 @@ about_page_template = """
 
 supervisord_template = """
 [program:{{ name }}]
-{% if folder is defined %}directory={{folder}}{% endif %}
-command=/bin/sh -c " {{ cmd }} "
+command=/bin/sh -c "{% if env_vars is defined %}{% for env in env_vars %}export {{env}}; {% endfor %}{% endif %}{% if folder is defined %}cd {{folder}}; {% endif %} {{ cmd }} "
 stderr_logfile = /var/log/workspace/{{ name }}-stderr.log
 stdout_logfile = /var/log/workspace/{{ name }}-stdout.log
 logfile_maxbytes = 1024

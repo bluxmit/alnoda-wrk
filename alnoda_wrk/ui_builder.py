@@ -178,7 +178,7 @@ def update_ui_styles(wrk_params):
     :type wrk_params: dict
     """
     # create dict with style settings
-    d_styles = {}
+    d_styles = {"light": {}, "dark": {}, "common_colors": {}}
     if 'styles' in wrk_params:
         if 'colors' in wrk_params['styles']:
             d_styles.update(wrk_params['styles']['colors'])
@@ -263,7 +263,7 @@ def update_home_page(wrk_params, conf_dir_path):
         ui_apps = read_ui_conf() 
         ui_apps = update_ui_page_from_wrk_params(ui_apps, wrk_params, 'home')
         update_ui_conf(ui_apps)
-    return ui_apps
+    return
 
 
 def update_other_pages(wrk_params, conf_dir_path):
