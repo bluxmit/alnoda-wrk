@@ -1,4 +1,6 @@
 import typer
+import inquirer
+from rich.prompt import Prompt
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
@@ -6,64 +8,54 @@ from .wrk_modifiers import start_app
 
 app = typer.Typer()
 
-
 @app.command()
 def deps():
-    """ 
-    Install/Update mkdocs dependencies
-    """
+    """ Install/Update mkdocs dependencies """
     install_mkdocs_deps()
     return
     
-
 @app.command()
 def init():
-    """
-    Initialize workspace folder
-    """
+    """ Initialize workspace folder """
     typer.echo("Initializing $HOME/.wrk")
     init_wrk()
     return
 
-
 @app.command()
 def delete():
-    """
-    Delete local .wrk folder
-    """
+    """ Delete local .wrk folder """
     typer.echo("Deleting $HOME/.wrk")
     delete_wrk()
     return
 
-
 @app.command()
 def build(folder: str):
-    """
-    Build workspace
-    """
+    """ Build workspace (use in docker build) """
     typer.echo(f"Building the workspace from {folder} ...")
     build_workspace(folder)
     return
 
-
 @app.command()
 def edit(what: str = "description"):
-    """
-    Edit Workspace meta (description by default) interactively
-    """
+    """ Edit Workspace meta (description by default) interactively """
     if what == "description":
         edit_workspace_description()
     else:
         typer.echo(f"Cannot edit {what}")
     return
 
-
 @app.command()
-def update(what, value):
-    """
-    Update Workspace meta 
-    """
+def edit():
+    """ Update Workspace meta """
+    questions = [
+        inquirer.List('name',
+                    message="What do you want to edit?",
+                    choices=['name', 'version', 'author', 'description'],
+        ),
+    ]
+    what = inquirer.prompt(questions)['name']
     if what == "name":
+        value = Prompt.ask("Enter new name :sunglasses:")
         update_workspace_name(value)
         # update mkdocs.yml too
         mkyml = get_mkdocs_yml()
@@ -79,19 +71,17 @@ def update(what, value):
         typer.echo(f"Cannot edit {what}")
     return
 
-
 @app.command()
 def refresh(what: str = "about"):
-    """
-    Force refresh some of the workspace parts
-    """
+    """ Force refresh some of the workspace parts (meta, about) """
     if what == "about":
         refresh_about()
-
+    return
 
 @app.command()
-def start(name: str, cmd: str):
+def run(name: str, cmd: str):
     """
     Start application
     """
     start_app(name, cmd)
+    return

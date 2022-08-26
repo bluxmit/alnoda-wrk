@@ -41,6 +41,8 @@ def mock_globals(monkeypatch, kdir="/tmp"):
         except: pass
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.VAR_LOG_FOLDER", f"{kdir}/log")
         except: pass
+        try: monkeypatch.setattr(f"alnoda_wrk.{m}.WORKSPACE_LINEAGE_FILE", f"{kdir}/.wrk/lineage.json")
+        except: pass
     return
 
 
