@@ -16,7 +16,7 @@
             "port": 8023,
             "title": "Filebrowser",
             "name": "File Browser",
-            "description": "Browse, upload and download files and folders to and from the Workspace",
+            "description": "Browse, upload and download files and folders to and from the workspace",
             "image": "assets/home/Filebrowser.png"
         }, 
         "UNGIT": {
@@ -29,14 +29,14 @@
     "my_apps": {
         "PORT_8029": {
             "port": 8029,
-            "title": "Port 8029",
-            "description": "My app running on port 8029",
+            "title": "My app on port 8029",
+            "description": "Start any app or service that listens on port 8029. USe this link for quick access",
             "image": "port-8029.png"
         },
         "PORT_8030": {
             "port": 8030,
-            "title": "Port 8030",
-            "description": "My app running on port 8030",
+            "title": "My app on port 8030",
+            "description": "Start any app or service that listens on port 8030. USe this link for quick access",
             "image": "port-8030.png"
         }
     }

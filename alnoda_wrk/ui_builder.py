@@ -10,65 +10,15 @@ from pathlib import Path
 from jinja2 import Template
 from distutils.dir_util import copy_tree
 from .globals import *
+from .fileops import * 
 from .ui_styles import styles_str
 from .templates import app_page_str
-from .meta_about import update_meta, refresh_about_from_meta
+from .meta_about import update_meta, refresh_about
 
-mkdocs_yml_path = os.path.join(WORKSPACE_UI_DIR, 'mkdocs.yml') 
 mkdocs_extra_css_path = os.path.join(WORKSPACE_UI_DIR, 'docs', 'stylesheets', 'extra.css') 
 mkdocs_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
-ui_dict_file = os.path.join(WORKSPACE_UI_DIR, 'conf', 'ui-apps.json')
 mkdocs_home_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_other_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'pages')
-
-
-def get_mkdocs_yml():
-    """  ->> {}
-    Reads mkdocs.yml from the workspace UI, and returns as dict
-
-    :return: workspace mkdocs.yml as a dict
-    :rtype: dict
-    """
-    logging.debug(f"reading mkdocs.yml from {mkdocs_yml_path}")
-    with open(mkdocs_yml_path, 'r') as stream:
-        mkdocs_dict = yaml.safe_load(stream)
-    return mkdocs_dict
-
-
-def update_mkdocs_yml(mkdocs_dict):
-    """ {} ->> 
-    Updates (replaces) mkdocs.yml with the new dict
-
-    :param mkdocs_dict: dict with main configuration for MkDocs
-    :type wrk_params: dict
-    """
-    with open(mkdocs_yml_path, 'w') as file:
-        documents = yaml.dump(mkdocs_dict, file, default_flow_style=False)
-    return
-
-
-def read_ui_conf():
-    """ ->> {}
-    Reads existing workspace UI json, and returns dict.
-
-    :return: existing UI app configuration
-    :rtype: dict
-    """
-    with open(ui_dict_file) as json_file:
-        ui_apps = json.load(json_file)
-    return ui_apps
-
-
-def update_ui_conf(ui_apps):
-    """ {} ->> 
-    Overwrite existing workspace UI json with the updated dict
-
-    :param ui_apps: dict with the current MkDocs pages, fetched from the .wrk dir
-    :type ui_apps: dict
-    """
-    with open(ui_dict_file, 'w') as file:
-        json.dump(ui_apps, file, indent=4 * ' ')
-    return 
 
 
 def update_required_ui_params(wrk_params, conf_dir_path):
@@ -100,7 +50,7 @@ def update_required_ui_params(wrk_params, conf_dir_path):
         version=version,
         author=author,
         description=description
-        ); refresh_about_from_meta()
+        ); refresh_about()
     return
 
 

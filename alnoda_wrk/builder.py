@@ -2,16 +2,13 @@ import os
 import logging
 import json, yaml
 from pathlib import Path
-from jinja2 import Template
 import shutil
-from .meta_about import update_meta, refresh_about_from_meta
+from .meta_about import update_meta, refresh_about, add_wrk_to_lineage
 from .conf_parser import read_conf_dir
 from .globals import *
 from .ui_builder import build_wrk_ui
-from .templates import supervisord_template
+from .wrk_supervisor import init_supervisord, create_supervisord_file
 
-SUPERVISORD_FOLDER = "/etc/supervisord"
-VAR_LOG_FOLDER = "/var/log/workspace/"
 MKDOCS_REQUIREMENTS_DIR = os.path.join(WORKSPACE_DIR, 'requires')
 mkdocs_file = os.path.join(MKDOCS_REQUIREMENTS_DIR, 'mkdocs.txt')
 mkdocs_deps_file = os.path.join(MKDOCS_REQUIREMENTS_DIR, 'deps.txt')
@@ -54,7 +51,7 @@ def init_wrk():
             shutil.copytree(os.path.join(this_path, 'wrk'), WORKSPACE_DIR)
             # update meta 
             update_meta()   #<- only update created date
-            refresh_about_from_meta() #<- and update about page with the new date
+            refresh_about() #<- and update about page with the new date
         else:
             logging.info(f'Workspace initialized in {WORKSPACE_DIR}')
     except Exception as e:
@@ -69,55 +66,6 @@ def delete_wrk():
     if Path(WORKSPACE_DIR).is_dir():
         shutil.rmtree(WORKSPACE_DIR)
         logging.warning("Workspace UI deleted!")
-    return
-
-
-def init_supervisord():
-    """ ->> bool
-    Ensure folder for supervisord and for UI app logs exist
-
-    :return: whether supervisord was successfully initialized
-    :rtype: bool
-    """
-    logging.debug(f'Making sure folder {SUPERVISORD_FOLDER} for supervisord exists')
-    try:
-        Path(SUPERVISORD_FOLDER).mkdir(parents=True, exist_ok=True)
-    except Exception as e:
-        logging.warning(f"Could not create folder for supervisord {SUPERVISORD_FOLDER}. Something went wrong. Error: {e}")
-        return False
-    logging.debug(f'Making sure folder {VAR_LOG_FOLDER} for app logs exists')
-    try:
-        Path(VAR_LOG_FOLDER).mkdir(parents=True, exist_ok=True)
-    except Exception as e:
-        logging.warning(f"Could not create folder for logs {VAR_LOG_FOLDER}. Something went wrong. Error: {e}")
-        return False
-    return True
-
-
-def create_supervisord_file(name, cmd, folder=None, env_vars=None):
-    """ str, str, str ->> 
-    Add supervisord command and file to start an application
-
-    :param name: name of the application
-    :type name: str
-    :param cmd: shell command that starts an application
-    :type cmd: str
-    :param folder: folder in where application should be started
-    :type folder: str
-    :param env_vars: env var definitions, i.e. ["TERM=xterm", "EDITOR=mc"]
-    :type env_vars: list
-    """
-    init_supervisord() # <- make sure folders exist
-    params = {"name": name, "cmd": cmd}
-    if folder: params["folder"] = folder
-    if env_vars: params["env_vars"] = env_vars
-    tm = Template(supervisord_template)
-    supervisord_file = tm.render(params)
-    # write file to the supervisord folder
-    supervisor_file = os.path.join(SUPERVISORD_FOLDER, f"{name}.conf")
-    with open(supervisor_file, "w") as _file:
-        _file.write(supervisord_file)
-    logging.debug(f"creating startup for {name}")
     return
 
 
@@ -163,10 +111,17 @@ def build_workspace(conf_dir_path):
         author = wrk_params['author'],
         description = wrk_params['description']
     )
-    refresh_about_from_meta()
     # create UI
     build_wrk_ui(wrk_params, conf_dir_path)
     # Create supervisord files for applications to start up
     create_startup_applications(wrk_params)
+    # Add this workspace to the lineage
+    add_wrk_to_lineage(
+        name = wrk_params['name'],
+        version = wrk_params['version'],
+        docs = wrk_params['doc_url']
+        )
+    # refresh about page
+    refresh_about()
     return
     

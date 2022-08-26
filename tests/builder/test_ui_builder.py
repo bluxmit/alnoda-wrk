@@ -13,7 +13,7 @@ from ..conf_parse.test_config_dir import get_full_conf_dir_path
 def mock_globals(monkeypatch, kdir="/tmp"):
     """
     """
-    mgl = ["globals", "meta_about", "conf_parser", "ui_builder", "builder"]
+    mgl = ["globals", "meta_about", "conf_parser", "ui_builder", "builder", "fileops", "wrk_supervisor"]
     for m in mgl:
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.HOME_DIR", f"{kdir}/")
         except: pass
@@ -78,6 +78,7 @@ def test_update_required_ui_params(monkeypatch):
     from alnoda_wrk.meta_about import read_meta, read_about 
     # RUN TEST
     builder.init_wrk()
+    builder.init_supervisord()
     update_required_ui_params(wrk_params, conf_dir_path)
     # CHECK mkdocs dict
     mkdocs_yml = get_mkdocs_yml()
@@ -97,7 +98,7 @@ def test_update_required_ui_params(monkeypatch):
     assert author in about, f"author {author} was not updated in the about.md"
     assert description in about, f"description {description} was not updated in the about.md"
     # clear test results
-    shutil.rmtree("/tmp/.wrk")
+    shutil.rmtree("/tmp/.wrk"); shutil.rmtree("/tmp/supervisord")
     return
 
 
@@ -111,6 +112,7 @@ def test_wrk_build(monkeypatch):
     # TEST
     # # Initialize
     builder.init_wrk()
+    builder.init_supervisord()
     conf_dir_path = get_full_conf_dir_path("correct")
     builder.build_workspace(conf_dir_path)
     mkdocs_yml = get_mkdocs_yml()

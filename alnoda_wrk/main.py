@@ -2,6 +2,7 @@ import typer
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
+from .wrk_modifiers import start_app
 
 app = typer.Typer()
 
@@ -77,3 +78,20 @@ def update(what, value):
     else:
         typer.echo(f"Cannot edit {what}")
     return
+
+
+@app.command()
+def refresh(what: str = "about"):
+    """
+    Force refresh some of the workspace parts
+    """
+    if what == "about":
+        refresh_about()
+
+
+@app.command()
+def start(name: str, cmd: str):
+    """
+    Start application
+    """
+    start_app(name, cmd)

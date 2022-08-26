@@ -20,6 +20,14 @@
   --md-typeset-color:           #9CDCFE;
   --md-typeset-a-color:         #9CDCFE;
   
-  --md-code-bg-color:           #D2D2D2;
-  --md-code-fg-color:           #bfbfbf; 
+  --md-code-bg-color:           #2e2b2b;
+  --md-code-fg-color:           #ced6d6; 
+}
+
+.md-header {
+    color: #FFFFFF; !important;
+}
+
+.md-nav__link--active {
+    color: #eab676 !important;
 }

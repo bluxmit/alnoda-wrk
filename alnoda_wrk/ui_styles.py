@@ -7,7 +7,7 @@ styles_str = """
     --md-typeset-color:             {{ styles.light.text|default('#1C1C1C') }};
     --md-typeset-a-color:           {{ styles.light.title|default('#1C1C1C') }};
     --md-code-bg-color:             {{ styles.light.code_background|default('#D2D2D2') }};
-    --md-code-fg-color:             {{ styles.light.code_text|default('#D2D2D2') }};
+    --md-code-fg-color:             {{ styles.light.code_text|default('#4d4c4c') }};
 }
 [data-md-color-scheme="workspace-dark"] {
     --md-primary-fg-color:          {{ styles.dark.primary|default('#3C3C3C') }};
@@ -16,17 +16,13 @@ styles_str = """
     --md-default-fg-color--light:   {{ styles.dark.subtitle|default('#9CDCFE') }};
     --md-typeset-color:             {{ styles.dark.text|default('#9CDCFE') }};
     --md-typeset-a-color:           {{ styles.dark.title|default('#9CDCFE') }};
-    --md-code-bg-color:             {{ styles.dark.code_background|default('#D2D2D2') }};
-    --md-code-fg-color:             {{ styles.dark.code_text|default('#bfbfbf') }};
+    --md-code-bg-color:             {{ styles.dark.code_background|default('#2e2b2b') }};
+    --md-code-fg-color:             {{ styles.dark.code_text|default('#ced6d6') }};
 }
 
-{% if 'common_colors' in styles %}
-{% if 'header' in styles['common_colors'] %}
 .md-header {
-    color: {{ styles.common_colors.header }}; !important;
+    color: {{ styles.common_colors.header|default('#FFFFFF') }}; !important;
     }
-{% endif %}
-{% endif %}
 
 .md-nav__link--active {
     color: {{ styles.common_colors.nav|default('#eab676') }} !important;
