@@ -6,6 +6,7 @@ from TermTk.TTkCore.color import TTkColor
 from home import WrkHomeTab
 from features_widget import get_features_widget
 from description_widget import get_description_widget
+from preferences_widget import get_preferences_widget
 
 options = ["Home", "Features", "Description", "Preferences", "Intrerface"]
 label_color = TTkColor.fg('#ebcf34')
@@ -43,6 +44,7 @@ def demoList(root= None):
         if label == "Home":                 r_widget = hello_widget
         elif label == "Features":           r_widget = get_features_widget(parent=frame2, label_color=label_color)
         elif label == "Description":        r_widget = get_description_widget(parent=frame2, label_color=label_color)
+        elif label == "Preferences":        r_widget = get_preferences_widget(parent=frame2, label_color=label_color)
         else:                               r_widget = hello_widget
         frame2.show()
         frame2.layout().addWidget(r_widget)
