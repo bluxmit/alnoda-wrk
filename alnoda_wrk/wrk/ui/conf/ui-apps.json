@@ -30,13 +30,13 @@
         "PORT_8029": {
             "port": 8029,
             "title": "My app on port 8029",
-            "description": "Start any app or service that listens on port 8029. USe this link for quick access",
+            "description": "Start any app or service that listens on port 8029. Use this link for quick access",
             "image": "port-8029.png"
         },
         "PORT_8030": {
             "port": 8030,
             "title": "My app on port 8030",
-            "description": "Start any app or service that listens on port 8030. USe this link for quick access",
+            "description": "Start any app or service that listens on port 8030. Use this link for quick access",
             "image": "port-8030.png"
         }
     }

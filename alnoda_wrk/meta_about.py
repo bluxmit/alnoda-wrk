@@ -208,7 +208,7 @@ def update_workspace_description(new_description):
 def edit_workspace_description():
     """  ->>
     Interactively edit the description of the aboput page. 
-    It calls nano editor for that.
+    It calls system editor for that.
     """
     # Get description from meta
     wrk_meta = read_meta()

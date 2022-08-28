@@ -1,3 +1,4 @@
+import os
 import typer
 import inquirer
 from rich.prompt import Prompt
@@ -7,6 +8,11 @@ from .meta_about import *
 from .wrk_modifiers import start_app
 
 app = typer.Typer()
+
+def cls():
+    """ Clean (terminal) screen """
+    os.system('cls' if os.name == 'nt' else 'clear')
+    return
 
 @app.command()
 def deps():
@@ -45,6 +51,23 @@ def edit(what: str = "description"):
     return
 
 @app.command()
+def update(what, value):
+    """ Update Workspace meta (non-interactive) """
+    if what == "name": update_workspace_name(value)
+    elif what == "version": update_workspace_version(value)
+    elif what == "author": update_workspace_author(value)
+    elif what == "description": update_workspace_description(value)
+    else: typer.echo(f"Cannot edit {what}")
+    return
+
+@app.command()
+def refresh(what: str = "about"):
+    """ Force refresh some of the workspace parts (meta, about) """
+    if what == "about":
+        refresh_about()
+    return
+
+@app.command()
 def edit():
     """ Update Workspace meta """
     questions = [
@@ -54,28 +77,25 @@ def edit():
         ),
     ]
     what = inquirer.prompt(questions)['name']
+    cls()
     if what == "name":
-        value = Prompt.ask("Enter new name :sunglasses:")
+        value = Prompt.ask("Enter new workspace name :robot:")
         update_workspace_name(value)
         # update mkdocs.yml too
         mkyml = get_mkdocs_yml()
         mkyml["site_name"] = value
         update_mkdocs_yml(mkyml)
     elif what == "version":
+        value = Prompt.ask("Enter new workspace version :stopwatch:")
         update_workspace_version(value)
     elif what == "author":
+        value = Prompt.ask("Enter new workspace author :sunglasses:")
         update_workspace_author(value)
     elif what == "description":
-        update_workspace_description(value)
+        edit_workspace_description()
     else:
         typer.echo(f"Cannot edit {what}")
-    return
-
-@app.command()
-def refresh(what: str = "about"):
-    """ Force refresh some of the workspace parts (meta, about) """
-    if what == "about":
-        refresh_about()
+    typer.echo(f"Done! :okay:")
     return
 
 @app.command()
