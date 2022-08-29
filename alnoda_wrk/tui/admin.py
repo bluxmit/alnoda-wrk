@@ -19,40 +19,52 @@ def demoList(root= None):
     # Create internal window
     w = root._width; h = root._height
     mw = 140; mh = 30; mx = int((w - mw)/2); my = int((h - mh)/2)
-    mainw = ttk.TTkWindow(parent=frame, size=(mw,mh), pos=(mx,my), title="Alnoda admin", border=True, layout=ttk.TTkGridLayout())
+    mainw = ttk.TTkWindow(parent=frame, size=(mw,mh), pos=(mx,my), title="Alnoda admin", border=True, layout=ttk.TTkGridLayout(), maxWidth=mw, minWidth=mw, maxHeight=mh, minHeight=mh)
 
     splitter = ttk.TTkSplitter(parent=mainw, orientation=ttk.TTkK.HORIZONTAL)
-    frame1 = ttk.TTkFrame(parent=splitter, border=0, layout=ttk.TTkVBoxLayout())
-    frame2 = ttk.TTkFrame(parent=splitter, border=0, layout=ttk.TTkVBoxLayout())
+    leftFrame = ttk.TTkFrame(parent=splitter, border=0, layout=ttk.TTkVBoxLayout())
+    RightFrame = ttk.TTkFrame(parent=splitter, border=0, layout=ttk.TTkVBoxLayout())
     
     # Selection List
-    listWidget = ttk.TTkList(parent=frame1, maxWidth=20, minWidth=20)
+    listWidget = ttk.TTkList(maxWidth=20, minWidth=20)
     listWidget.setPadding(1,1,1,1)
+    leftFrame.layout().addWidget(listWidget)
 
     # Home tab
     hello_widget = WrkHomeTab(border=0)
     r_widget = hello_widget
-    frame2.layout().addWidget(hello_widget)
+    RightFrame.layout().addWidget(hello_widget)
 
-    @ttk.pyTTkSlot(str)
-    def _listCallback1(label):
-        nonlocal r_widget
-        r_widget.hide(); r_widget.close()
-        r_widget._canvas.clean()
-        frame2.layout().removeWidget(r_widget); frame2._canvas.clean()
-        frame2.hide()
-        if label == "Home":                 r_widget = hello_widget
-        elif label == "Features":           r_widget = get_features_widget(parent=frame2, label_color=label_color)
-        elif label == "Description":        r_widget = get_description_widget(parent=frame2, label_color=label_color)
-        elif label == "Preferences":        r_widget = get_preferences_widget(parent=frame2, label_color=label_color)
-        else:                               r_widget = hello_widget
-        frame2.show()
-        frame2.layout().addWidget(r_widget)
-        r_widget.show()
+    # FeaturesWidget
+    FeaturesWidget = get_features_widget(label_color=label_color)
+    RightFrame.layout().addWidget(FeaturesWidget)
+
+    # DescriptionWidget
+    DescriptionWidget = get_description_widget(label_color=label_color)
+    RightFrame.layout().addWidget(DescriptionWidget)
+
+
     
+    @ttk.pyTTkSlot(str)
+    def _listCallback(label):
+        widget = None
+        if   label == "Home":           widget = hello_widget
+        elif label == "Features":       widget = FeaturesWidget
+        elif label == "Description":    widget = DescriptionWidget
+        elif label == "Preferences":    
+            widget = get_preferences_widget(label_color=label_color)
+            RightFrame.layout().addWidget(widget)
+            widget.show()
+        if widget:
+            if _listCallback.active:
+                _listCallback.active.hide()
+            widget.show()
+            _listCallback.active = widget
+    _listCallback.active = None
 
     # Connect the signals to the 2 slots defines
-    listWidget.textClicked.connect(_listCallback1)
+    listWidget.textClicked.connect(_listCallback)
+    listWidget.setCurrentRow(1)
 
     # populate the lists with random entries
     for option in options:

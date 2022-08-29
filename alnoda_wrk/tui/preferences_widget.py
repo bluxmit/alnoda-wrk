@@ -1,33 +1,55 @@
 import TermTk as ttk
+from helper_vidgets import make_horizontal_pair
 
 
-def get_preferences_widget(parent, label_color):
-    wrap_widg = ttk.TTkFrame(parent=parent, layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=False)
-    preferences_widget = ttk.TTkFrame(parent=wrap_widg, layout= ttk.TTkGridLayout(columnMinWidth=1), border=0)
-    preferences_widget.setPadding(1,20,2,2)
-    row = 1
-    # Font
-    row +=1;  preferences_widget.layout().addWidget(ttk.TTkLabel(text='Font', color=label_color),row,0)
-    preferences_widget.layout().addWidget(ttk.TTkLineEdit(text='Roboto'),row,2)
-    # Logo file
-    row += 1; preferences_widget.layout().addWidget(ttk.TTkLabel(text='Logo', color=label_color),row,0)
-    logo_btn = ttk.TTkButton(size=(8,3),  border=0, text='File' )
-    preferences_widget.layout().addWidget(logo_btn, row,2)
-    # Favicon file
-    row += 1; preferences_widget.layout().addWidget(ttk.TTkLabel(text='Favicon', color=label_color),row,0)
-    favicon_btn = ttk.TTkButton(size=(8,3),  border=0, text='File' )
-    preferences_widget.layout().addWidget(favicon_btn, row,2)
-    #
-    btn_widget = ttk.TTkFrame(parent=wrap_widg, layout= ttk.TTkGridLayout(columnMinWidth=1), border=0)
-    btn_widget.layout().addWidget(ttk.TTkButton(text='Cancel'),row,0)
-    btn_widget.layout().addWidget(ttk.TTkButton(text='Save'),row,2)
+def featureScrollArea(label_color, wrap_widg):
+    scrollArea = ttk.TTkScrollArea(parent=None, border=0, minHeight=22)
+    l = 2; ls = 50
+    r = 55; rs = 60 
+    row = 0
+    ttk.TTkLabel(text='Font', color=label_color, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    ttk.TTkLineEdit(text='Roboto', pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
-    label = ttk.TTkLabel(parent=parent, pos=(1,5), size=(30,1), text="...")
+    row+=2; ttk.TTkLabel(text='Logo', color=label_color, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    logo_btn = ttk.TTkButton(text='File', pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
+    
+    row+=2; ttk.TTkLabel(text='Favicon', color=label_color, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    favicon_btn = ttk.TTkButton(text='File', pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
+
+    # l = ttk.TTkLabel(text='Logo', color=label_color)
+    # logo_btn = ttk.TTkButton(size=(8,3),  border=0, text='File' )
+
+    # l = ttk.TTkLabel(text='Favicon', color=label_color)
+    # favicon_btn = ttk.TTkButton(size=(8,3),  border=0, text='File' )
+
+    row+=2; ttk.TTkLabel(text='Primary color', color=label_color, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    ligh_primary = ttk.TTkColorButtonPicker(pos=(r,row), size=(rs,1), border=0, parent=scrollArea.viewport(), color=ttk.TTkColor.bg('#88ffff'))
+
+    # Bind buttons
     def _showDialog(fm):
         filePicker = ttk.TTkFileDialogPicker(pos = (3,3), size=(100,25), caption="Pick Something", path=".", fileMode=fm ,filter="All Files (*);;Python Files (*.py);;Bash scripts (*.sh);;Markdown Files (*.md)")
-        filePicker.pathPicked.connect(label.setText)
-        ttk.TTkHelper.overlay(parent, filePicker, 2, 1, True)
+        ttk.TTkHelper.overlay(wrap_widg, filePicker, 2, 1, True)
 
     logo_btn.clicked.connect(lambda : _showDialog(ttk.TTkK.FileMode.AnyFile))
     favicon_btn.clicked.connect(lambda : _showDialog(ttk.TTkK.FileMode.Directory))
+
+    return scrollArea
+
+
+
+
+def get_preferences_widget(label_color):
+    wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=True)
+
+    # Scroll area
+    scrollarea = featureScrollArea(label_color, wrap_widg)
+    wrap_widg.layout().addWidget(scrollarea)
+
+    # Buttons
+    btn_widget = ttk.TTkFrame(layout= ttk.TTkGridLayout(columnMinWidth=1), border=0)
+    btn_widget.setPadding(1,1,2,2)
+    btn_widget.layout().addWidget(ttk.TTkButton(text='Cancel'), 1, 0)
+    btn_widget.layout().addWidget(ttk.TTkButton(text='Save'), 1, 2)
+    wrap_widg.layout().addWidget(btn_widget)
+
     return wrap_widg

@@ -1,7 +1,17 @@
+import TermTk as ttk
 from TermTk import TTkFrame, TTkWindow
 from TermTk import TTkColor
 
+# used !
+def make_horizontal_pair(a, b):
+    pf = ttk.TTkFrame(layout= ttk.TTkGridLayout(columnMinWidth=1), border=0)
+    pf.layout().addWidget(a, 1, 0)
+    pf.layout().addWidget(b, 1, 2)
+    pf.setPadding(1,0,2,2)
+    return pf
 
+
+# not used
 class ColorFrame(TTkFrame):
     __slots__ = ('_fillColor')
     def __init__(self, *args, **kwargs):
