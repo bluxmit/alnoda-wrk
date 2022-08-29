@@ -1,5 +1,4 @@
 import TermTk as ttk
-from helper_vidgets import make_horizontal_pair
 from gvars import *
 
 
@@ -71,7 +70,6 @@ def featureScrollArea(wrap_widg):
         debug_label.text=test_message
     # Bind Color pickers
     ligh_code_background.colorSelected.connect(lambda col: _processColor(col, "light", "code-background"))
-
 
     return scrollArea
 

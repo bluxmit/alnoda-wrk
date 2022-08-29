@@ -7,6 +7,7 @@ from home import WrkHomeTab
 from features_widget import get_features_widget
 from description_widget import get_description_widget
 from preferences_widget import get_preferences_widget
+from interface_widget import get_interface_widget
 
 options = ["Home", "Features", "Description", "Preferences", "Intrerface"]
 
@@ -42,14 +43,17 @@ def demoList(root= None):
     DescriptionWidget = get_description_widget()
     RightFrame.layout().addWidget(DescriptionWidget)
 
+    # InterfaceWidget
+    InterfaceWidget = get_interface_widget()
+    RightFrame.layout().addWidget(InterfaceWidget)
 
-    
     @ttk.pyTTkSlot(str)
     def _listCallback(label):
         widget = None
         if   label == "Home":           widget = hello_widget
         elif label == "Features":       widget = FeaturesWidget
         elif label == "Description":    widget = DescriptionWidget
+        elif label == "Intrerface":     widget = InterfaceWidget
         elif label == "Preferences":    
             widget = get_preferences_widget()
             RightFrame.layout().addWidget(widget)

@@ -29,7 +29,7 @@ class WrkHomeTab(TTkFrame):
         [(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00),(0x00,0x00,0x00)]]
 
     Homelogo_1 = pyfiglet.figlet_format("Alnoda", font="banner3-D").split("\n")
-    Homelogo_2 = pyfiglet.figlet_format("workspace").split("\n")
+    Homelogo_2 = pyfiglet.figlet_format("workspaces").split("\n")
 
     __slots__=('_image')
     def __init__(self, *args, **kwargs):
@@ -46,9 +46,9 @@ class WrkHomeTab(TTkFrame):
             c[2]-=0x11
 
         for y, line in enumerate(WrkHomeTab.Homelogo_2):
-            self._canvas.drawText(pos=(self.left_padding+16,11+y),text=line, color=TTkColor.fg(f'#{c[0]:02X}{c[1]:02X}{c[2]:02X}'))
+            self._canvas.drawText(pos=(self.left_padding+14,11+y),text=line, color=TTkColor.fg(f'#{c[0]:02X}{c[1]:02X}{c[2]:02X}'))
 
-        self._canvas.drawText(pos=(self.left_padding+24,18),text=f"Portable containerized environments", color=TTkColor.fg('#AAAAFF'))
-        self._canvas.drawText(pos=(self.left_padding+30,19),text="https://docs.alnoda.org/", color=TTkColor.fg('#44FFFF'))
+        self._canvas.drawText(pos=(self.left_padding+25,18),text=f"Portable containerized environments", color=TTkColor.fg('#AAAAFF'))
+        self._canvas.drawText(pos=(self.left_padding+31,19),text="https://docs.alnoda.org", color=TTkColor.fg('#44FFFF'))
 
         TTkFrame.paintEvent(self)
