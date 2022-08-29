@@ -1,6 +1,8 @@
 import TermTk as ttk
+from gvars import *
 
-def get_description_widget(label_color):
+
+def get_description_widget():
     # Description
     wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=False)
     wrap_widg.setPadding(1,1,2,2)
@@ -8,7 +10,7 @@ def get_description_widget(label_color):
     # Edit label
     lab_widget = ttk.TTkFrame(layout= ttk.TTkVBoxLayout(columnMinWidth=1), border=0, maxHeight=2)
     lab_widget.setPadding(0,1,0,0)
-    lab_widget.layout().addWidget(ttk.TTkLabel(text='Edit workspace description', color=label_color))
+    lab_widget.layout().addWidget(ttk.TTkLabel(text='Edit workspace description', color=LABEL_COLOR))
     wrap_widg.layout().addWidget(lab_widget)
 
     # Description

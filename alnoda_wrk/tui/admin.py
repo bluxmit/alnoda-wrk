@@ -9,7 +9,6 @@ from description_widget import get_description_widget
 from preferences_widget import get_preferences_widget
 
 options = ["Home", "Features", "Description", "Preferences", "Intrerface"]
-label_color = TTkColor.fg('#ebcf34')
 
 
 def demoList(root= None):
@@ -36,11 +35,11 @@ def demoList(root= None):
     RightFrame.layout().addWidget(hello_widget)
 
     # FeaturesWidget
-    FeaturesWidget = get_features_widget(label_color=label_color)
+    FeaturesWidget = get_features_widget()
     RightFrame.layout().addWidget(FeaturesWidget)
 
     # DescriptionWidget
-    DescriptionWidget = get_description_widget(label_color=label_color)
+    DescriptionWidget = get_description_widget()
     RightFrame.layout().addWidget(DescriptionWidget)
 
 
@@ -52,7 +51,7 @@ def demoList(root= None):
         elif label == "Features":       widget = FeaturesWidget
         elif label == "Description":    widget = DescriptionWidget
         elif label == "Preferences":    
-            widget = get_preferences_widget(label_color=label_color)
+            widget = get_preferences_widget()
             RightFrame.layout().addWidget(widget)
             widget.show()
         if widget:
