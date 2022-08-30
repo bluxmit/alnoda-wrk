@@ -4,7 +4,9 @@ Methods to read/write workspace files, where meta, ui configs are defined
 import os
 import logging
 import json, yaml
+from jinja2 import Template
 from .globals import *
+from .ui_styles import styles_str
 
 mkdocs_yml_path = os.path.join(WORKSPACE_UI_DIR, 'mkdocs.yml') 
 ui_dict_file = os.path.join(WORKSPACE_UI_DIR, 'conf', 'ui-apps.json')
@@ -191,3 +193,18 @@ def read_styles_scss():
         else:
             styles_dict = col_map(line, group, styles_dict)
     return styles_dict
+
+
+def write_styles_scss(styles_dict):
+    """ {} ->> 
+    Overwrite existing styles of the runnning Workspace (.wrk)
+
+    :param styles_dict: dict with the updated styles
+    :type meta_dict: dict
+    """
+    # Generate jinja template
+    tm = Template(styles_str)
+    new_styles_str = tm.render({'styles': styles_dict})
+    with open(WORKSPACE_UI_SCSS_STYLES_FILE, "w") as styles_file:
+        styles_file.write(new_styles_str)
+    return

@@ -7,15 +7,12 @@ import shutil
 import logging
 import json, yaml
 from pathlib import Path
-from jinja2 import Template
 from distutils.dir_util import copy_tree
 from .globals import *
 from .fileops import * 
-from .ui_styles import styles_str
 from .templates import app_page_str
 from .meta_about import update_meta, refresh_about
 
-mkdocs_extra_css_path = os.path.join(WORKSPACE_UI_DIR, 'docs', 'stylesheets', 'extra.css') 
 mkdocs_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_home_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_other_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'pages')
@@ -171,16 +168,12 @@ def update_ui_styles(wrk_params):
     for k in d_styles['common_colors']:
         if k not in wrk_params['styles']['common_colors']:
             wrk_params['styles']['common_colors'][k] = d_styles['common_colors'][k]
-    # Generate jinja template
-    tm = Template(styles_str)
     new_styles = {}
     new_styles['light'] = wrk_params['styles']['colors']['light']
     new_styles['dark'] = wrk_params['styles']['colors']['dark']
     new_styles['common_colors'] = wrk_params['styles']['common_colors']
-    new_styles_str = tm.render({'styles': new_styles})
-    # Save styles to mkdocs stylesheet
-    with open(mkdocs_extra_css_path, "w") as styles_file:
-        styles_file.write(new_styles_str)
+    # Save updated styles
+    write_styles_scss(new_styles)
     return
 
 

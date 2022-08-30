@@ -9,9 +9,7 @@ from ..meta_about import update_meta, refresh_from_meta
 def get_features_widget():
     # Get actual values
     meta = read_meta()
-    docs_url = get_docs_url()
     new_meta = copy.deepcopy(meta)
-    new_docs_url = docs_url
     
     # Generate widgets
     wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=False)
@@ -32,18 +30,17 @@ def get_features_widget():
     wrap_widg.layout().addWidget(g)
 
     l = ttk.TTkLabel(text="Workspace documentation", color=LABEL_COLOR)
-    docs_inp = ttk.TTkLineEdit(text=docs_url)
+    docs_inp = ttk.TTkLineEdit(text=meta['docs'])
     g = make_horizontal_pair(l, docs_inp)
     wrap_widg.layout().addWidget(g)
 
     # Text Input processor
     def _processMetaInput(what, n): new_meta[what] = n
-    def _docsInp(n): new_docs_url = n
     # Bind Text Input
     name_inp.textEdited.connect(lambda n: _processMetaInput('name', n))
     version_inp.textEdited.connect(lambda n: _processMetaInput('version', n))
     author_inp.textEdited.connect(lambda n: _processMetaInput('author', n))
-    docs_inp.textEdited.connect(lambda n: _docsInp(n))
+    docs_inp.textEdited.connect(lambda n: _processMetaInput('docs', n))
     
     # Buttons
     btn_widget = ttk.TTkFrame(layout= ttk.TTkGridLayout(columnMinWidth=1), border=0)
@@ -56,15 +53,17 @@ def get_features_widget():
 
     # Button processors
     def _cancelBtn():
+        nonlocal meta; nonlocal new_meta
         name_inp._text = meta['name']; name_inp.update()
         version_inp._text = meta['version']; version_inp.update()
         author_inp._text = meta['author']; author_inp.update()
-        docs_inp._text = docs_url; docs_inp.update()
+        docs_inp._text = meta['docs']; docs_inp.update()
         new_meta = copy.deepcopy(meta)
-        new_docs_url = docs_url
     def _savelBtn():
-        update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'])
+        nonlocal meta; nonlocal new_meta
+        update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'], docs=new_meta['docs'])
         refresh_from_meta()
+        meta = copy.deepcopy(new_meta)
     # Connect buttons
     btn_cancel.clicked.connect(lambda : _cancelBtn())    
     btn_save.clicked.connect(lambda : _savelBtn())

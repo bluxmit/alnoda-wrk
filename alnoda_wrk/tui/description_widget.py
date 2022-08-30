@@ -47,10 +47,13 @@ def get_description_widget():
 
     # Button processors
     def _cancelBtn():
-        new_meta = copy.deepcopy(meta)
+        nonlocal meta; nonlocal new_meta
         description_edit.setText(ttk.TTkString(meta['description']))
+        new_meta = copy.deepcopy(meta)
     def _savelBtn(): 
+        nonlocal meta; nonlocal new_meta
         update_workspace_description(new_meta['description'])
+        meta = copy.deepcopy(new_meta)
     # Connect buttons
     btn_cancel.clicked.connect(lambda : _cancelBtn())    
     btn_save.clicked.connect(lambda : _savelBtn())

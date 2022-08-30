@@ -3,5 +3,6 @@
     "version": 0.1,
     "author": "bluxmit",
     "description": "Portable isolated containerized browser-based development environment.",
+    "docs": "https://docs.alnoda.org/",
     "created": "2022-09-01"
 }

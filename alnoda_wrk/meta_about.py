@@ -111,7 +111,7 @@ def add_wrk_to_lineage(name, version, docs):
     return
 
 
-def update_meta(name=None, version=None, author=None, description=None, update_created=True):
+def update_meta(name=None, version=None, author=None, description=None, docs=None, update_created=True):
     """ str, str, str, str, bool ->> 
     Updates meta.json. When called without any args, it will 
     update 'created' field only. 
@@ -124,6 +124,8 @@ def update_meta(name=None, version=None, author=None, description=None, update_c
     :type author: str
     :param description: workspace description
     :type description: str
+    :param docs: link to the workspace documentation
+    :type docs: str
     :param update_created: should 'created' be updated in the meta.json? (Default is True)
     :type update_created: bool
     """
@@ -136,6 +138,8 @@ def update_meta(name=None, version=None, author=None, description=None, update_c
         meta_dict['author'] = author
     if description is not None:
         meta_dict['description'] = description
+    if docs is not None:
+        meta_dict['docs'] = docs
     if update_created:
         meta_dict['created'] = str(date.today())
     write_meta(meta_dict)
@@ -171,6 +175,12 @@ def refresh_from_meta():
     meta_dict = read_meta()
     mkdocs_dict = get_mkdocs_yml()
     mkdocs_dict['site_name'] = meta_dict['name']
+    # Refresh workspace docs link on the main page too
+    doc_url = meta_dict['docs']
+    if 'http' not in doc_url: doc_url = "https://"+doc_url
+    for e in mkdocs_dict['nav']:
+        if 'Docs' in e: e['Docs'] = doc_url
+    # write updated mkdocs dict
     update_mkdocs_yml(mkdocs_dict)
     return
 
