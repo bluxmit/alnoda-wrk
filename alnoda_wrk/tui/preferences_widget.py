@@ -1,5 +1,5 @@
 import TermTk as ttk
-from gvars import *
+from .gvars import *
 
 
 def featureScrollArea(wrap_widg):
@@ -34,7 +34,7 @@ def featureScrollArea(wrap_widg):
     ligh_code = ttk.TTkColorButtonPicker(pos=(r,row), size=(rs,1), border=0, parent=scrollArea.viewport(), color=ttk.TTkColor.bg('#4d4c4c'))
     row+=2; ttk.TTkLabel(text='Code background', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
     ligh_code_background = ttk.TTkColorButtonPicker(pos=(r,row), size=(rs,1), border=0, parent=scrollArea.viewport(), color=ttk.TTkColor.bg('#D2D2D2'))
-    # show how to get the color:
+    # DEBUG LABEL: show how to get the color:
     row+=2; debug_label = ttk.TTkLabel(text=f'DEBUG: ligh_code_background: {ligh_code_background.color().getHex("_fg")}', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
     
     # dark theme colors
@@ -70,6 +70,18 @@ def featureScrollArea(wrap_widg):
         debug_label.text=test_message
     # Bind Color pickers
     ligh_code_background.colorSelected.connect(lambda col: _processColor(col, "light", "code-background"))
+
+    # DEBUG LABEL: show file path worked
+    row+=2; file_label = ttk.TTkLabel(text='...', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+
+    # File Picker processor
+    def _FilePickerDialog(fm):
+        filePicker = ttk.TTkFileDialogPicker(pos = (3,3), size=(95,24), caption="Pick Something", path=".", fileMode=fm ,filter="All Files (*);;Python Files (*.py);;Bash scripts (*.sh);;Markdown Files (*.md)")
+        filePicker.pathPicked.connect(file_label.setText)
+        ttk.TTkHelper.overlay(wrap_widg, filePicker, 2, 1, True)
+    # Bind File Picker buttons
+    logo_btn.clicked.connect(lambda : _FilePickerDialog(ttk.TTkK.FileMode.AnyFile))
+    favicon_btn.clicked.connect(lambda : _FilePickerDialog(ttk.TTkK.FileMode.Directory))
 
     return scrollArea
 

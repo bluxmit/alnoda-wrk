@@ -3,16 +3,16 @@ import sys, os, argparse, math, random
 sys.path.append(os.path.join(sys.path[0],'../..'))
 import TermTk as ttk
 from TermTk.TTkCore.color import TTkColor
-from home import WrkHomeTab
-from features_widget import get_features_widget
-from description_widget import get_description_widget
-from preferences_widget import get_preferences_widget
-from interface_widget import get_interface_widget
+from .home import WrkHomeTab
+from .features_widget import get_features_widget
+from .description_widget import get_description_widget
+from .preferences_widget import get_preferences_widget
+from .interface_widget import get_interface_widget
 
 options = ["Home", "Features", "Description", "Preferences", "Intrerface"]
 
 
-def demoList(root= None):
+def AlnodaAdminTUI(root= None):
     # ttk.TTkLogViewer(parent=root)
     frame = ttk.TTkFrame(parent=root, border=False)
 
@@ -82,7 +82,7 @@ def demoList(root= None):
 def main():
     root = ttk.TTk()
     root.setLayout(ttk.TTkGridLayout())
-    demoList(root)
+    AlnodaAdminTUI(root)
     root.mainloop()
 
 if __name__ == "__main__":

@@ -2,10 +2,12 @@ import os
 import typer
 import inquirer
 from rich.prompt import Prompt
+import TermTk as ttk
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
 from .wrk_modifiers import start_app
+from .tui.admin import AlnodaAdminTUI
 
 app = typer.Typer()
 
@@ -61,10 +63,9 @@ def update(what, value):
     return
 
 @app.command()
-def refresh(what: str = "about"):
-    """ Force refresh some of the workspace parts (meta, about) """
-    if what == "about":
-        refresh_about()
+def refresh():
+    """ Force refresh workspace from meta"""
+    refresh_from_meta()
     return
 
 @app.command()
@@ -105,3 +106,14 @@ def run(name: str, cmd: str):
     """
     start_app(name, cmd)
     return
+
+
+@app.command()
+def admin():
+    """
+    Open Admin TUI
+    """
+    root = ttk.TTk()
+    root.setLayout(ttk.TTkGridLayout())
+    AlnodaAdminTUI(root)
+    root.mainloop()

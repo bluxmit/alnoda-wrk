@@ -3,7 +3,7 @@ import logging
 import json, yaml
 from pathlib import Path
 import shutil
-from .meta_about import update_meta, refresh_about, add_wrk_to_lineage
+from .meta_about import update_meta, refresh_about, add_wrk_to_lineage, refresh_from_meta
 from .conf_parser import read_conf_dir
 from .globals import *
 from .ui_builder import build_wrk_ui
@@ -122,6 +122,6 @@ def build_workspace(conf_dir_path):
         docs = wrk_params['doc_url']
         )
     # refresh about page
-    refresh_about()
+    refresh_from_meta()
     return
     

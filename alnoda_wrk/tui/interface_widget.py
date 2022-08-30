@@ -1,6 +1,6 @@
 import TermTk as ttk
-from helper_vidgets import make_horizontal_pair
-from gvars import *
+from .helper_vidgets import make_horizontal_pair
+from .gvars import *
 
 
 def get_interface_widget():

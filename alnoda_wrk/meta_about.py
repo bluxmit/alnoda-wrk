@@ -159,6 +159,20 @@ def refresh_about():
     tm = Template(about_page_template)
     new_about = tm.render(meta_dict)
     write_about(new_about)
+    return
+
+
+def refresh_from_meta():
+    """ ->>
+    Refreshes from meta both about page, and mkdocs.yaml (in the .wrk)
+    """
+    refresh_about()
+    # Refresh workspace name on the main page too
+    meta_dict = read_meta()
+    mkdocs_dict = get_mkdocs_yml()
+    mkdocs_dict['site_name'] = meta_dict['name']
+    update_mkdocs_yml(mkdocs_dict)
+    return
 
 
 def update_workspace_name(new_name):
@@ -169,6 +183,10 @@ def update_workspace_name(new_name):
     update_meta(name=new_name)
     # update about page with the new name
     refresh_about() 
+    # update mkdocs.yaml with the new name
+    mkdocs_dict = get_mkdocs_yml()
+    mkdocs_dict['site_name'] = new_name
+    update_mkdocs_yml(mkdocs_dict)
     return
 
 

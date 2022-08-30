@@ -132,3 +132,62 @@ def write_lineage(meta_dict):
     with open(WORKSPACE_LINEAGE_FILE, 'w') as file:
         json.dump(meta_dict, file, indent=4 * ' ')
     return 
+
+
+def read_styles_scss():
+    """ ->> {}
+    Reads the UI styles of the runnning Workspace (.wrk), 
+    parses and and returns the dict of styles. 
+    """
+    def get_color(line):
+        parts = line.split(":")
+        colpart = parts[1]
+        for p in parts: 
+            if "#" in p: colpart = p
+        col_ = colpart.replace(";","")
+        col_ = col_.replace("\n","")
+        col_ = col_.replace("\t","")
+        col_ = col_.replace("!important","")
+        col_ = col_.strip()
+        return col_
+
+    def col_map(line, group, styles_dict):
+        if "--md-primary-fg-color" in line:             styles_dict[group]["primary"] = get_color(line)
+        elif "--md-accent-fg-color" in line:            styles_dict[group]["accent"] = get_color(line)
+        elif "--md-default-bg-color" in line:           styles_dict[group]["background"] = get_color(line)
+        elif "--md-default-fg-color--light" in line:    styles_dict[group]["subtitle"] = get_color(line)
+        elif "--md-typeset-color" in line:              styles_dict[group]["text"] = get_color(line)
+        elif "--md-typeset-a-color" in line:            styles_dict[group]["title"] = get_color(line)
+        elif "--md-code-bg-color" in line:              styles_dict[group]["code_background"] = get_color(line)
+        elif "--md-code-fg-color" in line:              styles_dict[group]["code_text"] = get_color(line)
+        elif "--md-code-fg-color" in line:              styles_dict[group]["code_text"] = get_color(line)
+        return styles_dict
+
+    with open(WORKSPACE_UI_SCSS_STYLES_FILE) as styles_file:
+        styles_lines = styles_file.readlines()
+    styles_dict = {}
+    group = ""
+    for idx, line in enumerate(styles_lines):
+        if 'data-md-color-scheme="workspace"' in line:
+            group = "light"
+            styles_dict[group] = {}
+        elif 'data-md-color-scheme="workspace-dark"' in line:
+            group = "dark"
+            styles_dict[group] = {}
+        elif ".md-header" in line:
+            if "common_colors" not in styles_dict: styles_dict["common_colors"] = {}
+            for nl in range(1,20):
+                next_line = styles_lines[idx + nl]
+                if "#" in next_line:
+                    styles_dict["common_colors"]['header'] = get_color(next_line)
+                    break
+        elif ".md-nav__link--active" in line:
+            if "common_colors" not in styles_dict: styles_dict["common_colors"] = {}
+            for nl in range(1,20):
+                next_line = styles_lines[idx + nl]
+                if "#" in next_line:
+                    styles_dict["common_colors"]['nav'] = get_color(next_line)
+                    break
+        else:
+            styles_dict = col_map(line, group, styles_dict)
+    return styles_dict

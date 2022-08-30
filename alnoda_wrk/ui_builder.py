@@ -54,6 +54,22 @@ def update_required_ui_params(wrk_params, conf_dir_path):
     return
 
 
+def get_docs_url():
+    """ ->> str
+    Returns the link to the docs (of the current workspace,
+    from the .wrk)
+    
+    :return: docs link from mkdocs.yml 
+    :rtype: str
+    """
+    workspace_yaml = get_mkdocs_yml()
+    docs_url = ""
+    for e in workspace_yaml['nav']:
+        if 'Docs' in e:
+            docs_url = e['Docs']
+    return docs_url
+
+
 def update_optional_ui_params(wrk_params, conf_dir_path):
     """ {}, str ->> 
     Update optional ui parameters, such as workspace home page font
@@ -122,25 +138,49 @@ def update_favicon(wrk_params, conf_dir_path):
 
 def update_ui_styles(wrk_params):
     """ {} ->> 
-    Update existing workspace UI - change CSS styles
+    Update existing workspace UI - change CSS styles. 
+    This will try to get the styles from the existing scss file,
+    and update it with the new styles, provided by the user.
 
     :param wrk_params: dict with the workspace parameters
     :type wrk_params: dict
     """
-    # create dict with style settings
+    # if wrk_params does not define new styles, return right away
+    if 'styles' not in wrk_params:
+        return
+    # Get existing workspace styles, we will use it as default
     d_styles = {"light": {}, "dark": {}, "common_colors": {}}
-    if 'styles' in wrk_params:
-        if 'colors' in wrk_params['styles']:
-            d_styles.update(wrk_params['styles']['colors'])
-        if 'common_colors' in wrk_params['styles']:
-            d_styles.update({'common_colors': wrk_params['styles']['common_colors']})
-    if len(d_styles.keys()) > 0:      
-        # generate jinja template
-        tm = Template(styles_str)
-        new_styles = tm.render({'styles': d_styles})
-        # save styles to mkdocs stylesheet
-        with open(mkdocs_extra_css_path, "w") as styles_file:
-            styles_file.write(new_styles)
+    try:
+        d_styles = read_styles_scss()
+    except: pass
+    # Update missing styles in wrk_params with the defaults from d_styles
+    if 'colors' not in wrk_params['styles']: wrk_params['styles']['colors'] = {}
+    if 'common_colors' not in wrk_params['styles']: wrk_params['styles']['common_colors'] = {}
+    if 'light' not in wrk_params['styles']['colors']:
+        wrk_params['styles']['colors']['light'] = d_styles['light']
+    else:
+        for k in d_styles['light']:
+            if k not in wrk_params['styles']['colors']['light']:
+                wrk_params['styles']['colors']['light'][k] = d_styles['light'][k]
+    if 'dark' not in wrk_params['styles']['colors']:
+        wrk_params['styles']['colors']['dark'] = d_styles['dark']
+    else:
+        for k in d_styles['dark']:
+            if k not in wrk_params['styles']['colors']['dark']:
+                wrk_params['styles']['colors']['dark'][k] = d_styles['dark'][k]
+    for k in d_styles['common_colors']:
+        if k not in wrk_params['styles']['common_colors']:
+            wrk_params['styles']['common_colors'][k] = d_styles['common_colors'][k]
+    # Generate jinja template
+    tm = Template(styles_str)
+    new_styles = {}
+    new_styles['light'] = wrk_params['styles']['colors']['light']
+    new_styles['dark'] = wrk_params['styles']['colors']['dark']
+    new_styles['common_colors'] = wrk_params['styles']['common_colors']
+    new_styles_str = tm.render({'styles': new_styles})
+    # Save styles to mkdocs stylesheet
+    with open(mkdocs_extra_css_path, "w") as styles_file:
+        styles_file.write(new_styles_str)
     return
 
 
@@ -273,3 +313,4 @@ def build_wrk_ui(wrk_params, conf_dir_path):
     update_home_page(wrk_params, conf_dir_path)
     update_other_pages(wrk_params, conf_dir_path)
     return
+

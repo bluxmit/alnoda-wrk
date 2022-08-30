@@ -6,6 +6,7 @@ WORKSPACE_DIR = os.path.join(HOME_DIR, '.wrk')
 WORKSPACE_UI_DIR = os.path.join(WORKSPACE_DIR, 'ui')
 WORKSPACE_META_FILE = os.path.join(WORKSPACE_DIR, 'meta.json')
 WORKSPACE_LINEAGE_FILE = os.path.join(WORKSPACE_DIR, 'lineage.json')
+WORKSPACE_UI_SCSS_STYLES_FILE = os.path.join(WORKSPACE_DIR, 'docs', 'stylesheets', 'extra.css')
 SUPERVISORD_FOLDER = "/etc/supervisord"
 VAR_LOG_FOLDER = "/var/log/workspace/"
 WORKSPACE_HOME_PAGES = ["home", "admin", "my_apps"]
