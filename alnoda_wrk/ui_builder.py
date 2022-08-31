@@ -13,7 +13,7 @@ from .fileops import *
 from .templates import app_page_str
 from .meta_about import update_meta, refresh_about
 
-mkdocs_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
+MKDOCS_ASSETS_DIR = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_home_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_other_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'pages')
 
@@ -105,7 +105,7 @@ def update_logo(wrk_params, conf_dir_path):
         update_mkdocs_yml(mkdocs_dict)
         # Copy file
         logo_file = os.path.join(conf_dir_path, wrk_params["logo"])
-        shutil.copy2(logo_file, mkdocs_assets_dir)
+        shutil.copy2(logo_file, MKDOCS_ASSETS_DIR)
         logging.debug(f"logo updated from file {logo_file}")
     return
 
@@ -128,7 +128,7 @@ def update_favicon(wrk_params, conf_dir_path):
         update_mkdocs_yml(mkdocs_dict)
         # Copy file
         favicon_file = os.path.join(conf_dir_path, wrk_params["favicon"])
-        shutil.copy2(favicon_file, mkdocs_assets_dir)
+        shutil.copy2(favicon_file, MKDOCS_ASSETS_DIR)
         logging.debug(f"favicon updated from file {favicon_file}")
     return
 
@@ -307,3 +307,24 @@ def build_wrk_ui(wrk_params, conf_dir_path):
     update_other_pages(wrk_params, conf_dir_path)
     return
 
+
+def update_logo_favicon(image, what):
+    """ str, str ->> 
+    Update logo or favicon. This function copies the file 
+    into the respective folder, and updates mkdocs.yml file
+
+    :param image: path to the new file 
+    :type wrk_params: dict
+    :param what: id it logo or favicon?
+    :type what: str
+    """
+    assert what in ['logo', 'favicon'], f"Function update_logo_favicon can only be used for logo and favicon. But tried with {what}"
+    # Copy file into the respective folder
+    new_image_path_ = shutil.copy2(image, MKDOCS_ASSETS_DIR)
+    new_image_path = "assets/"+new_image_path_.split("assets/")[1]
+    # Get mkdocs dict, and update it respectively
+    mkdocs_dict = get_mkdocs_yml() 
+    mkdocs_dict['theme'][what] = new_image_path
+    # Save updated mkdocs file
+    update_mkdocs_yml(mkdocs_dict)
+    return
