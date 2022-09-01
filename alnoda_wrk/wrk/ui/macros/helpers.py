@@ -87,7 +87,7 @@ def get_url(app, v, workspace_home_port):
 
             ## Port increment 
             # if other ports should be exposed
-            port_increment = v['port'] - 8020
+            port_increment = int(v['port']) - 8020
             port = workspace_home_port + port_increment
 
             ## Construct URL

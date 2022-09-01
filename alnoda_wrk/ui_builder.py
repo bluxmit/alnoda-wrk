@@ -328,3 +328,21 @@ def update_logo_favicon(image, what):
     # Save updated mkdocs file
     update_mkdocs_yml(mkdocs_dict)
     return
+
+
+def copy_pageapp_image(page, image_path):
+    """ str, str ->>
+    Copies image for different pages into the respective folder
+    """
+    # settings for different pages
+    prefix = ""
+    assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'pages')
+    if page == "home":
+        prefix = "assets/home/"
+        assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
+    # copy file to the respective folder
+    shutil.copy2(image_path, os.path.join(assets_dir, page))
+    # generate filepath for ui_conf.json
+    filename = os.path.basename(image_path)
+    new_image_path = prefix+filename
+    return new_image_path

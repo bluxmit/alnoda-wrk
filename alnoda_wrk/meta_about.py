@@ -32,7 +32,7 @@ def get_ports_table():
         for k,v in apps.items():
             ports.append({"port":v["port"], "title": v["title"], "page": page})
     # sort ports
-    ports = sorted(ports, key=lambda l: l["port"])
+    ports = sorted(ports, key=lambda l: int(l["port"]))
     # Generate markdown template
     tm = Template(port_usage_template)
     port_info = tm.render(data={"ports":ports})

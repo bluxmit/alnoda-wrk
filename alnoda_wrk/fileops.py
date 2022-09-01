@@ -3,6 +3,7 @@ Methods to read/write workspace files, where meta, ui configs are defined
 """
 import os
 import logging
+import time
 import json, yaml
 from jinja2 import Template
 from .globals import *
@@ -11,6 +12,7 @@ from .ui_styles import styles_str
 mkdocs_yml_path = os.path.join(WORKSPACE_UI_DIR, 'mkdocs.yml') 
 ui_dict_file = os.path.join(WORKSPACE_UI_DIR, 'conf', 'ui-apps.json')
 WORKSPACE_ABOUT_FILE = os.path.join(WORKSPACE_UI_DIR, 'docs', 'about.md')
+WORKSPACE_MANIFEST_FILE = os.path.join(WORKSPACE_UI_DIR, 'docs', 'manifest.txt')
 
 def get_mkdocs_yml():
     """  ->> {}
@@ -37,6 +39,13 @@ def update_mkdocs_yml(mkdocs_dict):
     return
 
 
+def force_refresh_ui():
+    """ Force UI to reload by updating manifest """
+    with open(WORKSPACE_MANIFEST_FILE, 'w') as f:
+        f.write(str(time.time()))
+    return
+
+
 def read_ui_conf():
     """ ->> {}
     Reads existing workspace UI json, and returns dict.
@@ -58,6 +67,8 @@ def update_ui_conf(ui_apps):
     """
     with open(ui_dict_file, 'w') as file:
         json.dump(ui_apps, file, indent=4 * ' ')
+    # Force refresh UI
+    force_refresh_ui()
     return 
 
 

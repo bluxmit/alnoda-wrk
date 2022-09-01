@@ -3,8 +3,9 @@ import TermTk as ttk
 from TermTk.TTkCore.string import TTkString
 from .helper_vidgets import make_horizontal_pair
 from .gvars import *
-from ..fileops import read_ui_conf, update_ui_conf
 from ..globals import *
+from ..fileops import read_ui_conf, update_ui_conf
+from ..ui_builder import copy_pageapp_image
 
 
 def find_title_in_dict(dic, title):
@@ -22,11 +23,11 @@ def find_title_in_dict(dic, title):
 
 def get_tab_widgets(tab, ui_conf):
     """Create widgets for the specific tab"""
-    tabdata = copy.deepcopy(ui_conf[tab])
-    new_tabdata = copy.deepcopy(tabdata)
-    apps_list = [e['title'] for e in tabdata.values()]
+    new_ui_conf = copy.deepcopy(ui_conf)
+    apps_list = list(new_ui_conf[tab].keys())
     apps_list.append("CREATE NEW")
     extra = {'choice': ""}
+    new_app = {}
 
     scrollArea = ttk.TTkScrollArea(parent=None, border=0, minHeight=22)
     scrollArea.setPadding(0,0,0,2)
@@ -61,25 +62,25 @@ def get_tab_widgets(tab, ui_conf):
         
     # App Selection handling
     def appSelectHandler(i):
-        new_tabdata = copy.deepcopy(tabdata)  # <- this will cancel unexpected changes
-        try:    # <- modify existing apps
-            sel = apps_list[i]
-            extra['choice'] = sel
-            appd = find_title_in_dict(tabdata, sel)
+        new_ui_conf = copy.deepcopy(ui_conf)  # <- this will cancel unexpected changes
+        choice = apps_list[i]
+        extra['choice'] = choice
+        if choice != "CREATE NEW":
+            appd = new_ui_conf[tab][choice]
             inp_title._text = appd['title']; inp_title.update()
             inp_descr._text = appd['description']; inp_descr.update()
             inp_port._text = str(appd['port']); inp_port.update()
             inp_img._text = TTkString(appd['image']); inp_img.update()
             # Show delete, cancel and save buttons
-            btn_delete._visible=True; btn_delete.update()
+            btn_delete.show()
             btn_cancel._visible=True; btn_cancel.update()
             btn_save._visible=True; btn_save.update()
-        except:  # <- create new 
+        else:  # <- create new 
             inp_title._text = ""; inp_title.update()
             inp_descr._text = ""; inp_descr.update()
             inp_port._text = ""; inp_port.update()
             inp_img._text = TTkString(""); inp_img.update()
-            btn_delete.hide(); btn_delete.update()
+            btn_delete.hide()
             btn_cancel._visible=True; btn_cancel.update()
             btn_save._visible=True; btn_save.update()
     app_select.currentIndexChanged.connect(lambda i : appSelectHandler(i))
@@ -92,9 +93,11 @@ def get_tab_widgets(tab, ui_conf):
 
     # Text input handlers
     def _processMetaInput(what, n): 
-        app =  extra['choice']
-        d = find_title_in_dict(new_tabdata, app)
-        d[what] = n
+        nonlocal extra; nonlocal new_app
+        choice =  extra['choice']
+        if choice != "CREATE NEW":
+            new_ui_conf[tab][choice][what] = n
+        else: new_app[what] = n
     # Bind text inputs
     inp_title.textEdited.connect(lambda n: _processMetaInput('title', n))
     inp_descr.textEdited.connect(lambda n: _processMetaInput('description', n))
@@ -102,39 +105,67 @@ def get_tab_widgets(tab, ui_conf):
 
     # File Picker processor
     def _updImg(val):
-        app =  extra['choice']
-        d = find_title_in_dict(new_tabdata, app)
-        d["image"] = val
+        nonlocal extra; nonlocal new_app
+        choice =  extra['choice']
+        if choice != "CREATE NEW":
+            new_ui_conf[tab][choice]["image"] = val
+        else:
+            new_app["image"] = val
         inp_img._text = TTkString(val)
-
     def _ImageFilePickerDialog(fm):
         filePicker = ttk.TTkFileDialogPicker(pos = (3,3), size=(95,24), caption="Pick Something", path=".", fileMode=fm ,filter="All Files (*);;SVG files (*.svg);;PNG images (*.png);;JPG images (*.jpg)")
         filePicker.pathPicked.connect(lambda fi : _updImg(fi))
         ttk.TTkHelper.overlay(scrollArea, filePicker, 2, 1, True)
-        
     # Bind Image File Picker buttons
     inp_img.clicked.connect(lambda : _ImageFilePickerDialog(ttk.TTkK.FileMode.AnyFile))
 
+
     # Cancel Button processor
     def _cancelBtn(): 
-        nonlocal tabdata; nonlocal new_tabdata; nonlocal extra 
-        sel = extra['choice']
-        d = find_title_in_dict(tabdata, extra['choice'])
-        inp_title._text = d["title"]; inp_title.update()
-        inp_descr._text = d["description"]; inp_descr.update()
-        inp_port._text = str(d["port"]); inp_port.update()
-        inp_img._text = TTkString(d["image"]); inp_img.update()
-        new_tabdata = copy.deepcopy(tabdata)
+        nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal new_app 
+        choice =  extra['choice']
+        if choice != "CREATE NEW":
+            appd = ui_conf[tab][choice]
+            inp_title._text = appd["title"]; inp_title.update()
+            inp_descr._text = appd["description"]; inp_descr.update()
+            inp_port._text = str(appd["port"]); inp_port.update()
+            inp_img._text = TTkString(appd["image"]); inp_img.update()
+            new_ui_conf = copy.deepcopy(ui_conf)
+        else:
+            inp_title._text = ""; inp_title.update()
+            inp_descr._text = ""; inp_descr.update()
+            inp_port._text = ""; inp_port.update()
+            inp_img._text = TTkString(""); inp_img.update()
     # Bind cancel button
     btn_cancel.clicked.connect(_cancelBtn)
 
     # Save Button processor
     def _saveBtn(): 
-        nonlocal ui_conf; nonlocal tabdata; nonlocal new_tabdata; nonlocal extra 
-        ui_conf[tab] = new_tabdata
-        # debt._text = ">> "+ui_conf[tab]['FILEBROWSER']['title']; debt.update()
-        update_ui_conf(ui_conf)
-        tabdata = copy.deepcopy(new_tabdata)
+        nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal apps_list
+        choice =  extra['choice']
+        if choice != "CREATE NEW":
+            if new_ui_conf[tab][choice]['image'] != ui_conf[tab][choice]['image']:
+                new_img_path = copy_pageapp_image(tab, new_ui_conf[tab][choice]['image'])
+                new_ui_conf[tab][choice]['image'] = new_img_path
+                inp_img._text = TTkString(new_img_path); inp_img.update()
+            new_ui_conf[tab][choice]['port'] = int(new_ui_conf[tab][choice]['port'])
+            update_ui_conf(new_ui_conf)
+            ui_conf[tab] = new_ui_conf[tab]
+        else:
+            new_img_path = copy_pageapp_image(tab, new_app["image"])
+            new_app["image"] = new_img_path
+            new_app["port"] = int(new_app["port"])
+            inp_img._text = TTkString(new_img_path); inp_img.update()
+            # create new entry in the new_ui_conf
+            newtitle = safestring(new_app['title'])
+            new_ui_conf[tab][newtitle] = new_app
+            update_ui_conf(new_ui_conf)
+            ui_conf = copy.deepcopy(new_ui_conf)
+            # Update the UI
+            apps_list.append(newtitle)
+            app_select._list = apps_list; app_select.update()
+            app_select.setCurrentIndex(apps_list.index(newtitle))
+        ui_conf[tab] = copy.deepcopy(new_ui_conf[tab])
     btn_save.clicked.connect(_saveBtn)
 
     return scrollArea
