@@ -6,7 +6,7 @@ import TermTk as ttk
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
-from .wrk_modifiers import start_app
+from .wrk_supervisor import start_app
 from .tui.admin import AlnodaAdminTUI
 
 app = typer.Typer()
@@ -100,7 +100,7 @@ def edit():
     return
 
 @app.command()
-def run(name: str, cmd: str):
+def start(name: str, cmd: str):
     """
     Start application
     """

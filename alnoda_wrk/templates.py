@@ -29,7 +29,7 @@ about_page_template = """
 {{ description }}
 
 ## Ports
-The following ports (from the range 8021-8040) are used
+Allowed port range: 8021-8040. Ports used:
 {{ ports_table }}
 
 ## Apps & services 
@@ -44,7 +44,7 @@ This workspace was built from the following workspaces
 
 supervisord_template = """
 [program:{{ name }}]
-command=/bin/sh -c "{% if env_vars is defined %}{% for env in env_vars %}export {{env}}; {% endfor %}{% endif %}{% if folder is defined %}cd {{folder}}; {% endif %} {{ cmd }} "
+command=/bin/sh -c "{% if env_vars is defined %}{% for env in env_vars %}export {{env}}; {% endfor %}{% endif %}{% if folder is defined %}cd {{folder}}; {% endif %} {{ cmd }}"
 stderr_logfile = /var/log/workspace/{{ name }}-stderr.log
 stdout_logfile = /var/log/workspace/{{ name }}-stdout.log
 logfile_maxbytes = 1024

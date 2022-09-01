@@ -6,6 +6,9 @@ from .gvars import *
 from ..globals import *
 from ..fileops import read_ui_conf, update_ui_conf
 from ..ui_builder import copy_pageapp_image
+from ..meta_about import refresh_from_meta
+
+CREATE_NEW = "CREATE NEW"
 
 
 def find_title_in_dict(dic, title):
@@ -25,7 +28,7 @@ def get_tab_widgets(tab, ui_conf):
     """Create widgets for the specific tab"""
     new_ui_conf = copy.deepcopy(ui_conf)
     apps_list = list(new_ui_conf[tab].keys())
-    apps_list.append("CREATE NEW")
+    apps_list.append(CREATE_NEW)
     extra = {'choice': ""}
     new_app = {}
 
@@ -55,9 +58,9 @@ def get_tab_widgets(tab, ui_conf):
     scrollArea.viewport().addWidget(inp_descr)
 
     # Buttons
-    row+=8; btn_delete = ttk.TTkButton(text='Delete', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=4; btn_delete = ttk.TTkButton(text='Delete', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_delete.setBorderColor(TTkColor.fg('#f20e0a'))
-    row+=4; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=8; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
         
     # App Selection handling
@@ -65,7 +68,7 @@ def get_tab_widgets(tab, ui_conf):
         new_ui_conf = copy.deepcopy(ui_conf)  # <- this will cancel unexpected changes
         choice = apps_list[i]
         extra['choice'] = choice
-        if choice != "CREATE NEW":
+        if choice != CREATE_NEW:
             appd = new_ui_conf[tab][choice]
             inp_title._text = appd['title']; inp_title.update()
             inp_descr._text = appd['description']; inp_descr.update()
@@ -87,7 +90,7 @@ def get_tab_widgets(tab, ui_conf):
 
     # Create new handling
     def _btnSaveHandler():
-        if extra['choice'] == "CREATE NEW":
+        if extra['choice'] == CREATE_NEW:
             pass
     btn_save.clicked.connect(_btnSaveHandler)
 
@@ -95,7 +98,7 @@ def get_tab_widgets(tab, ui_conf):
     def _processMetaInput(what, n): 
         nonlocal extra; nonlocal new_app
         choice =  extra['choice']
-        if choice != "CREATE NEW":
+        if choice != CREATE_NEW:
             new_ui_conf[tab][choice][what] = n
         else: new_app[what] = n
     # Bind text inputs
@@ -107,7 +110,7 @@ def get_tab_widgets(tab, ui_conf):
     def _updImg(val):
         nonlocal extra; nonlocal new_app
         choice =  extra['choice']
-        if choice != "CREATE NEW":
+        if choice != CREATE_NEW:
             new_ui_conf[tab][choice]["image"] = val
         else:
             new_app["image"] = val
@@ -120,11 +123,31 @@ def get_tab_widgets(tab, ui_conf):
     inp_img.clicked.connect(lambda : _ImageFilePickerDialog(ttk.TTkK.FileMode.AnyFile))
 
 
+    # Delete Button processor
+    def _deletelBtn(): 
+        nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal new_app 
+        # Remove the entry from the new_ui_conf
+        choice =  extra['choice']
+        del new_ui_conf[tab][choice]
+        update_ui_conf(new_ui_conf)
+        ui_conf[tab] = copy.deepcopy(new_ui_conf[tab])
+        # Update the UI
+        apps_list.remove(choice)
+        app_select._list = apps_list; app_select.update()
+        app_select.setCurrentIndex(-1)
+        inp_title._text = ""; inp_title.update()
+        inp_descr._text = ""; inp_descr.update()
+        inp_port._text = ""; inp_port.update()
+        inp_img._text = TTkString(""); inp_img.update()
+        refresh_from_meta()
+    # Bind delete button
+    btn_delete.clicked.connect(_deletelBtn)
+
     # Cancel Button processor
     def _cancelBtn(): 
         nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal new_app 
         choice =  extra['choice']
-        if choice != "CREATE NEW":
+        if choice != CREATE_NEW:
             appd = ui_conf[tab][choice]
             inp_title._text = appd["title"]; inp_title.update()
             inp_descr._text = appd["description"]; inp_descr.update()
@@ -143,7 +166,7 @@ def get_tab_widgets(tab, ui_conf):
     def _saveBtn(): 
         nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal apps_list
         choice =  extra['choice']
-        if choice != "CREATE NEW":
+        if choice != CREATE_NEW:
             if new_ui_conf[tab][choice]['image'] != ui_conf[tab][choice]['image']:
                 new_img_path = copy_pageapp_image(tab, new_ui_conf[tab][choice]['image'])
                 new_ui_conf[tab][choice]['image'] = new_img_path
@@ -166,6 +189,7 @@ def get_tab_widgets(tab, ui_conf):
             app_select._list = apps_list; app_select.update()
             app_select.setCurrentIndex(apps_list.index(newtitle))
         ui_conf[tab] = copy.deepcopy(new_ui_conf[tab])
+        refresh_from_meta()
     btn_save.clicked.connect(_saveBtn)
 
     return scrollArea
@@ -187,6 +211,8 @@ def get_interface_widget():
     HomeScrollArea = get_tab_widgets("my_apps", ui_conf)
     tabArea.addTab(HomeScrollArea,  "My Apps")
 
+    HomeScrollArea = get_tab_widgets("admin", ui_conf)
+    tabArea.addTab(HomeScrollArea,  "Admin")
 
     return wrap_widg
 

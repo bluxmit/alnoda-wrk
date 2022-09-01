@@ -8,8 +8,9 @@ from .features_widget import get_features_widget
 from .description_widget import get_description_widget
 from .preferences_widget import get_preferences_widget
 from .interface_widget import get_interface_widget
+from .apps_services import get_apps_services_widget
 
-options = ["Home", "Features", "Description", "Preferences", "Intrerface"]
+options = ["Home", "Features", "Description", "Preferences", "Intrerface", "Apps & Services"]
 
 
 def AlnodaAdminTUI(root= None):
@@ -47,6 +48,10 @@ def AlnodaAdminTUI(root= None):
     InterfaceWidget = get_interface_widget()
     RightFrame.layout().addWidget(InterfaceWidget)
 
+    # AppsServicesWidget
+    AppsServicesWidget = get_apps_services_widget()
+    RightFrame.layout().addWidget(AppsServicesWidget)
+
     @ttk.pyTTkSlot(str)
     def _listCallback(label):
         widget = None
@@ -54,6 +59,7 @@ def AlnodaAdminTUI(root= None):
         elif label == "Features":       widget = FeaturesWidget
         elif label == "Description":    widget = DescriptionWidget
         elif label == "Intrerface":     widget = InterfaceWidget
+        elif label == "Apps & Services": widget = AppsServicesWidget
         elif label == "Preferences":    
             widget = get_preferences_widget()
             RightFrame.layout().addWidget(widget)
