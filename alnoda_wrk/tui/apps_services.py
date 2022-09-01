@@ -30,35 +30,33 @@ def get_apps_services_widget():
     cmd_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(cmd_inp)
 
-    row+=2; name_lab = ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
-    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    row+=2; name_lab = ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(name_inp)
 
     # Buttons
-    row+=2; remove_btn = ttk.TTkButton(text='Remove', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=3; remove_btn = ttk.TTkButton(text='Remove', pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
     remove_btn.setBorderColor(TTkColor.fg('#f20e0a'))
-    row+=17; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
-    btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
+    row+=16; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
     def appSelectHandler(i):
         choice = apps_list[i]
         extra['choice'] = choice
         if choice != CREATE_NEW:
+            name_inp._text = choice; name_inp.update() 
             cmd = apps[choice]
             cmd_inp._text = cmd; cmd_inp.update()
             # Show delete, cancel and save buttons
+            btn_cancel.hide()
+            btn_save.hide()
             remove_btn.show()
-            btn_cancel._visible=True; btn_cancel.update()
-            btn_save._visible=True; btn_save.update()
-            name_lab.hide(); name_inp.hide()
         else:
             remove_btn.hide()
-            btn_cancel._visible=True; btn_cancel.update()
-            btn_save._visible=True; btn_save.update()
-            name_lab._visible=True; name_lab.update()
-            name_inp._visible=True; name_inp.update()
-            name_lab.show(); name_inp.show()
+            btn_cancel.show()
+            btn_save.show()
             cmd_inp._text = ""; cmd_inp.update()
+            name_inp._text = ""; name_inp.update()
     app_select.currentIndexChanged.connect(lambda i : appSelectHandler(i))
 
     # Text input processor (CMD)
