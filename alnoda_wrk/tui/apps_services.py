@@ -53,6 +53,7 @@ def get_apps_services_widget():
     def appSelectHandler(i):
         nonlocal state
         refresh_state()
+        app_select._list = state['apps_list']; app_select.update()
         choice = state['apps_list'][i]
         state['choice'] = choice
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
@@ -90,11 +91,12 @@ def get_apps_services_widget():
         choice = state['choice']
         try:
             stop_app(choice)
-            del new_apps[choice]
         except:
             pass
+        time.sleep(2)
         # refresh state
         refresh_state()
+        app_select._list = state['apps_list']; app_select.update()
         # refresh about page
         refresh_about()
         # refresh UI & clean inputs
@@ -127,9 +129,13 @@ def get_apps_services_widget():
             msg_lab._color = ERROR_COLOR
             msg_lab._text = "Failed!"; msg_lab.update()
             stop_app(name)
+            time.sleep(2)
+            return
         else:
             # refresh state
+            time.sleep(2)
             refresh_state()
+            app_select._list = state['apps_list']; app_select.update()
             # refresh about page
             refresh_about()
             # update UI

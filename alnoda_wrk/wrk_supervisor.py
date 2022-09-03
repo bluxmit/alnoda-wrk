@@ -115,9 +115,9 @@ def start_app(name, cmd, folder=None):
     cmd = cmd.strip()
     # patch command if needed
     if "/bin/zsh" in cmd or "bin/sh" in cmd:
-        cmd_ = cmd[:-1] + " &!'"
+        cmd_ = cmd[:-1] + " &'"
     else:
-        cmd_ = cmd + " &!"
+        cmd_ = cmd + " &"
     if folder:
         cmd_ = f""" cd {folder}; {cmd_} """
     # start process 
@@ -172,6 +172,7 @@ def stop_app(name: str):
     pids = get_service_pids(cmd)
     for pid in pids:
         subprocess.Popen(f"pkill -TERM -P {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.Popen(f"kill {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # delete supervisord file
     try:
         os.remove(os.path.join(SUPERVISORD_FOLDER, supervisord_file))
