@@ -28,12 +28,12 @@ about_page_template = """
 ## Description  
 {{ description }}
 
-## Ports
-Allowed port range: 8021-8040. Ports used:
+## Apps & services: UI tabs and ports
+Created UI shortcuts for the following apps and their respective ports (allowed port range is 8021-8040)
 {{ ports_table }}
 
-## Apps & services 
-The following applications and services are runing in the workspace
+## Apps & services: commands
+The following commads were used to start apps and services in the workspace
 {{ startup_table }}
 
 ## Lineage 

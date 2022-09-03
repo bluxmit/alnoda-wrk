@@ -121,11 +121,7 @@ def start_app(name, cmd, folder=None):
     if folder:
         cmd_ = f""" cd {folder}; {cmd_} """
     # start process 
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    time.sleep(3)
-    returnCode = process.poll()
-    if returnCode != 0:
-        return False
+    process = subprocess.Popen(cmd_, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Add to the supervisor (app will run even after workspace restart)
     create_supervisord_file(name, cmd, folder=folder)
     return True
@@ -175,7 +171,10 @@ def stop_app(name: str):
     # get pids and kill them
     pids = get_service_pids(cmd)
     for pid in pids:
-        subprocess.Popen(f"pkill -TERM -P {pid}", shell=True, stdout=subprocess.PIPE)
+        subprocess.Popen(f"pkill -TERM -P {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # delete supervisord file
-    os.remove(supervisord_file)
+    try:
+        os.remove(os.path.join(SUPERVISORD_FOLDER, supervisord_file))
+    except:
+        pass
     return
