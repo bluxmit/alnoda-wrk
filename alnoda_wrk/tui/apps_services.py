@@ -124,28 +124,21 @@ def get_apps_services_widget():
         msg_lab._text = "starting..."; msg_lab.update()
         time.sleep(3)
         # Check running 
-        pids = get_service_pids(cmd)
-        if len(pids) == 0:
-            msg_lab._color = ERROR_COLOR
-            msg_lab._text = "Failed!"; msg_lab.update()
-            stop_app(name)
-            time.sleep(2)
-            return
-        else:
-            # refresh state
-            time.sleep(2)
-            refresh_state()
-            app_select._list = state['apps_list']; app_select.update()
-            # refresh about page
-            refresh_about()
-            # update UI
-            app_select.setCurrentIndex(state['apps_list'].index(name))
-            app_select.update()
-            # cmd_inp._text = name; cmd_inp.update()
-            # name_inp._text = state['apps'][name]; name_inp.update()
-            # Show success color message
-            msg_lab._color = SUCCESS_COLOR
-            msg_lab._text = "Done"; msg_lab.update()
+        pids = get_service_pids(cmd) # <- does not always work!
+        # refresh state
+        time.sleep(2)
+        refresh_state()
+        app_select._list = state['apps_list']; app_select.update()
+        # refresh about page
+        refresh_about()
+        # update UI
+        app_select.setCurrentIndex(state['apps_list'].index(name))
+        app_select.update()
+        # cmd_inp._text = name; cmd_inp.update()
+        # name_inp._text = state['apps'][name]; name_inp.update()
+        # Show success color message
+        msg_lab._color = WAIT_COLOR
+        msg_lab._text = "Executed"; msg_lab.update()
         return
     # Bind save button
     btn_save.clicked.connect(_saveBtn)
