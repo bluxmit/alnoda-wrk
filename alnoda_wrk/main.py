@@ -1,13 +1,10 @@
 import os
 import typer
-import inquirer
-from rich.prompt import Prompt
-import TermTk as ttk
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
 from .wrk_supervisor import start_app
-from .tui.admin import AlnodaAdminTUI
+from .tui.admin import open_admin
 
 app = typer.Typer()
 
@@ -69,37 +66,6 @@ def refresh():
     return
 
 @app.command()
-def edit():
-    """ Update Workspace meta """
-    questions = [
-        inquirer.List('name',
-                    message="What do you want to edit?",
-                    choices=['name', 'version', 'author', 'description'],
-        ),
-    ]
-    what = inquirer.prompt(questions)['name']
-    cls()
-    if what == "name":
-        value = Prompt.ask("Enter new workspace name :robot:")
-        update_workspace_name(value)
-        # update mkdocs.yml too
-        mkyml = get_mkdocs_yml()
-        mkyml["site_name"] = value
-        update_mkdocs_yml(mkyml)
-    elif what == "version":
-        value = Prompt.ask("Enter new workspace version :stopwatch:")
-        update_workspace_version(value)
-    elif what == "author":
-        value = Prompt.ask("Enter new workspace author :sunglasses:")
-        update_workspace_author(value)
-    elif what == "description":
-        edit_workspace_description()
-    else:
-        typer.echo(f"Cannot edit {what}")
-    typer.echo(f"Done! :okay:")
-    return
-
-@app.command()
 def start(name: str, cmd: str):
     """
     Start application
@@ -107,13 +73,9 @@ def start(name: str, cmd: str):
     start_app(name, cmd)
     return
 
-
 @app.command()
 def admin():
     """
     Open Admin TUI
     """
-    root = ttk.TTk()
-    root.setLayout(ttk.TTkGridLayout())
-    AlnodaAdminTUI(root)
-    root.mainloop()
+    open_admin()
