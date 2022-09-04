@@ -26,7 +26,7 @@ def get_description_widget():
     document=ttk.TTkTextDocument()
     description_edit = ttk.TTkTextEdit(document=document)
     description_edit.setReadOnly(False)
-    description_edit.setText(ttk.TTkString(meta['description']))
+    description_edit.setText(ttk.TTkString(str(meta['description'])))
     description_widget.layout().addWidget(description_edit)
     wrap_widg.layout().addWidget(description_widget)
 
@@ -48,7 +48,7 @@ def get_description_widget():
     # Button processors
     def _cancelBtn():
         nonlocal meta; nonlocal new_meta
-        description_edit.setText(ttk.TTkString(meta['description']))
+        description_edit.setText(ttk.TTkString(str(meta['description'])))
         new_meta = copy.deepcopy(meta)
     def _savelBtn(): 
         nonlocal meta; nonlocal new_meta

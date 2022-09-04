@@ -16,6 +16,10 @@ def get_preferences_widget():
     images['logo'] = mkdocs_d['theme']['logo']
     images['favicon'] = mkdocs_d['theme']['favicon']
     new_images = copy.deepcopy(images)
+    
+    _font = 'Roboto'
+    try:    _font = str(mkdocs_d['theme']['font']['text'])
+    except: pass
 
     # Generate widgets
     wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=True)
@@ -25,7 +29,7 @@ def get_preferences_widget():
     r = 55; rs = 60 
     row = 0
     ttk.TTkLabel(text='Font (Google)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    font_inp = ttk.TTkLineEdit(text='Roboto', pos=(r,row), size=(rs,1))
+    font_inp = ttk.TTkLineEdit(text=_font, pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(font_inp)
 
     row+=2; ttk.TTkLabel(text='Logo', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())

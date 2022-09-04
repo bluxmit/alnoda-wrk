@@ -15,22 +15,22 @@ def get_features_widget():
     wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=False)
 
     l = ttk.TTkLabel(text="Workspace name", color=LABEL_COLOR)
-    name_inp = ttk.TTkLineEdit(text=meta['name'])
+    name_inp = ttk.TTkLineEdit(text=str(meta['name']))
     g = make_horizontal_pair(l, name_inp)
     wrap_widg.layout().addWidget(g)
 
     l = ttk.TTkLabel(text="Workspace version", color=LABEL_COLOR)
-    version_inp = ttk.TTkLineEdit(text=meta['version'])
+    version_inp = ttk.TTkLineEdit(text=str(meta['version']))
     g = make_horizontal_pair(l, version_inp)
     wrap_widg.layout().addWidget(g)
 
     l = ttk.TTkLabel(text="Workspace author", color=LABEL_COLOR)
-    author_inp = ttk.TTkLineEdit(text=meta['author'])
+    author_inp = ttk.TTkLineEdit(text=str(meta['author']))
     g = make_horizontal_pair(l, author_inp)
     wrap_widg.layout().addWidget(g)
 
     l = ttk.TTkLabel(text="Workspace documentation", color=LABEL_COLOR)
-    docs_inp = ttk.TTkLineEdit(text=meta['docs'])
+    docs_inp = ttk.TTkLineEdit(text=str(meta['docs']))
     g = make_horizontal_pair(l, docs_inp)
     wrap_widg.layout().addWidget(g)
 
@@ -54,10 +54,10 @@ def get_features_widget():
     # Button processors
     def _cancelBtn():
         nonlocal meta; nonlocal new_meta
-        name_inp._text = meta['name']; name_inp.update()
-        version_inp._text = meta['version']; version_inp.update()
-        author_inp._text = meta['author']; author_inp.update()
-        docs_inp._text = meta['docs']; docs_inp.update()
+        name_inp._text = str(meta['name']); name_inp.update()
+        version_inp._text = str(meta['version']); version_inp.update()
+        author_inp._text = str(meta['author']); author_inp.update()
+        docs_inp._text = str(meta['docs']); docs_inp.update()
         new_meta = copy.deepcopy(meta)
     def _savelBtn():
         nonlocal meta; nonlocal new_meta
