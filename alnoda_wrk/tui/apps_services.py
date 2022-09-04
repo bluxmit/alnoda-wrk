@@ -1,7 +1,7 @@
 import copy
 import time
 import TermTk as ttk
-from ..wrk_supervisor import get_started_apps, start_app, stop_app, get_service_pids
+from ..wrk_supervisor import get_started_apps, start_app, stop_app, get_service_pids, is_cmd_runninng
 from ..meta_about import refresh_about
 from ..globals import safestring
 from .gvars import *
@@ -89,10 +89,9 @@ def get_apps_services_widget():
     def _removeBtn(): 
         nonlocal state
         choice = state['choice']
-        try:
-            stop_app(choice)
-        except:
-            pass
+        status = False
+        try:    status = stop_app(choice)
+        except: pass
         time.sleep(2)
         # refresh state
         refresh_state()
@@ -104,6 +103,8 @@ def get_apps_services_widget():
         app_select.update()
         cmd_inp._text = ""; cmd_inp.update()
         name_inp._text = ""; name_inp.update()
+        if not status:
+            msg_lab._color = ERROR_COLOR; msg_lab._text = "Might not stopped (virtual environment?). Please kill this process manually"; msg_lab.update()
     # Bind remove button
     remove_btn.clicked.connect(_removeBtn)
 
@@ -118,13 +119,11 @@ def get_apps_services_widget():
             msg_lab._color = ERROR_COLOR; msg_lab._text = "Please give a name for your app or service"; msg_lab.update()
             return
         # Start app/service
-        res = start_app(name, cmd)
+        status = start_app(name, cmd)
         # Sleep 3 sec
-        msg_lab._color = WAIT_COLOR
-        msg_lab._text = "starting..."; msg_lab.update()
         time.sleep(3)
         # Check running 
-        pids = get_service_pids(cmd) # <- does not always work!
+        status = is_cmd_runninng(cmd) 
         # refresh state
         time.sleep(2)
         refresh_state()
@@ -134,11 +133,12 @@ def get_apps_services_widget():
         # update UI
         app_select.setCurrentIndex(state['apps_list'].index(name))
         app_select.update()
-        # cmd_inp._text = name; cmd_inp.update()
-        # name_inp._text = state['apps'][name]; name_inp.update()
         # Show success color message
-        msg_lab._color = WAIT_COLOR
-        msg_lab._text = "Executed"; msg_lab.update()
+        if status != True:
+            msg_lab._color = WAIT_COLOR; msg_lab._text = "Executed, but success is not confirmed. Please check." 
+        else:
+            msg_lab._color = SUCCESS_COLOR; msg_lab._text = "Started" 
+        msg_lab.update()
         return
     # Bind save button
     btn_save.clicked.connect(_saveBtn)

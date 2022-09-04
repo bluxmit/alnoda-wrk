@@ -101,6 +101,28 @@ def get_started_apps(exclude=True):
     return apps
 
 
+def get_service_pids(cmd):
+    """ str ->> [int]
+    Gets pids of the process, started by a command cmd
+
+    :param cmd: command used to start applicatio
+    :type name: str
+    :return: list of system pids to kill
+    :rtype: list
+    """
+    ret_pids = set()
+    cmd_ = cmd.replace(" &!", "").replace("&!", "").replace("&", "")
+    # General case
+    scmd_ = f"""ps aux | grep "{cmd_}" | sed 's/\s\s*/ /g' | cut -d' ' -f2"""
+    stream = os.popen(scmd_)
+    output = stream.read()
+    pids = output.split("\n")
+    for pid in pids:
+        if pid is not None and pid != "" and pid.isnumeric(): 
+            ret_pids.add(pid)
+    return ret_pids
+
+
 def start_app(name, cmd, folder=None):
     """ str, str ->> 
     Start application immediately, as well as create supervisord file
@@ -124,35 +146,24 @@ def start_app(name, cmd, folder=None):
     process = subprocess.Popen(cmd_, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Add to the supervisor (app will run even after workspace restart)
     create_supervisord_file(name, cmd, folder=folder)
-    return True
+    return 
 
 
-def get_service_pids(cmd):
-    """ str ->> [int]
-    Gets pids of the process, started by a command cmd
+def is_cmd_runninng(cmd):
+    """ str ->>
+    Check if command is running
 
-    :param cmd: command used to start applicatio
-    :type name: str
-    :return: list of system pids to kill
-    :rtype: list
+    :param cmd: name of the application
+    :type cmd: str
+    :return: is command running?
+    :rtype: bool
     """
-    pids = []
-    cmd_ = cmd.replace(" &!", "").replace("&!", "")
-    scmd_ = f"""ps axf | grep "{cmd_}" """
-    stream = os.popen(scmd_)
-    output = stream.read()
-    pid = output.split(" ")[0]
-    if pid is not None and pid != "": pids.append(pid)
-    # try to get child process
-    try:   
-        cmd_child = f"ps --ppid {pid}"
-        stream = os.popen(scmd_)
-        output = stream.read()
-        chpid = output.split(" ")[0]
-        if chpid is not None and chpid != "": pids.append(chpid)
-    except:
-        pass
-    return pids
+    status = True
+    pids1 = set(get_service_pids(cmd))
+    pids2 = set(get_service_pids(cmd))
+    pids = pids1.intersection(pids2)
+    if len(pids) == 0:  status = False
+    return status
 
 
 def stop_app(name: str):
@@ -162,20 +173,25 @@ def stop_app(name: str):
     :param name: name of the application
     :type name: str
     """
+    status = True
     # read supervisord file 
     cmd_ = get_app_command(name)
     # if there were folders and env vars, strip them too
-    cmd = cmd_.split(";")[-1]
-    cmd = cmd.strip()
+    # Special cases
+    if ". env/bin/activate" in cmd_:    status = False
+    # Common cases
+    cmd = cmd_.strip()
     supervisord_file = name+".conf"
     # get pids and kill them
     pids = get_service_pids(cmd)
     for pid in pids:
-        subprocess.Popen(f"pkill -TERM -P {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        subprocess.Popen(f"kill {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:    subprocess.Popen(f"pkill -TERM -P {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except: pass
+        try:    subprocess.Popen(f"kill {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except: pass
     # delete supervisord file
     try:
         os.remove(os.path.join(SUPERVISORD_FOLDER, supervisord_file))
     except:
         pass
-    return
+    return status
