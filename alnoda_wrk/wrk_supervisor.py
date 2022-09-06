@@ -123,75 +123,20 @@ def get_service_pids(cmd):
     return ret_pids
 
 
-def start_app(name, cmd, folder=None):
-    """ str, str ->> 
-    Start application immediately, as well as create supervisord file
-
-    :param name: name of the application
-    :type name: str
-    :param cmd: shell command that starts an application
-    :type cmd: str
-    :return: was it succesfull? 
-    :rtype: bool
-    """
-    cmd = cmd.strip()
-    # patch command if needed
-    if "/bin/zsh" in cmd or "bin/sh" in cmd:
-        cmd_ = cmd[:-1] + " &'"
-    else:
-        cmd_ = cmd + " &"
-    if folder:
-        cmd_ = f""" cd {folder}; {cmd_} """
-    # start process 
-    process = subprocess.Popen(cmd_, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # Add to the supervisor (app will run even after workspace restart)
-    create_supervisord_file(name, cmd, folder=folder)
-    return 
-
-
-def is_cmd_runninng(cmd):
-    """ str ->>
-    Check if command is running
-
-    :param cmd: name of the application
-    :type cmd: str
-    :return: is command running?
-    :rtype: bool
-    """
-    status = True
-    pids1 = set(get_service_pids(cmd))
-    pids2 = set(get_service_pids(cmd))
-    pids = pids1.intersection(pids2)
-    if len(pids) == 0:  status = False
-    return status
-
-
 def stop_app(name: str):
     """ str, str ->> 
-    Stop application immediately, as well as remove from the supervisord file
+    Remove the supervisord file for the app
 
     :param name: name of the application
     :type name: str
     """
-    status = True
-    # read supervisord file 
-    cmd_ = get_app_command(name)
-    # if there were folders and env vars, strip them too
-    # Special cases
-    if ". env/bin/activate" in cmd_:    status = False
-    # Common cases
-    cmd = cmd_.strip()
     supervisord_file = name+".conf"
-    # get pids and kill them
-    pids = get_service_pids(cmd)
-    for pid in pids:
-        try:    subprocess.Popen(f"pkill -TERM -P {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except: pass
-        try:    subprocess.Popen(f"kill {pid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except: pass
     # delete supervisord file
-    try:
-        os.remove(os.path.join(SUPERVISORD_FOLDER, supervisord_file))
-    except:
-        pass
-    return status
+    try:    os.remove(os.path.join(SUPERVISORD_FOLDER, supervisord_file))
+    except: pass
+    # also delete log files
+    try:    os.remove(os.path.join(VAR_LOG_FOLDER, f"{choice}-stdout.log"))
+    except: pass
+    try:    os.remove(os.path.join(VAR_LOG_FOLDER, f"{choice}-stderr.log"))
+    except: pass
+    return 

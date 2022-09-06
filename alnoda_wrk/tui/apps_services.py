@@ -1,9 +1,11 @@
+import os
 import copy
 import time
 import TermTk as ttk
-from ..wrk_supervisor import get_started_apps, start_app, stop_app, get_service_pids, is_cmd_runninng
+from ..wrk_supervisor import get_started_apps, create_supervisord_file, stop_app, get_service_pids
 from ..meta_about import refresh_about
-from ..globals import safestring
+from ..globals import safestring, VAR_LOG_FOLDER
+from .helper_vidgets import get_file_viewer
 from .gvars import *
 
 CREATE_NEW = "START NEW"
@@ -44,10 +46,14 @@ def get_apps_services_widget():
 
     row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
+    # Logs
+    row+=2; stdout_log_btn = ttk.TTkButton(text='std.out logs', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
+    row+=2; stderr_log_btn = ttk.TTkButton(text='std.error logs', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
+
     # Buttons
-    row+=2; remove_btn = ttk.TTkButton(text='Remove', pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    row+=2; remove_btn = ttk.TTkButton(text='Remove', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     remove_btn.setBorderColor(TTkColor.fg('#f20e0a'))
-    row+=14; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=10; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
 
     def appSelectHandler(i):
@@ -65,8 +71,12 @@ def get_apps_services_widget():
             btn_cancel.hide()
             btn_save.hide()
             remove_btn.show()
+            stdout_log_btn.show()
+            stderr_log_btn.show()
         else:
             remove_btn.hide()
+            stdout_log_btn.hide()
+            stderr_log_btn.hide()
             btn_cancel.show()
             btn_save.show()
             cmd_inp._text = ""; cmd_inp.update()
@@ -86,14 +96,28 @@ def get_apps_services_widget():
     cmd_inp.textEdited.connect(lambda n: _processCMDInput(n))
     name_inp.textEdited.connect(lambda n: _processNameInput(n))
 
+    def _stderrlogBtn(): 
+        nonlocal state
+        choice = state['choice']
+        file_ = os.path.join(VAR_LOG_FOLDER, f"{choice}-stderr.log")
+        fw = get_file_viewer(file_, wrap_widg)
+    # Bind stderr log button
+    stderr_log_btn.clicked.connect(_stderrlogBtn)
+
+    def _stdoutlogBtn(): 
+        nonlocal state
+        choice = state['choice']
+        file_ = os.path.join(VAR_LOG_FOLDER, f"{choice}-stdout.log")
+        fw = get_file_viewer(file_, wrap_widg)
+    # Bind stderr log button
+    stdout_log_btn.clicked.connect(_stdoutlogBtn)
+
     def _removeBtn(): 
         nonlocal state
         choice = state['choice']
-        status = False
-        try:    status = stop_app(choice)
-        except: pass
-        time.sleep(2)
+        stop_app(choice)
         # refresh state
+        time.sleep(2)
         refresh_state()
         app_select._list = state['apps_list']; app_select.update()
         # refresh about page
@@ -103,8 +127,9 @@ def get_apps_services_widget():
         app_select.update()
         cmd_inp._text = ""; cmd_inp.update()
         name_inp._text = ""; name_inp.update()
-        if not status:
-            msg_lab._color = ERROR_COLOR; msg_lab._text = "Might not stopped (virtual environment?). Please kill this process manually"; msg_lab.update()
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Restart workspace for changes to take place"; msg_lab.update()
+        btn_cancel.hide()
+        btn_save.hide()
     # Bind remove button
     remove_btn.clicked.connect(_removeBtn)
 
@@ -119,11 +144,7 @@ def get_apps_services_widget():
             msg_lab._color = ERROR_COLOR; msg_lab._text = "Please give a name for your app or service"; msg_lab.update()
             return
         # Start app/service
-        status = start_app(name, cmd)
-        # Sleep 3 sec
-        time.sleep(3)
-        # Check running 
-        status = is_cmd_runninng(cmd) 
+        create_supervisord_file(name, cmd)
         # refresh state
         time.sleep(2)
         refresh_state()
@@ -134,10 +155,7 @@ def get_apps_services_widget():
         app_select.setCurrentIndex(state['apps_list'].index(name))
         app_select.update()
         # Show success color message
-        if status != True:
-            msg_lab._color = WAIT_COLOR; msg_lab._text = "Executed, but success is not confirmed. Please check." 
-        else:
-            msg_lab._color = SUCCESS_COLOR; msg_lab._text = "Started" 
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Restart workspace for changes to take place" 
         msg_lab.update()
         return
     # Bind save button

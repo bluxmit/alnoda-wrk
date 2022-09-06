@@ -3,7 +3,7 @@ import typer
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
-from .wrk_supervisor import start_app
+from .wrk_supervisor import create_supervisord_file
 from .tui.admin import open_admin
 
 app = typer.Typer()
@@ -70,7 +70,7 @@ def start(name: str, cmd: str):
     """
     Start application
     """
-    start_app(name, cmd)
+    create_supervisord_file(name, cmd)
     return
 
 @app.command()
