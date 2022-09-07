@@ -14,8 +14,9 @@ def open_admin():
     from .preferences_widget import get_preferences_widget
     from .interface_widget import get_interface_widget
     from .apps_services import get_apps_services_widget
+    from .env_vars_widget import get_env_vars_widget
 
-    options = ["Home", "Features", "Description", "Preferences", "Intrerface", "Apps & Services"]
+    options = ["Home", "Features", "Description", "Preferences", "Intrerface", "Apps & Services", "Env variables"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -57,14 +58,19 @@ def open_admin():
         AppsServicesWidget = get_apps_services_widget()
         RightFrame.layout().addWidget(AppsServicesWidget)
 
+        # EnvVarsWidget
+        EnvVarsWidget = get_env_vars_widget()
+        RightFrame.layout().addWidget(EnvVarsWidget)
+
         @ttk.pyTTkSlot(str)
         def _listCallback(label):
             widget = None
-            if   label == "Home":           widget = hello_widget
-            elif label == "Features":       widget = FeaturesWidget
-            elif label == "Description":    widget = DescriptionWidget
-            elif label == "Intrerface":     widget = InterfaceWidget
-            elif label == "Apps & Services": widget = AppsServicesWidget
+            if   label == "Home":               widget = hello_widget
+            elif label == "Features":           widget = FeaturesWidget
+            elif label == "Description":        widget = DescriptionWidget
+            elif label == "Intrerface":         widget = InterfaceWidget
+            elif label == "Apps & Services":    widget = AppsServicesWidget
+            elif label == "Env variables":      widget = EnvVarsWidget
             elif label == "Preferences":    
                 widget = get_preferences_widget()
                 RightFrame.layout().addWidget(widget)

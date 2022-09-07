@@ -13,6 +13,8 @@ mkdocs_yml_path = os.path.join(WORKSPACE_UI_DIR, 'mkdocs.yml')
 ui_dict_file = os.path.join(WORKSPACE_UI_DIR, 'conf', 'ui-apps.json')
 WORKSPACE_ABOUT_FILE = os.path.join(WORKSPACE_UI_DIR, 'docs', 'about.md')
 WORKSPACE_MANIFEST_FILE = os.path.join(WORKSPACE_UI_DIR, 'docs', 'manifest.txt')
+ZSHRC_FILE = os.path.join(HOME_DIR, '.zshrc')
+
 
 def get_mkdocs_yml():
     """  ->> {}
@@ -219,3 +221,42 @@ def write_styles_scss(styles_dict):
     with open(WORKSPACE_UI_SCSS_STYLES_FILE, "w") as styles_file:
         styles_file.write(new_styles_str)
     return
+
+
+def read_zshrc():
+    """ ->> [str]
+
+    Read .zshrc file line-by-line
+    :return: list with ~/.zshrc lines
+    :rtype: list
+    """
+    with open(ZSHRC_FILE) as f:
+        zshrc_lines = f.readlines()
+    return f
+
+
+def overwrite_zshrc(new_lines):
+    """ [{},{}] ->>
+   
+    Overwrite .zshrc file line-by-line
+    :param new_lines: list with new lines for ~/.zshrc
+    :type new_lines: list
+    """
+    with open(ZSHRC_FILE, "w") as f:
+        f.writelines(new_lines)
+    return
+    
+
+def add_zshrc_line(line):
+    """ str ->> 
+
+    Add line to the ~/.zshrc file
+    :param line: new line to add to the  ~/.zshrc file 
+    :type line: str
+    """
+    with open(ZSHRC_FILE, "a") as f:
+        # Append 'hello' at the end of file
+        f.write(line)
+    return
+
+
