@@ -232,7 +232,7 @@ def read_zshrc():
     """
     with open(ZSHRC_FILE) as f:
         zshrc_lines = f.readlines()
-    return f
+    return zshrc_lines
 
 
 def overwrite_zshrc(new_lines):
@@ -258,5 +258,3 @@ def add_zshrc_line(line):
         # Append 'hello' at the end of file
         f.write(line)
     return
-
-

@@ -2,19 +2,19 @@ import TermTk as ttk
 import copy
 import time
 from .gvars import *
-from ..zsh import get_user_env_vars, add_user_env_var, remove_user_env_var
+from ..zsh import get_user_aliases, add_user_alias, remove_user_alias
 
 CREATE_NEW = "ADD NEW"
 
 
-def get_env_vars_widget():
-    state = {'envars': {}, 'vars_list': [], 'choice': "", 'name': "", 'value': ""}
+def get_aliases_widget():
+    state = {'aliases': {}, 'alias_list': [], 'choice': "", 'name': "", 'cmd': ""}
 
     def refresh_state():
-        state['envars'] = get_user_env_vars()
-        envars = state['envars']
-        state['vars_list'] = list(envars.keys())
-        state['vars_list'].append(CREATE_NEW)
+        state['aliases'] = get_user_aliases()
+        aliases = state['aliases']
+        state['alias_list'] = list(aliases.keys())
+        state['alias_list'].append(CREATE_NEW)
     refresh_state()
 
     # Generate widgets
@@ -25,17 +25,17 @@ def get_env_vars_widget():
     r = 25; rs = 90 
     row = 1 
 
-    ttk.TTkLabel(text='env var (terminal)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    var_select = ttk.TTkComboBox(list=state['vars_list'], pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(var_select)
+    ttk.TTkLabel(text='alias (terminal)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    alias_select = ttk.TTkComboBox(list=state['alias_list'], pos=(r,row), size=(rs,1))
+    scrollArea.viewport().addWidget(alias_select)
 
-    row+=2; ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    row+=2; ttk.TTkLabel(text='Short name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
     name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(name_inp)
 
-    row+=2; ttk.TTkLabel(text='Value', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    value_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(value_inp)
+    row+=2; ttk.TTkLabel(text='Command', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    cmd_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
+    scrollArea.viewport().addWidget(cmd_inp)
     
     row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
@@ -46,16 +46,16 @@ def get_env_vars_widget():
     row+=14; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
 
-    def varSelectHandler(i):
+    def aliasSelectHandler(i):
         nonlocal state
         refresh_state()
-        choice = state['vars_list'][i]
+        choice = state['alias_list'][i]
         state['choice'] = choice
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
         if choice != CREATE_NEW:
             name_inp._text = choice; name_inp.update() 
-            value = state['envars'][choice]
-            value_inp._text = value; value_inp.update()
+            cmd = state['aliases'][choice]
+            cmd_inp._text = cmd; cmd_inp.update()
             # Show delete, cancel and save buttons
             btn_cancel.hide()
             btn_save.hide()
@@ -65,35 +65,35 @@ def get_env_vars_widget():
             btn_cancel.show()
             btn_save.show()
             name_inp._text = ""; name_inp.update()
-            value_inp._text = ""; value_inp.update()
-    var_select.currentIndexChanged.connect(lambda i : varSelectHandler(i))
+            cmd_inp._text = ""; cmd_inp.update()
+    alias_select.currentIndexChanged.connect(lambda i : aliasSelectHandler(i))
     
     # Text input handlers
     def _processNameInput(n): 
         nonlocal state
         state['name'] = n
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
-    def _processValueInput(n): 
+    def _processcmdInput(n): 
         nonlocal state
-        state['value'] = n
+        state['cmd'] = n
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
     # Bind text inputs
     name_inp.textEdited.connect(lambda n: _processNameInput(n))
-    value_inp.textEdited.connect(lambda n: _processValueInput(n))
+    cmd_inp.textEdited.connect(lambda n: _processcmdInput(n))
 
     def _removeBtn(): 
         nonlocal state
         choice = state['choice']
-        remove_user_env_var(choice)
+        remove_user_alias(choice)
         # refresh state
         time.sleep(2)
         refresh_state()
-        var_select._list = state['vars_list']; var_select.update()
+        alias_select._list = state['alias_list']; alias_select.update()
         # refresh UI & clean inputs
-        var_select.setCurrentIndex(-1)
-        var_select.update()
+        alias_select.setCurrentIndex(-1)
+        alias_select.update()
         name_inp._text = ""; name_inp.update()
-        value_inp._text = ""; value_inp.update()
+        cmd_inp._text = ""; cmd_inp.update()
         btn_cancel.hide()
         btn_save.hide()
         msg_lab._color = WAIT_COLOR; msg_lab._text = "Changes will apply only in new terminal windows"; msg_lab.update()
@@ -103,27 +103,27 @@ def get_env_vars_widget():
     def _saveBtn(): 
         nonlocal state
         name = state['name']
-        value = state['value']
+        cmd = state['cmd']
         if name == "": 
-            msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter name for the variable"; msg_lab.update()
+            msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter alias short name"; msg_lab.update()
             return
-        if value == "": 
-            msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter value for the variable"; msg_lab.update()
+        if cmd == "": 
+            msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter command"; msg_lab.update()
             return
         if not name.isidentifier():
-            msg_lab._color = ERROR_COLOR; msg_lab._text = "Variable name is not appropriate"; msg_lab.update()
+            msg_lab._color = ERROR_COLOR; msg_lab._text = "Alias short name is not appropriate"; msg_lab.update()
             return
         # Start app/service
-        add_user_env_var(name, value)
+        add_user_alias(name, cmd)
         # refresh state
         time.sleep(2)
         refresh_state()
-        var_select._list = state['vars_list']; var_select.update()
+        alias_select._list = state['alias_list']; alias_select.update()
         # update UI
-        var_select.setCurrentIndex(state['vars_list'].index(name))
-        var_select.update()
+        alias_select.setCurrentIndex(state['alias_list'].index(name))
+        alias_select.update()
         # Show success color message
-        msg_lab._color = WAIT_COLOR; msg_lab._text = "Variable added. Available only in new terminal windows"; msg_lab.update()
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Alias added. Available only in new terminal windows"; msg_lab.update()
         return
     # Bind save button
     btn_save.clicked.connect(_saveBtn)
@@ -133,10 +133,10 @@ def get_env_vars_widget():
         # refresh state
         refresh_state()
         # refresh UI & clean inputs
-        var_select.setCurrentIndex(-1)
-        var_select.update()
+        alias_select.setCurrentIndex(-1)
+        alias_select.update()
         name_inp._text = ""; name_inp.update()
-        value_inp._text = ""; value_inp.update()
+        cmd_inp._text = ""; cmd_inp.update()
     btn_cancel.clicked.connect(_cancelBtn)
 
     return wrap_widg
