@@ -147,6 +147,19 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
     write_meta(meta_dict)
     return
 
+def better_tags(tags):
+    """ str ->> str
+
+    Beautify tags for Markdown - wrap in backtics, split by space
+    :param tags: comma-separated tags
+    :type name: str
+    :return: beautified tags
+    :rtype: str
+    """
+    tags_list = tags.split(",")
+    b_tags = " ".join([f"`{tag}`" for tag in tags_list])
+    return b_tags
+
 
 def refresh_about():
     """  ->>
@@ -159,7 +172,11 @@ def refresh_about():
     meta_dict['ports_table'] = get_ports_table()
     # Add scheduled apps table
     meta_dict['startup_table'] = get_startup_apps_table()
+    # Beautify tags
+    if 'tags' in meta_dict and meta_dict['tags'] != "":
+        meta_dict['tags'] = better_tags(meta_dict['tags'])
     # Add lineage table
+    meta_dict['lineage_table'] = get_lineage_table()
     meta_dict['lineage_table'] = get_lineage_table()
     # Generate template for the About page
     tm = Template(about_page_template)
