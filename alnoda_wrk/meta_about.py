@@ -65,6 +65,20 @@ def get_startup_apps_table():
     return startup_apps_str
 
 
+def better_tags(tags):
+    """ str ->> str
+
+    Beautify tags for Markdown - wrap in backtics, split by space
+    :param tags: comma-separated tags
+    :type name: str
+    :return: beautified tags
+    :rtype: str
+    """
+    tags_list = tags.split(",")
+    b_tags = " ".join([f"`{tag}`" for tag in tags_list])
+    return b_tags
+
+
 def get_lineage_table():
     """  ->> str
 
@@ -78,6 +92,9 @@ def get_lineage_table():
     max_ind = max([e["ind"] for e in lineage])
     # remove current workspace from the lineage
     lineage = [l for l in lineage if l["ind"] != max_ind] 
+    # beautify tags in lineage 
+    for l in lineage:
+        if 'tags' in l: l['tags'] = better_tags(l['tags'])
     # order lineage in desc order
     lineage = sorted(lineage, key=lambda d: d['ind'], reverse=True) 
     # generate Markdown table string from the template
@@ -141,24 +158,11 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
     if docs is not None:
         meta_dict['docs'] = docs
     if tags is not None:
-        meta_dict['tags'] = tags
+        meta_dict['tags'] = tags.lower()
     if update_created:
         meta_dict['created'] = str(date.today())
     write_meta(meta_dict)
     return
-
-def better_tags(tags):
-    """ str ->> str
-
-    Beautify tags for Markdown - wrap in backtics, split by space
-    :param tags: comma-separated tags
-    :type name: str
-    :return: beautified tags
-    :rtype: str
-    """
-    tags_list = tags.split(",")
-    b_tags = " ".join([f"`{tag}`" for tag in tags_list])
-    return b_tags
 
 
 def refresh_about():
