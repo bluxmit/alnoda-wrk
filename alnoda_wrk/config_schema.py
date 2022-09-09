@@ -22,6 +22,11 @@
         'required': True,
         'type': 'string',
     },
+    'lang': 
+    {
+        'required': False,
+        'type': 'string',
+    },
     'logo': 
     {
         'required': False,

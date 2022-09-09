@@ -46,7 +46,8 @@ def update_required_ui_params(wrk_params, conf_dir_path):
         name=name, 
         version=version,
         author=author,
-        description=description
+        description=description,
+        docs=doc_url
         ); refresh_about()
     return
 
