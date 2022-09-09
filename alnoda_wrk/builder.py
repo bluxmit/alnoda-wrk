@@ -116,10 +116,14 @@ def build_workspace(conf_dir_path):
     # Create supervisord files for applications to start up
     create_startup_applications(wrk_params)
     # Add this workspace to the lineage
+    tags = ""
+    if 'tags' in wrk_params:
+        tags = wrk_params['tags']
     add_wrk_to_lineage(
         name = wrk_params['name'],
         version = wrk_params['version'],
-        docs = wrk_params['doc_url']
+        docs = wrk_params['doc_url'],
+        tags = tags
         )
     # refresh about page
     refresh_from_meta()

@@ -63,6 +63,7 @@ def update(what, value):
 def refresh():
     """ Force refresh workspace from meta"""
     refresh_from_meta()
+    refresh_about()
     return
 
 @app.command()

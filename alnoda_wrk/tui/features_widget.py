@@ -34,6 +34,11 @@ def get_features_widget():
     g = make_horizontal_pair(l, docs_inp)
     wrap_widg.layout().addWidget(g)
 
+    l = ttk.TTkLabel(text="Tags", color=LABEL_COLOR)
+    tags_inp = ttk.TTkLineEdit(text=str(meta['tags']))
+    g = make_horizontal_pair(l, tags_inp)
+    wrap_widg.layout().addWidget(g)
+
     # Text Input processor
     def _processMetaInput(what, n): new_meta[what] = n
     # Bind Text Input
@@ -41,10 +46,11 @@ def get_features_widget():
     version_inp.textEdited.connect(lambda n: _processMetaInput('version', n))
     author_inp.textEdited.connect(lambda n: _processMetaInput('author', n))
     docs_inp.textEdited.connect(lambda n: _processMetaInput('docs', n))
+    tags_inp.textEdited.connect(lambda n: _processMetaInput('tags', n))
     
     # Buttons
     btn_widget = ttk.TTkFrame(layout= ttk.TTkGridLayout(columnMinWidth=1), border=0)
-    btn_widget.setPadding(16,1,2,2)
+    btn_widget.setPadding(14,1,2,2)
     btn_cancel = ttk.TTkButton(text='Cancel')
     btn_save = ttk.TTkButton(text='Save')
     btn_widget.layout().addWidget(btn_cancel, 1, 0)
@@ -61,7 +67,7 @@ def get_features_widget():
         new_meta = copy.deepcopy(meta)
     def _savelBtn():
         nonlocal meta; nonlocal new_meta
-        update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'], docs=new_meta['docs'])
+        update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'], docs=new_meta['docs'], tags=new_meta['tags'])
         refresh_from_meta()
         meta = copy.deepcopy(new_meta)
     # Connect buttons

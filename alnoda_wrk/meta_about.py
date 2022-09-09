@@ -86,7 +86,7 @@ def get_lineage_table():
     return lineage_str
 
 
-def add_wrk_to_lineage(name, version, docs):
+def add_wrk_to_lineage(name, version, docs, tags):
     """ str, str, str ->> 
     Add this workspace to the workspace lineage file.
 
@@ -104,14 +104,14 @@ def add_wrk_to_lineage(name, version, docs):
     new_ind = max_ind + 1
     # add element to the dict
     lineage.append(
-        {"ind": new_ind, "name": name, "version": version, "link": docs}
+        {"ind": new_ind, "name": name, "version": version, "link": docs, "tags": tags}
     )
     # save updated lineage
     write_lineage(lineage)
     return
 
 
-def update_meta(name=None, version=None, author=None, description=None, docs=None, update_created=True):
+def update_meta(name=None, version=None, author=None, description=None, docs=None, tags=None, update_created=True):
     """ str, str, str, str, bool ->> 
     Updates meta.json. When called without any args, it will 
     update 'created' field only. 
@@ -140,6 +140,8 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
         meta_dict['description'] = description
     if docs is not None:
         meta_dict['docs'] = docs
+    if tags is not None:
+        meta_dict['tags'] = tags
     if update_created:
         meta_dict['created'] = str(date.today())
     write_meta(meta_dict)
@@ -224,11 +226,22 @@ def update_workspace_author(new_author):
 
 def update_workspace_description(new_description):
     """ str ->>
-    Update author of this workspace
+    Update description of this workspace
     """
     # update meta with the new description
     update_meta(description=new_description)
     # update about page with the new description
+    refresh_about() 
+    return
+
+
+def update_workspace_tags(new_tags):
+    """ str ->>
+    Update tags of this workspace
+    """
+    # update meta with the new tags
+    update_meta(tags=new_tags)
+    # update about page with the new tags
     refresh_about() 
     return
 

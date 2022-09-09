@@ -10,6 +10,8 @@ description: |
   *(created by authentic-apostol, authentic.apostol@gmail.com)*
 
 # optional
+# (programmig languages, technologies)
+tags: python, javascript, kafka
 # (Homepage UI icons)
 logo: white-icon.svg
 favicon: dark-icon.svg

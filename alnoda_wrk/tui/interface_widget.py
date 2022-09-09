@@ -208,11 +208,17 @@ def get_interface_widget():
     HomeScrollArea = get_tab_widgets("home", ui_conf)
     tabArea.addTab(HomeScrollArea,  "Home")
 
-    HomeScrollArea = get_tab_widgets("my_apps", ui_conf)
-    tabArea.addTab(HomeScrollArea,  "My Apps")
+    try:
+        HomeScrollArea = get_tab_widgets("my_apps", ui_conf)
+        tabArea.addTab(HomeScrollArea,  "My Apps")
+    except:
+        pass
 
-    HomeScrollArea = get_tab_widgets("admin", ui_conf)
-    tabArea.addTab(HomeScrollArea,  "Admin")
+    try:
+        HomeScrollArea = get_tab_widgets("admin", ui_conf)
+        tabArea.addTab(HomeScrollArea,  "Admin")
+    except:
+        pass
 
     return wrap_widg
 

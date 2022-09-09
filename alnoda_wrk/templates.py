@@ -24,6 +24,7 @@ about_page_template = """
 | version       | {{ version }} |
 | author       | {{ author }} |
 | created    | {{ created }} |
+| tags       | {{ tags|default('') }} |
 
 ## Description  
 {{ description }}
@@ -67,9 +68,9 @@ startup_apps_template = """
 """
 
 lineage_template = """
-| Layer      | Name                          | Version      |
-| ----------- | --------------------------- | ----------- |
+| Layer      | Name                          | Version      | Tags      |
+| ----------- | --------------------------- | ----------- | ----------- |
 {% for l in data.lineage -%}
-| {{l.ind}}       | [{{l.name}}]({{l.link}})        | {{l.version}}      |
+| {{l.ind}}       | [{{l.name}}]({{l.link}})        | {{l.version}}      | {{l.tags|default('')}}      |
 {% endfor %}
 """

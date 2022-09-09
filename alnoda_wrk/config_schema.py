@@ -22,7 +22,7 @@
         'required': True,
         'type': 'string',
     },
-    'lang': 
+    'tags': 
     {
         'required': False,
         'type': 'string',

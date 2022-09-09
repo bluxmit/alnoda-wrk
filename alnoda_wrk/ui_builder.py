@@ -85,6 +85,8 @@ def update_optional_ui_params(wrk_params, conf_dir_path):
             mkdocs_dict['theme']['font'] = {}
         mkdocs_dict['theme']['font']['text'] = wrk_params['styles']['font']
         update_mkdocs_yml(mkdocs_dict)
+    if 'tags' in wrk_params and wrk_params['tags'] != "":
+        update_meta(tags=str(wrk_params['tags'])); refresh_about()
     return
 
 
