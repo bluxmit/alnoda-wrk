@@ -90,8 +90,8 @@ def get_lineage_table():
     """
     lineage = read_lineage()
     max_ind = max([e["ind"] for e in lineage])
-    # remove current workspace from the lineage
-    lineage = [l for l in lineage if l["ind"] != max_ind] 
+    # # remove current workspace from the lineage
+    # lineage = [l for l in lineage if l["ind"] != max_ind] 
     # beautify tags in lineage 
     for l in lineage:
         if 'tags' in l: l['tags'] = better_tags(l['tags'])

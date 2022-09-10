@@ -29,6 +29,10 @@ about_page_template = """
 ## Description  
 {{ description }}
 
+## Lineage 
+This workspace was built from the following workspaces
+{{ lineage_table }}
+
 ## UI tabs and ports
 UI shortcuts for apps and their respective ports (allowed port range is 8021-8040)
 {{ ports_table }}
@@ -36,10 +40,6 @@ UI shortcuts for apps and their respective ports (allowed port range is 8021-804
 ## Apps & services
 Commads used to start apps and services in the workspace
 {{ startup_table }}
-
-## Lineage 
-This workspace was built from the following workspaces
-{{ lineage_table }}
 """
 
 

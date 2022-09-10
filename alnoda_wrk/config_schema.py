@@ -92,7 +92,12 @@
                             'required': False,
                             'type': 'string',
                         },
-                        'code': 
+                        'code_text': 
+                        {
+                            'required': False,
+                            'type': 'string',
+                        },
+                        'code_background': 
                         {
                             'required': False,
                             'type': 'string',
