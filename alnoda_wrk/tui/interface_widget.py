@@ -58,26 +58,31 @@ def get_tab_widgets(tab, ui_conf):
     scrollArea.viewport().addWidget(inp_descr)
 
     row+=2; ttk.TTkLabel(text='Path (optional)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    inp_path = ttk.TTkButton(text="", pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
-    scrollArea.viewport().addWidget(inp_descr)
+    inp_path = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
+    scrollArea.viewport().addWidget(inp_path)
+
+    row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
     # Buttons
-    row+=4; btn_delete = ttk.TTkButton(text='Delete', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=2; btn_delete = ttk.TTkButton(text='Delete', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_delete.setBorderColor(TTkColor.fg('#f20e0a'))
-    row+=8; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=6; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
         
     # App Selection handling
     def appSelectHandler(i):
         new_ui_conf = copy.deepcopy(ui_conf)  # <- this will cancel unexpected changes
+        msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
         choice = apps_list[i]
         extra['choice'] = choice
         if choice != CREATE_NEW:
             appd = new_ui_conf[tab][choice]
+            if "path" not in appd: appd['path'] = ""
             inp_title._text = appd['title']; inp_title.update()
             inp_descr._text = appd['description']; inp_descr.update()
             inp_port._text = str(appd['port']); inp_port.update()
             inp_img._text = TTkString(appd['image']); inp_img.update()
+            inp_path._text = str(appd['path']); inp_path.update()
             # Show delete, cancel and save buttons
             btn_delete.show()
             btn_cancel._visible=True; btn_cancel.update()
@@ -87,6 +92,7 @@ def get_tab_widgets(tab, ui_conf):
             inp_descr._text = ""; inp_descr.update()
             inp_port._text = ""; inp_port.update()
             inp_img._text = TTkString(""); inp_img.update()
+            inp_path._text = ""; inp_path.update()
             btn_delete.hide()
             btn_cancel._visible=True; btn_cancel.update()
             btn_save._visible=True; btn_save.update()
@@ -102,15 +108,22 @@ def get_tab_widgets(tab, ui_conf):
     def _processMetaInput(what, n): 
         nonlocal extra; nonlocal new_app
         choice =  extra['choice']
+        # remove trailing / from path if any
+        if what == 'path' and len(n) > 0 and n[0] == "/":
+            n = n[1:]
+        # update respective dict
         if choice != CREATE_NEW:
-            new_ui_conf[tab][choice][what] = n
+            if tab != "" and choice != "":
+                new_ui_conf[tab][choice][what] = n
         else: new_app[what] = n
+        msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
     # Bind text inputs
     inp_title.textEdited.connect(lambda n: _processMetaInput('title', n))
     inp_descr.textEdited.connect(lambda n: _processMetaInput('description', n))
     inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
     inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
     inp_path.textEdited.connect(lambda n: _processMetaInput('path', n))
+
 
     # File Picker processor
     def _updImg(val):
@@ -121,6 +134,7 @@ def get_tab_widgets(tab, ui_conf):
         else:
             new_app["image"] = val
         inp_img._text = TTkString(val)
+        msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
     def _ImageFilePickerDialog(fm):
         filePicker = ttk.TTkFileDialogPicker(pos = (3,3), size=(95,24), caption="Pick Something", path=".", fileMode=fm ,filter="All Files (*);;SVG files (*.svg);;PNG images (*.png);;JPG images (*.jpg)")
         filePicker.pathPicked.connect(lambda fi : _updImg(fi))
@@ -156,12 +170,12 @@ def get_tab_widgets(tab, ui_conf):
         choice =  extra['choice']
         if choice != CREATE_NEW:
             appd = ui_conf[tab][choice]
-            inp_title._text = appd["title"]; inp_title.update()
-            inp_descr._text = appd["description"]; inp_descr.update()
+            if "path" not in appd: appd['path'] = ""
+            inp_title._text = str(appd["title"]); inp_title.update()
+            inp_descr._text = str(appd["description"]); inp_descr.update()
             inp_port._text = str(appd["port"]); inp_port.update()
             inp_img._text = TTkString(appd["image"]); inp_img.update()
-            try:    inp_path._text = TTkString(appd["path"]); inp_img.update()
-            except: inp_path._text = TTkString(""); inp_img.update()
+            inp_path._text = str(appd["path"]); inp_path.update()
             new_ui_conf = copy.deepcopy(ui_conf)
         else:
             inp_title._text = ""; inp_title.update()
@@ -177,20 +191,51 @@ def get_tab_widgets(tab, ui_conf):
         nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal apps_list
         choice =  extra['choice']
         if choice != CREATE_NEW:
+            # checks all fields provided
+            if new_ui_conf[tab][choice]['title'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter title"; msg_lab.update()
+                return
+            if new_ui_conf[tab][choice]['description'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter description"; msg_lab.update()
+                return
+            if new_ui_conf[tab][choice]['port'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter port"; msg_lab.update()
+                return
+            if not str(new_ui_conf[tab][choice]['port']).isnumeric():
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Port must be nnumeric"; msg_lab.update()
+                return
+            # copy image file physically (if changed)
             if new_ui_conf[tab][choice]['image'] != ui_conf[tab][choice]['image']:
                 new_img_path = copy_pageapp_image(tab, new_ui_conf[tab][choice]['image'])
                 new_ui_conf[tab][choice]['image'] = new_img_path
                 inp_img._text = TTkString(new_img_path); inp_img.update()
+            # Make port int
             new_ui_conf[tab][choice]['port'] = int(new_ui_conf[tab][choice]['port'])
+            # Save new configuration
             update_ui_conf(new_ui_conf)
             ui_conf[tab] = new_ui_conf[tab]
         else:
+            # perform checks required fields
+            if 'title' not in new_app or new_app['title'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter title"; msg_lab.update()
+                return
+            if 'description' not in new_app or new_app['description'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter description"; msg_lab.update()
+                return
+            if 'port' not in new_app or new_app['port'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter port"; msg_lab.update()
+                return
+            if not str(new_app['port']).isnumeric(): 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Port must be nnumeric"; msg_lab.update()
+                return
+            if 'image' not in new_app or new_app['image'] == "": 
+                msg_lab._color = ERROR_COLOR; msg_lab._text = "Please choose image"; msg_lab.update()
+                return
+            # copy new image physically
             new_img_path = copy_pageapp_image(tab, new_app["image"])
             new_app["image"] = new_img_path
             new_app["port"] = int(new_app["port"])
             inp_img._text = TTkString(new_img_path); inp_img.update()
-            try:    inp_path._text = TTkString(appd["path"]); inp_img.update()
-            except: inp_path._text = TTkString(""); inp_img.update()
             # create new entry in the new_ui_conf
             newtitle = safestring(new_app['title'])
             new_ui_conf[tab][newtitle] = new_app

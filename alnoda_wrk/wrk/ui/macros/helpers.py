@@ -35,7 +35,7 @@ def add_path(url, v):
     """ str, {} -> str
     If path is defined, add it to the URL
     """
-    if "path" in v:
+    if "path" in v and len(str(v['path'])) > 0:
         if v["path"][0] == "/": path = v["path"][1:] 
         else: path = v["path"]
         url = f"{url}/{path}"
