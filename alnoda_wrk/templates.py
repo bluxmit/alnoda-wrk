@@ -30,7 +30,7 @@ about_page_template = """
 {{ description }}
 
 ## Lineage 
-This workspace was built from the following workspaces
+This workspace has features of the following workspaces (build history)
 {{ lineage_table }}
 
 ## UI tabs and ports

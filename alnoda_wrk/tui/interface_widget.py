@@ -19,7 +19,7 @@ def find_title_in_dict(dic, title):
             return v
     # if not found
     app_name = safestring(title)
-    new = {'title': "", 'description': "", 'port': "", 'image': ""}
+    new = {'title': "", 'description': "", 'port': "", 'image': "", 'path': ""}
     dic[app_name] = new
     return new
 
@@ -55,6 +55,10 @@ def get_tab_widgets(tab, ui_conf):
 
     row+=2; ttk.TTkLabel(text='Image', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
     inp_img = ttk.TTkButton(text="", pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
+    scrollArea.viewport().addWidget(inp_descr)
+
+    row+=2; ttk.TTkLabel(text='Path (optional)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    inp_path = ttk.TTkButton(text="", pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
     scrollArea.viewport().addWidget(inp_descr)
 
     # Buttons
@@ -105,6 +109,8 @@ def get_tab_widgets(tab, ui_conf):
     inp_title.textEdited.connect(lambda n: _processMetaInput('title', n))
     inp_descr.textEdited.connect(lambda n: _processMetaInput('description', n))
     inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
+    inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
+    inp_path.textEdited.connect(lambda n: _processMetaInput('path', n))
 
     # File Picker processor
     def _updImg(val):
@@ -138,6 +144,7 @@ def get_tab_widgets(tab, ui_conf):
         inp_title._text = ""; inp_title.update()
         inp_descr._text = ""; inp_descr.update()
         inp_port._text = ""; inp_port.update()
+        inp_path._text = ""; inp_path.update()
         inp_img._text = TTkString(""); inp_img.update()
         refresh_from_meta()
     # Bind delete button
@@ -153,11 +160,14 @@ def get_tab_widgets(tab, ui_conf):
             inp_descr._text = appd["description"]; inp_descr.update()
             inp_port._text = str(appd["port"]); inp_port.update()
             inp_img._text = TTkString(appd["image"]); inp_img.update()
+            try:    inp_path._text = TTkString(appd["path"]); inp_img.update()
+            except: inp_path._text = TTkString(""); inp_img.update()
             new_ui_conf = copy.deepcopy(ui_conf)
         else:
             inp_title._text = ""; inp_title.update()
             inp_descr._text = ""; inp_descr.update()
             inp_port._text = ""; inp_port.update()
+            inp_path._text = ""; inp_path.update()
             inp_img._text = TTkString(""); inp_img.update()
     # Bind cancel button
     btn_cancel.clicked.connect(_cancelBtn)
@@ -179,6 +189,8 @@ def get_tab_widgets(tab, ui_conf):
             new_app["image"] = new_img_path
             new_app["port"] = int(new_app["port"])
             inp_img._text = TTkString(new_img_path); inp_img.update()
+            try:    inp_path._text = TTkString(appd["path"]); inp_img.update()
+            except: inp_path._text = TTkString(""); inp_img.update()
             # create new entry in the new_ui_conf
             newtitle = safestring(new_app['title'])
             new_ui_conf[tab][newtitle] = new_app

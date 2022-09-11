@@ -77,11 +77,6 @@
                             'required': False,
                             'type': 'string',
                         },
-                        'subtitle': 
-                        {
-                            'required': False,
-                            'type': 'string',
-                        },
                         'text': 
                         {
                             'required': False,
