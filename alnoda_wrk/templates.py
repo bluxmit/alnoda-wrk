@@ -24,7 +24,7 @@ about_page_template = """
 | version       | {{ version }} |
 | author       | {{ author }} |
 | created    | {{ created }} |
-| tags       | {{ tags|default('') }} |
+| tags       | {% if tags != "" %}{{ tags }}{% endif %} |
 
 ## Description  
 {{ description }}
@@ -71,6 +71,6 @@ lineage_template = """
 | Layer      | Name                          | Version      | Tags      |
 | ----------- | --------------------------- | ----------- | ----------- |
 {% for l in data.lineage -%}
-| {{l.ind}}       | [{{l.name}}]({{l.link}})        | {{l.version}}      | {{l.tags|default('')}}      |
+| {{l.ind}}       | [{{l.name}}]({{l.link}})        | {{l.version}}      |  {% if l.tags != "" %}{{ l.tags }}{% endif %}     |
 {% endfor %}
 """

@@ -75,7 +75,7 @@ def better_tags(tags):
     :rtype: str
     """
     tags_list = tags.split(",")
-    b_tags = " ".join([f"`{tag}`" for tag in tags_list])
+    b_tags = " ".join([f"`{tag}`" for tag in tags_list if tag != ""])
     return b_tags
 
 
