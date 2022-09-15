@@ -157,8 +157,8 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
         meta_dict['description'] = description
     if docs is not None:
         meta_dict['docs'] = docs
-    if tags is not None:
-        meta_dict['tags'] = tags.lower()
+    if tags is not None:    meta_dict['tags'] = tags.lower()
+    else:   meta_dict['tags'] = ""
     if update_created:
         meta_dict['created'] = str(date.today())
     write_meta(meta_dict)
