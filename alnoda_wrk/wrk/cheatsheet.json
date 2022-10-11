@@ -1,0 +1,24 @@
+{   
+    "Install apps": {
+        "sudo apt-get update": "update package lists (do this before apt-get install)",
+        "sudo apt-get install [package]": "install new package with apt"
+    },
+    "Text editors": {
+        "nano": "open nano editor (new file)",
+        "nano [file name]": "edit file [file name] with nano editor",
+        "vim": "open vim editor (new file)",
+        "vim [file name]": "edit file [file name] with vim editor",
+        "mcedit": "open mcedit editor (new file)", 
+        "mcedit [file name]": "edit file [file name] with mcedit editor",
+        "tilde": "open tilde editor (new file)",
+        "tilde [file name]": "edit file [file name] with tilde editor"
+    },
+    "Node": {
+        "nodeenv --node=[node version] env": "Install node.js evironment (in the current folder)",
+        ". env/bin/activate ": "Activate node.js evironment (in the current folder)",
+        "npm install -g [package name]": "istall node.js package [package name]"
+    },
+    "Python": {
+        "pip install [package name]": "istall python package [package name]"
+    }
+}

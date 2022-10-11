@@ -10,7 +10,7 @@ WORKSPACE_UI_SCSS_STYLES_FILE = os.path.join(WORKSPACE_UI_DIR, 'docs', 'styleshe
 SUPERVISORD_FOLDER = "/etc/supervisord"
 VAR_LOG_FOLDER = "/var/log/workspace/"
 WORKSPACE_HOME_PAGES = ["home", "admin", "my_apps"]
-WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 9, "Docs": 10}
+WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 7, "Cheatsheet": 8, "Docs": 10}
 # external os text editor for interactive inputs
 TEXT_EDITOR = "mcedit"
 

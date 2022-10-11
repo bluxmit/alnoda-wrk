@@ -16,8 +16,9 @@ def open_admin():
     from .apps_services import get_apps_services_widget
     from .env_vars_widget import get_env_vars_widget
     from .aliases_widget import get_aliases_widget
+    from .cheatsheet_widget import get_cheatsheet_widget
 
-    options = ["Home", "Features", "Description", "Preferences", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
+    options = ["Home", "Features", "Description", "Cheatsheet", "Preferences", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -67,6 +68,10 @@ def open_admin():
         AliasesWidget = get_aliases_widget()
         RightFrame.layout().addWidget(AliasesWidget)
 
+        # Cheatsheet widget
+        CheatsheetWidget = get_cheatsheet_widget()
+        RightFrame.layout().addWidget(CheatsheetWidget)
+
         @ttk.pyTTkSlot(str)
         def _listCallback(label):
             widget = None
@@ -77,6 +82,7 @@ def open_admin():
             elif label == "Apps & Services":    widget = AppsServicesWidget
             elif label == "Env variables":      widget = EnvVarsWidget
             elif label == "Aliases":            widget = AliasesWidget
+            elif label == "Cheatsheet":            widget = CheatsheetWidget
             elif label == "Preferences":    
                 widget = get_preferences_widget()
                 RightFrame.layout().addWidget(widget)
