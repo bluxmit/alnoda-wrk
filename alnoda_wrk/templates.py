@@ -76,6 +76,12 @@ lineage_template = """
 """
 
 cheatsheet_template = """
+<style>
+/* Add TOC to this page */
+.md-sidebar.md-sidebar--secondary {
+    display: block !important;
+}
+</style>
 {% for section_name, commands_dict in data.items() -%}
 ## {{section_name}}
 {% for cmd, description in commands_dict.items() -%}
