@@ -222,4 +222,25 @@
             }
         }
     },
+    'cheatsheet': 
+    {
+        'required': False,
+        'type': 'dict',
+        'keysrules': 
+        {
+            'type': 'string'
+        },
+        'valuesrules':
+        {
+            'type': 'dict',
+            'keysrules': 
+            {
+                'type': 'string'
+            },
+            'valuesrules':
+            {
+                'type': 'string'
+            }
+        }
+    }
 }

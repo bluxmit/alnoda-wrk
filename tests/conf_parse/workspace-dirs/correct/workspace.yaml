@@ -29,7 +29,6 @@ styles:
       background: "#1E1E1E"
       title: "#9CDCFE"
       text: "#9CDCFE"
-      subtitle: "#eab676"
   common_colors:
     header: "#FFFFFF"
     nav: "#eab676"

@@ -23,13 +23,17 @@ def mock_globals(monkeypatch, kdir="/tmp"):
         except: pass
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.WORKSPACE_META_FILE", f"{kdir}/.wrk/meta.json")
         except: pass
+        try: monkeypatch.setattr(f"alnoda_wrk.{m}.MKDOCS_ASSETS_DIR", f"{kdir}/.wrk/ui/docs/assets")
+        except: pass
+        try: monkeypatch.setattr(f"alnoda_wrk.{m}.mkdocs_assets_dir", f"{kdir}/.wrk/ui/docs/assets")
+        except: pass
+        try: monkeypatch.setattr(f"alnoda_wrk.{m}.WORKSPACE_UI_SCSS_STYLES_FILE", f"{kdir}/.wrk/ui/docs/stylesheets/extra.css")
+        except: pass
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.WORKSPACE_ABOUT_FILE", f"{kdir}/.wrk/ui/docs/about.md")
         except: pass  
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.mkdocs_yml_path", f"{kdir}/.wrk/ui/mkdocs.yml")
         except: pass
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.mkdocs_extra_css_path", f"{kdir}/.wrk/ui/docs/stylesheets/extra.css")
-        except: pass
-        try: monkeypatch.setattr(f"alnoda_wrk.{m}.mkdocs_assets_dir", f"{kdir}/.wrk/ui/docs/assets")
         except: pass
         try: monkeypatch.setattr(f"alnoda_wrk.{m}.ui_dict_file", f"{kdir}/.wrk/ui/conf/ui-apps.json")
         except: pass

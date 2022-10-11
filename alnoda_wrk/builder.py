@@ -8,6 +8,7 @@ from .conf_parser import read_conf_dir
 from .globals import *
 from .ui_builder import build_wrk_ui
 from .wrk_supervisor import init_supervisord, create_supervisord_file
+from .cheatsheet import update_cheatsheet_page_from_new_dict
 
 MKDOCS_REQUIREMENTS_DIR = os.path.join(WORKSPACE_DIR, 'requires')
 mkdocs_file = os.path.join(MKDOCS_REQUIREMENTS_DIR, 'mkdocs.txt')
@@ -104,14 +105,14 @@ def build_workspace(conf_dir_path):
         raise Exception("There was a problem initializing workspace UI")
     # Read new user configs_dir
     wrk_params, files = read_conf_dir(conf_dir_path)
-    # update meta.json and refresh About page 
+    # Update meta.json and refresh About page 
     update_meta(
         name = wrk_params['name'],
         version = wrk_params['version'],
         author = wrk_params['author'],
         description = wrk_params['description']
     )
-    # create UI
+    # Create UI
     build_wrk_ui(wrk_params, conf_dir_path)
     # Create supervisord files for applications to start up
     create_startup_applications(wrk_params)
@@ -125,7 +126,10 @@ def build_workspace(conf_dir_path):
         docs = wrk_params['doc_url'],
         tags = tags
         )
-    # refresh about page
+    # Refresh about page
     refresh_from_meta()
+    # Update cheatsheet page 
+    if 'cheatsheet' in wrk_params:
+        update_cheatsheet_page_from_new_dict(wrk_params['cheatsheet'])
     return
     

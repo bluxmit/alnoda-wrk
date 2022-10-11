@@ -74,3 +74,18 @@ lineage_template = """
 | {{l.ind}}       | [{{l.name}}]({{l.link}})        | {{l.version}}      |  {% if l.tags != "" %}{{ l.tags }}{% endif %}     |
 {% endfor %}
 """
+
+cheatsheet_template = """
+<style>
+/* Add TOC to this page */
+.md-sidebar.md-sidebar--secondary {
+    display: block !important;
+}
+</style>
+{% for section_name, commands_dict in data.items() -%}
+## {{section_name}}
+{% for cmd, description in commands_dict.items() -%}
+- `{{cmd}}` - {{description}}
+{% endfor %}
+{% endfor %}
+"""
