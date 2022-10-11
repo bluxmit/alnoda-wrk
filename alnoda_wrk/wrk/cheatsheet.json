@@ -1,4 +1,10 @@
 {   
+    "Git" {
+        "git config --global credential.helper cache": "save git user, email and password (after next enter)",
+        "git config --global user.name '[user name]'": "enter git user name",
+        "git config --global user.email '[email]'": "eter git password",
+        "git config --global user.password '[password]'": "eter git password (GitHub, GitLab, Bitbucket, etc)"
+    },
     "Install apps": {
         "sudo apt-get update": "update package lists (do this before apt-get install)",
         "sudo apt-get install [package]": "install new package with apt"
