@@ -232,14 +232,23 @@
         },
         'valuesrules':
         {
-            'type': 'dict',
-            'keysrules': 
+            'type': 'list',
+            'schema': 
             {
-                'type': 'string'
-            },
-            'valuesrules':
-            {
-                'type': 'string'
+                'type': 'dict',
+                'schema': 
+                {
+                    'cmd': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    },
+                    'description': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    }
+                }
             }
         }
     }

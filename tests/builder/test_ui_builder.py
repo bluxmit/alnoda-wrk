@@ -183,7 +183,8 @@ def test_wrk_build(monkeypatch):
         superv_rediscomm = f.read()
     assert ". env/bin/activate && redis-commander --port=8029" in superv_rediscomm, "Startup command for REDIS_COMMANDER was not added"
     # clear test results
-    shutil.rmtree("/tmp/.wrk"); shutil.rmtree("/tmp/supervisord"); shutil.rmtree("/tmp/log");
+    shutil.rmtree("/tmp/.wrk") 
+    shutil.rmtree("/tmp/supervisord"); shutil.rmtree("/tmp/log");
     return
 
 

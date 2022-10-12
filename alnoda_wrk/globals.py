@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import random, string
 
 HOME_DIR = Path.home()
 WORKSPACE_DIR = os.path.join(HOME_DIR, '.wrk') 
@@ -34,3 +35,9 @@ def safestring(s, length=15):
     # make sure string has max length 
     s = s[:length]
     return s
+
+def get_code(length=8):
+    # With combination of lower and upper case
+    result_str = ''.join(random.choice(string.ascii_letters) for i in range(length))
+    return(result_str.lower())
+

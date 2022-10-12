@@ -76,16 +76,20 @@ lineage_template = """
 """
 
 cheatsheet_template = """
+
+{% for section, commands in data.items() -%}
+## {{section}}
+{% for code, cmdict in commands.items() -%}
+- `{{cmdict.cmd}}` - {{cmdict.description}}
+{% endfor %}
+{% endfor %}
+
 <style>
 /* Add TOC to this page */
 .md-sidebar.md-sidebar--secondary {
     display: block !important;
 }
 </style>
-{% for section_name, commands_dict in data.items() -%}
-## {{section_name}}
-{% for cmd, description in commands_dict.items() -%}
-- `{{cmd}}` - {{description}}
-{% endfor %}
-{% endfor %}
 """
+
+

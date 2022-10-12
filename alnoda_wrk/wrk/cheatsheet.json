@@ -1,78 +1,260 @@
-{   
+{
     "Common": {
-        "find . -name [file name]": "find file location",
-        "curl [URL]": "send GET request to URL (get webpage dwnload file)",
-        "wget [file URL]": "download a single file from Iternet",
-        "tar -xzf [tar.gz file]": "unzip tar.gz archeive file",
-        "unzip [.zip file]": "unzip .zip archeive file"
+        "vzphysrw": {
+            "cmd": "p [file name]",
+            "description": "vew file with richt viewer (code, csv, json, ipynb...)"
+        },
+        "dofffltf": {
+            "cmd": "find . -name [file name]",
+            "description": "find file location"
+        },
+        "lxdjfled": {
+            "cmd": "curl [URL]",
+            "description": "send GET request to URL (get webpage dwnload file)"
+        },
+        "jhzisudx": {
+            "cmd": "wget [file URL]",
+            "description": "download a single file from Iternet"
+        },
+        "ckbjjweo": {
+            "cmd": "tar -xzf [tar.gz file]",
+            "description": "unzip tar.gz archeive file"
+        },
+        "ohkropah": {
+            "cmd": "unzip [.zip file]",
+            "description": "unzip .zip archeive file"
+        }
     },
     "Install apps": {
-        "sudo apt-get update": "update package lists (do this before apt-get install)",
-        "sudo apt-get install [package]": "install new package with apt",
-        "nix-env -iA [package]": "install nix package",
-        "pipx install [application]": "Install and run python applications in isolated environment"
+        "hfwkrfvq": {
+            "cmd": "sudo apt-get update",
+            "description": "update package lists (do this before apt-get install)"
+        },
+        "aflelmfm": {
+            "cmd": "sudo apt-get install [package]",
+            "description": "install new package with apt"
+        },
+        "kqmlsmjv": {
+            "cmd": "nix-env -iA nixpkgs.[package]",
+            "description": "install nix package"
+        },
+        "ndzreyvv": {
+            "cmd": "pipx install [application]",
+            "description": "Install and run python applications in isolated environment"
+        }
     },
     "Node": {
-        "nodeenv --node=[node version] env": "Install node.js evironment (in the current folder)",
-        ". env/bin/activate ": "Activate node.js evironment (in the current folder)",
-        "npm install -g [package name]": "istall node.js package [package name]"
+        "mggnawoz": {
+            "cmd": "nodeenv --node=[node version] env",
+            "description": "Install node.js evironment (in the current folder)"
+        },
+        "qxwquaxt": {
+            "cmd": ". env/bin/activate ",
+            "description": "Activate node.js evironment (in the current folder)"
+        },
+        "hqgnoqoy": {
+            "cmd": "npm install -g [package name]",
+            "description": "istall node.js package [package name]"
+        }
     },
     "Python": {
-        "python": "start python shell",
-        "pip install [package name]": "istall python package [package name]"
+        "fnugriun": {
+            "cmd": "python",
+            "description": "start python shell"
+        },
+        "kqrgdgwm": {
+            "cmd": "pip install [package name]",
+            "description": "istall python package [package name]"
+        }
     },
     "Git": {
-        "git config --global credential.helper cache": "save git user, email and password (after next enter)",
-        "git config --global user.name '[user name]'": "enter git user name",
-        "git config --global user.email '[email]'": "set an email address that will be associated with each history marker",
-        "git config --global user.password '[password]'": "eter git password (GitHub, GitLab, Bitbucket, etc)",
-        "git status": "show modified files, staged for your next commit",
-        "git add .": "add all modified files (stage) to the next commit",
-        "git commit -m '[descriptive message]'": "commit staged files",
-        "git push": "push local commits to the remote repository",
-        "git pull": "fetch and merge any commits from remote",
-        "git branch": "list git branches",
-        "git branch [branch-name]": "create new branch",
-        "git checkout [branch-name]": "switch to branch [branch-name]",
-        "git merge [branch-name]": "merge [branch-name] into current bruch",
-        "git branch --delete [branch-name]": "delete branch",
-        "lazygit": "open lazygit UI"
+        "qcjakpth": {
+            "cmd": "git config --global credential.helper cache",
+            "description": "save git user, email and password (after next enter)"
+        },
+        "oflxvvep": {
+            "cmd": "git config --global user.name '[user name]'",
+            "description": "enter git user name"
+        },
+        "vyerqyfn": {
+            "cmd": "git config --global user.email '[email]'",
+            "description": "set an email address that will be associated with each history marker"
+        },
+        "ilxexvmb": {
+            "cmd": "git config --global user.password '[password]'",
+            "description": "eter git password (GitHub, GitLab, Bitbucket, etc)"
+        },
+        "hnarknkv": {
+            "cmd": "git status",
+            "description": "show modified files, staged for your next commit"
+        },
+        "dakjuohf": {
+            "cmd": "git add .",
+            "description": "add all modified files (stage) to the next commit"
+        },
+        "wjtstrns": {
+            "cmd": "git commit -m '[descriptive message]'",
+            "description": "commit staged files"
+        },
+        "siwabwoy": {
+            "cmd": "git push",
+            "description": "push local commits to the remote repository"
+        },
+        "yoyfztwz": {
+            "cmd": "git branch",
+            "description": "list git branches"
+        },
+        "vzkjioci": {
+            "cmd": "git branch [branch-name]",
+            "description": "create new branch"
+        },
+        "tchueaye": {
+            "cmd": "git checkout [branch-name]",
+            "description": "switch to branch [branch-name]"
+        },
+        "wswyhnco": {
+            "cmd": "git merge [branch-name]",
+            "description": "merge [branch-name] into current bruch"
+        },
+        "gpncpvmm": {
+            "cmd": "git branch --delete [branch-name]",
+            "description": "delete branch"
+        },
+        "zwwtneif": {
+            "cmd": "lazygit",
+            "description": "open lazygit UI (alias - lg)"
+        }
     },
     "Text editors": {
-        "nano": "open nano editor (new file)",
-        "nano [file name]": "edit file [file name] with nano editor",
-        "vim": "open vim editor (new file)",
-        "vim [file name]": "edit file [file name] with vim editor",
-        "mcedit": "open mcedit editor (new file)", 
-        "mcedit [file name]": "edit file [file name] with mcedit editor",
-        "tilde": "open tilde editor (new file)",
-        "tilde [file name]": "edit file [file name] with tilde editor"
+        "swylcrie": {
+            "cmd": "nano",
+            "description": "open nano editor (new file)"
+        },
+        "tlebawdm": {
+            "cmd": "nano [file name]",
+            "description": "edit file [file name] with nano editor"
+        },
+        "bvlfegap": {
+            "cmd": "vim",
+            "description": "open vim editor (new file)"
+        },
+        "evohxxmn": {
+            "cmd": "vim [file name]",
+            "description": "edit file [file name] with vim editor"
+        },
+        "vgfldkig": {
+            "cmd": "mcedit",
+            "description": "open mcedit editor (new file)"
+        },
+        "rhhsddha": {
+            "cmd": "mcedit [file name]",
+            "description": "edit file [file name] with mcedit editor"
+        },
+        "towkxzky": {
+            "cmd": "tilde",
+            "description": "open tilde editor (new file)"
+        },
+        "hfqfekcl": {
+            "cmd": "tilde [file name]",
+            "description": "edit file [file name] with tilde editor"
+        }
     },
     "Manage apps and services": {
-        "[cmd to run program] &!": "program won't get killed upon exiting the terminal",
-        "ps axf": "list all running processes (in forest)",
-        "kill [PID]": "kill process with [PID]",
-        "pm2 ls": "lits processes started with pm2 process manager",
-        "pm2 start [application] --name [name]": "start application and daemonize with pm2 process manager",
-        "pm2 start [application] --name [name] -- [flags]": "start application with flags",
-        "pm2 stop [application]": "stop application daemonized by pm2 process manager",
-        "tmux ls": "list tmux sessions",
-        "tmux new -s [session name]": "start new tmux session",
-        "Ctrl + b d": "dettach from tmux session",
-        "tmux a -t [session name]": "attach to tmux session [session name]",
-        "tmux kill-session -t [session name]": "kill tmux session",
-        "tmux kill-session -a": "kill all mux sessions"
+        "rzenzimt": {
+            "cmd": "[cmd to run program] &!",
+            "description": "start program so that it won't get killed upon exiting the terminal"
+        },
+        "qamevqks": {
+            "cmd": "ps axf",
+            "description": "list all running processes (in forest)"
+        },
+        "agsmfuzh": {
+            "cmd": "kill [PID]",
+            "description": "kill process with [PID]"
+        },
+        "xdqeqjpu": {
+            "cmd": "pm2 ls",
+            "description": "lits processes started with pm2 process manager"
+        },
+        "mxjnjuii": {
+            "cmd": "pm2 start [application] --name [name]",
+            "description": "start application and daemonize with pm2 process manager"
+        },
+        "dugqmnbq": {
+            "cmd": "pm2 start [application] --name [name] -- [flags]",
+            "description": "start application with flags"
+        },
+        "lktpjikg": {
+            "cmd": "pm2 stop [application]",
+            "description": "stop application daemonized by pm2 process manager"
+        },
+        "jkgrmegv": {
+            "cmd": "pm2 monit",
+            "description": "open UI for the running processes"
+        },
+        "pdbtvvph": {
+            "cmd": "tmux ls",
+            "description": "list tmux sessions"
+        },
+        "uymtaqkr": {
+            "cmd": "tmux new -s [session name]",
+            "description": "start new tmux session"
+        },
+        "akfxubhv": {
+            "cmd": "Ctrl + b d",
+            "description": "dettach from tmux session"
+        },
+        "zmlewwmt": {
+            "cmd": "tmux a -t [session name]",
+            "description": "attach to tmux session [session name]"
+        },
+        "wcyunsel": {
+            "cmd": "tmux kill-session -t [session name]",
+            "description": "kill tmux session"
+        },
+        "bxkbmsba": {
+            "cmd": "tmux kill-session -a",
+            "description": "kill all mux sessions"
+        }
     },
     "Admin": {
-        "crontab -l": "list scheduled tasks",
-        "crontab -e": "edit cron task schedule",
-        "glances": "Open glances system processes and resources monitor",
-        "ncdu": "explore file/folder sizes",
-        "telnet [host] [port]": "connect to remote system over a TCP/IP network",
-        "dig [domain name]": "perform a DNS lookup for a domain name",
-        "nslookup [domain name]": "obtain server records for a domain name"
+        "wwwibstd": {
+            "cmd": "crontab -l",
+            "description": "list scheduled tasks"
+        },
+        "htzkfpoa": {
+            "cmd": "crontab -e",
+            "description": "edit cron task schedule"
+        },
+        "sehhelga": {
+            "cmd": "glances",
+            "description": "Open glances system processes and resources monitor"
+        },
+        "gpqgtwnq": {
+            "cmd": "ncdu",
+            "description": "explore file/folder sizes"
+        },
+        "nmcyjdfx": {
+            "cmd": "telnet [host] [port]",
+            "description": "connect to remote system over a TCP/IP network"
+        },
+        "qyxprjvf": {
+            "cmd": "dig [domain name]",
+            "description": "perform a DNS lookup for a domain name"
+        },
+        "dmmxahes": {
+            "cmd": "nslookup [domain name]",
+            "description": "obtain server records for a domain name"
+        }
     },
     "Shortcuts": {
-        "pm2 start python --name http-server --  -m http.server 8030": "launch static web server on port 8030 (My app o 8030)"
+        "hyfxrxqx": {
+            "cmd": "pm2 start python --name http-server --  -m http.server 8030",
+            "description": "launch static web server on port 8030 (My app o 8030)"
+        },
+        "solbshdg": {
+            "cmd": "cd ~p",
+            "description": "go to /home/project/"
+        }
     }
 }
