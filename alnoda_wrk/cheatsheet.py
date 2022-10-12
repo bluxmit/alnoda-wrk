@@ -80,6 +80,24 @@ def remove_cheatsheet_section(section):
     refresh_cheatsheet_page()
     return 
 
+def rename_cheatsheet_section(section, new_name):
+    """ ->>
+    Remove section (empty) from the cheatsheet_dict, 
+    update the json file and refresh the .md page
+
+    :param section: name of the new section
+    :type section: str
+    :param new_name: new name for the new section
+    :type new_name: str
+    """
+    cheatsheet_dict = read_cheatsheet_data()
+    new_cheatsheet_dict = OrderedDict((new_name if k == section else k, v) for k, v in cheatsheet_dict.items())
+    # Save updated dict
+    write_cheatsheet_data(new_cheatsheet_dict)
+    # Update cheatsheet page
+    refresh_cheatsheet_page()
+    return 
+
 def add_cheatsheet_command(section, cmd, description):
     """ ->>
     Add new record to the existing section of the cheatsheet_dict, 

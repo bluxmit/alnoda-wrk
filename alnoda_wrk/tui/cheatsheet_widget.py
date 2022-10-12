@@ -93,6 +93,8 @@ def get_cheatsheet_widget():
     def create_section_view_widgets(section):
         nonlocal state
         row = 4
+        chap_lab = ttk.TTkLabel(text='MANAGE ITEMS', color=SECTION_COLOR, pos=(l,row), size=(ls,1))
+        V.addWidget(chap_lab); state['widgets'].append(chap_lab); row += 2
         for code,d in state['cheatsheet_dict'][section].items():
             cmd = d['cmd']; description = d['description']
             cmd_lab = ttk.TTkLabel(text='command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
@@ -120,15 +122,14 @@ def get_cheatsheet_widget():
             update_btn.clicked.connect(get_upd_handler(section, code))
 
         # New cheatsheet entry widgets
-        row += 1
         new_cmd_lab = ttk.TTkLabel(text='new command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
         new_descr_lab = ttk.TTkLabel(text='new description:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
         V.addWidget(new_cmd_lab); V.addWidget(new_descr_lab); row += 1
         new_w_cmd = ttk.TTkLineEdit(text="", pos=(l,row), size=(ls,1))
         new_w_descr = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-        V.addWidget(new_w_cmd); V.addWidget(new_w_descr); row += 2
-        new_cancel_btn = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), visible=True)
-        new_add_btn = ttk.TTkButton(text='Add', pos=(r,row), size=(rs,1), visible=True)
+        V.addWidget(new_w_cmd); V.addWidget(new_w_descr); row += 1
+        new_cancel_btn = ttk.TTkButton(text='Cancel', pos=(l,row), size=(20,1), visible=True)
+        new_add_btn = ttk.TTkButton(text='Add', pos=(r,row), size=(20,1), visible=True)
         V.addWidget(new_cancel_btn); V.addWidget(new_add_btn); row += 1
         msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(l,row), size=(fs,1), visible=False)
         V.addWidget(msg_lab)
@@ -174,6 +175,9 @@ def get_cheatsheet_widget():
         new_cancel_btn.clicked.connect(_addCacelBtn)
 
         # Remove section button
+        row += 2
+        chap_lab_s = ttk.TTkLabel(text='MANAGE SECTION', color=SECTION_COLOR, pos=(l,row), size=(ls,1))
+        V.addWidget(chap_lab_s); state['widgets'].append(chap_lab_s); 
         row += 2
         section_rem_btn = ttk.TTkButton(text='Remove section', pos=(l,row), size=(ls,1), visible=True)
         V.addWidget(section_rem_btn); state['widgets'].append(section_rem_btn)
