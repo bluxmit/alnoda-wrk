@@ -68,7 +68,7 @@ def get_url(app, v, workspace_home_port):
         except: pass
         try:
             wrk_domain = os.environ["WRK_DOMAIN"]
-            url = f"https://{domain_prefix}-{v['port']}-{wrk_domain}"
+            url = f"https://{domain_prefix}-{v['port']}.{wrk_domain}"
             return add_path(url, v)
         
         #### Construct URL piece-by-piece
