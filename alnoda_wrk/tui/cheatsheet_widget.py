@@ -10,7 +10,7 @@ CREATE_NEW = "ADD NEW"
 
 def get_cheatsheet_widget():
     superstate = {'selected_section': "", 'mode': ""}
-    state = {'cheatsheet_dict': {}, 'cheatsheet_dict_new': {}, 'sections': [], 'widgets': [], 'new_cmd': "", 'new_descr': "", "updates": {}, "new_section_name": ""}
+    state = {'cheatsheet_dict': {}, 'cheatsheet_dict_new': {}, 'sections': [], 'widgets': [], 'new_cmd': "", 'new_descr': "", "updates": {}, "new_section_name": "", "updated_section_name": ""}
 
     def refresh_state():
         state['cheatsheet_dict'] = read_cheatsheet_data()
@@ -21,6 +21,7 @@ def get_cheatsheet_widget():
         state['new_cmd'] = ""
         state['new_descr'] = ""
         state['new_section_name'] = ""
+        state['updated_section_name'] = ""
     refresh_state()
 
     wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=False)
@@ -179,9 +180,41 @@ def get_cheatsheet_widget():
         chap_lab_s = ttk.TTkLabel(text='MANAGE SECTION', color=SECTION_COLOR, pos=(l,row), size=(ls,1))
         V.addWidget(chap_lab_s); state['widgets'].append(chap_lab_s); 
         row += 2
-        section_rem_btn = ttk.TTkButton(text='Remove section', pos=(l,row), size=(ls,1), visible=True)
+        msk_lab = ttk.TTkLabel(text='section name:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
+        V.addWidget(msk_lab); state['widgets'].append(msk_lab)
+        row += 1
+        sec_name_inp = ttk.TTkLineEdit(text=section, pos=(l,row), size=(ls,1))     
+        V.addWidget(sec_name_inp); state['widgets'].append(sec_name_inp)   
+        section_rem_btn = ttk.TTkButton(text='Remove section', pos=(r,row), size=(rs,1), visible=True)
+        section_rem_btn.setBorderColor(TTkColor.fg('#f20e0a'))
         V.addWidget(section_rem_btn); state['widgets'].append(section_rem_btn)
-        # Button handlers
+        row += 1
+        section_name_upd_btn = ttk.TTkButton(text='Update', pos=(l,row), size=(20,1), visible=True)
+        V.addWidget(section_name_upd_btn); state['widgets'].append(section_name_upd_btn)
+        row += 2
+        upd_err_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(l,row), size=(fs,1), visible=False)
+        V.addWidget(upd_err_lab); state['widgets'].append(upd_err_lab)
+        # Text input handlers
+        def _processNewSectionNameInput(n): 
+            nonlocal state; state['updated_section_name'] = n
+        # Bind text inputs
+        sec_name_inp.textEdited.connect(lambda n: _processNewSectionNameInput(n))
+        # Remove button handler
+        def _UpdateSectionNameBtn():
+            new_name = state['updated_section_name']
+            if len(new_name) == 0:
+                upd_err_lab._text = "Please enter section name"; upd_err_lab.visible=True; upd_err_lab.show(); upd_err_lab.update()
+                return
+            rename_cheatsheet_section(section, new_name)
+            # remove widgets 
+            remove_all_widgets()
+            # generate new state
+            refresh_state()
+            # reset main select
+            set_main_selector(new_name)
+        section_name_upd_btn.clicked.connect(_UpdateSectionNameBtn)
+
+        # Remove button handler
         def _RemoveSectionBtn():
             # remove entire section
             remove_cheatsheet_section(section)
