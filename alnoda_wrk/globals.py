@@ -41,3 +41,9 @@ def get_code(length=8):
     result_str = ''.join(random.choice(string.ascii_letters) for i in range(length))
     return(result_str.lower())
 
+def pref_url(url):
+    # make url ok 
+    correct = False
+    if not url.startswith("https://") or url.startswith("http://"):
+        url = "//"+url 
+    return url

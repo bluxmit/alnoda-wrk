@@ -32,7 +32,7 @@ def update_required_ui_params(wrk_params, conf_dir_path):
     version = wrk_params["version"]
     author = wrk_params["author"]
     description = wrk_params["description"]
-    doc_url = wrk_params["doc_url"]
+    doc_url = pref_url(wrk_params["doc_url"])
     # Fetch existing mkdocs.yml file, make updates and save back
     # name
     mkdocs_dict = get_mkdocs_yml()
