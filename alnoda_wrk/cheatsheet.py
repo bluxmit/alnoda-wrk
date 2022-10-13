@@ -148,10 +148,12 @@ def update_cheatsheet_command(section, code, cmd=None, description=None):
     Update record in the existing section of the cheatsheet_dict: code, description or both. 
     Update the json file and refresh the.md page 
 
-    :param new_dict: new dict with sectios and commands
-    :type cmd: OrderedDict
-    :param cheatsheet_dict: existing cheatsheet_dict
-    :type cheatsheet_dict: OrderedDict
+    :param section: name of the new section
+    :type section: str
+    :param cmd: new command
+    :type cmd: str
+    :param description: new description
+    :type description: str
     """
     if cmd is None and description is None: 
         return
@@ -201,12 +203,10 @@ def update_cheatsheet_page_from_new_dict(new_dict):
     will be on top. If the same section name is already present in the 
     cheatsheet_dict, the new and old sections will be merged.
 
-    :param section: name of the new section
-    :type section: str
     :param new_dict: new dict with sectios and commands
     :type cmd: dict (or OrderedDict)
     """
-    coded_dict = OrderedDict(new_dict)
+    coded_dict = OrderedDict()
     # transform new_dict to have codes 
     for section, lists in new_dict.items():
         coded_dict[section] = {}

@@ -84,5 +84,16 @@ cheatsheet:
     - cmd: echo "My name is Slim Shady"
       description: say my name
     
-
+links:
+  Developer help:
+    - url: "https://www.codecademy.com/"
+      name: "Code academy"
+      description: "Learn coding"
+    - url: "https://stackoverflow.com/"
+      name: "Stack overflow"
+      description: "Get help from the community"
+  Free resources:
+    - url: https://lottiefiles.com/
+      name: Lottie Files for developers
+      description: Lightweight, scalable animations for everyone
 

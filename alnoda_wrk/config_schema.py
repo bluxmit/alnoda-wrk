@@ -251,5 +251,41 @@
                 }
             }
         }
+    },
+    'links': 
+    {
+        'required': False,
+        'type': 'dict',
+        'keysrules': 
+        {
+            'type': 'string'
+        },
+        'valuesrules':
+        {
+            'type': 'list',
+            'schema': 
+            {
+                'type': 'dict',
+                'schema': 
+                {
+                    'url': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                        'regex': '((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*'
+                    },
+                    'name': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    },
+                    'description': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    }
+                }
+            }
+        }
     }
 }

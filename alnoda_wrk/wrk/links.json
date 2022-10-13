@@ -1,0 +1,36 @@
+{
+    "Developer tools": {
+        "jhwxqski": {
+            "url": "https://devhints.io/",
+            "name": "Rico's cheatsheets",
+            "description": "Ridiculous collection of cheatsheets for developers"
+        },
+        "ergqusfe": {
+            "url": "https://tiny-helpers.dev/",
+            "name": "Tiny helpers (for web developers)",
+            "description": "A collection of free single-purpose online tools for web developers"
+        }
+    },
+    "Free resources": {
+        "gjdherqk": {
+            "url": "https://unsplash.com/",
+            "name": "Unsplash.com",
+            "description": "Free high-resolution photos"
+        },
+        "nntlpygk": {
+            "url": "https://lottiefiles.com/",
+            "name": "LottieFiles",
+            "description": "Lightweight, scalable animations"
+        },
+        "hlflxqiz": {
+            "url": "https://emojipedia.org/",
+            "name": "Emojipedia",
+            "description": "Collection of emoji"
+        },
+        "witffjki": {
+            "url": "https://www.svgrepo.com/",
+            "name": "SVG repo",
+            "description": "Browse 300.000+ SVG Vectors and Icons"
+        }
+    }
+}

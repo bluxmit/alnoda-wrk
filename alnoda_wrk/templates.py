@@ -92,4 +92,20 @@ cheatsheet_template = """
 </style>
 """
 
+links_template = """
+
+{% for section, links in data.items() -%}
+## {{section}}
+{% for code, link in links.items() -%}
+- <b><a href="{{link.url}}" target="_blank">{{link.name}}</a></b> - {{link.description}}
+{% endfor %}
+{% endfor %}
+
+<style>
+/* Add TOC to this page */
+.md-sidebar.md-sidebar--secondary {
+    display: block !important;
+}
+</style>
+"""
 
