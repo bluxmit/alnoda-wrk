@@ -71,7 +71,7 @@ def get_links_widget():
     def get_rem_handler(section, code):
         def _removeBtn():
             nonlocal state
-            # remove command from links
+            # remove from links
             remove_links_url(section, code)
             # remove widgets 
             remove_all_widgets()
@@ -136,7 +136,7 @@ def get_links_widget():
             update_btn.clicked.connect(get_upd_handler(section, code))
 
         # New links entry widgets
-        new_url_lab = ttk.TTkLabel(text='new command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
+        new_url_lab = ttk.TTkLabel(text='new url:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
         V.addWidget(new_url_lab); state['widgets'].append(new_url_lab)
         new_name_lab = ttk.TTkLabel(text='new name:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
         V.addWidget(new_name_lab); state['widgets'].append(new_name_lab); row += 1
