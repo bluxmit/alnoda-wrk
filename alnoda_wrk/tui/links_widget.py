@@ -30,7 +30,7 @@ def get_links_widget():
     wrap_widg.layout().addWidget(scrollArea)
     l = 2; ls = 50
     r = 55; rs = 60 
-    fs = 115
+    fs = 113
 
     debt = ttk.TTkLabel(text='Chose section', color=LABEL_COLOR, pos=(l,1), size=(20,1), parent=scrollArea.viewport())
     main_selector = ttk.TTkComboBox(list=[CREATE_NEW]+state['sections'], pos=(25,1), size=(90,1))
@@ -90,7 +90,7 @@ def get_links_widget():
             except: pass
             try: description = state['updates'][code]['upd_descr']
             except: pass
-            update_links_url(section, code, url=url, name=name, description=description)
+            update_links_url(section, code, url=pref_url(url), name=name, description=description)
             # remove widgets 
             remove_all_widgets()
             # generate new state
@@ -178,7 +178,7 @@ def get_links_widget():
                 msg_lab._text = "Please enter description"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
                 return
             # add new to links
-            add_links_url(section, state['new_url'], state['new_name'], state['new_descr'])
+            add_links_url(section, pref_url(state['new_url']), state['new_name'], state['new_descr'])
             # remove widgets 
             remove_all_widgets()
             # generate new state
