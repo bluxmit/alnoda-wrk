@@ -24,6 +24,7 @@ about_page_template = """
 | version       | {{ version }} |
 | author       | {{ author }} |
 | created    | {{ created }} |
+| repository    | <b><a href="{{repository}}" target="_blank">Source code</a></b> |
 | tags       | {% if tags != "" %}{{ tags }}{% endif %} |
 
 ## Description  

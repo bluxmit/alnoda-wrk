@@ -22,6 +22,11 @@
         'required': True,
         'type': 'string',
     },
+    'repository': 
+    {
+        'required': True,
+        'type': 'string',
+    },
     'tags': 
     {
         'required': False,

@@ -4,6 +4,7 @@ name: Awesome workspace
 doc_url: link to the documentation page
 author: bluxmit
 version: 4.0
+repository: https://github.com/bluxmit/alnoda-workspaces
 description: |
   # Workspace for awesome work. 
   Portable containerized development environment for awesome challenges

@@ -77,7 +77,7 @@ def test_update_required_ui_params(monkeypatch):
     # MOCK
     conf_dir_path = get_full_conf_dir_path("correct")
     name = 'This test workspace'; doc_url = 'http://this-test-link'; author = 'test-author'; version = 5.11; description = 'Test workspace description'
-    wrk_params = {'name': name, 'doc_url': doc_url, 'author': author, 'version': version, 'description': description, 'logo': 'white-icon.svg', 'favicon': 'dark-icon.svg', 'styles': {'font': 'Roboto', 'colors': {'light': {'primary': '#252525', 'accent': '#19758F', 'background': '#F5F7F7'}, 'dark': {'primary': '#3C3C3C', 'accent': '#E77260', 'background': '#1E1E1E', 'title': '#9CDCFE', 'text': '#9CDCFE'}}, 'common_colors': {'header': '#FFFFFF', 'nav': '#eab676'}}} 
+    wrk_params = {'name': name, 'doc_url': doc_url, 'author': author, 'version': version, 'description': description, 'logo': 'white-icon.svg', 'favicon': 'dark-icon.svg', 'styles': {'font': 'Roboto', 'colors': {'light': {'primary': '#252525', 'accent': '#19758F', 'background': '#F5F7F7'}, 'dark': {'primary': '#3C3C3C', 'accent': '#E77260', 'background': '#1E1E1E', 'title': '#9CDCFE', 'text': '#9CDCFE'}}, 'common_colors': {'header': '#FFFFFF', 'nav': '#eab676'}}, 'repository': 'https://alnoda.org'} 
     mock_globals(monkeypatch)
     from alnoda_wrk import builder
     from alnoda_wrk.ui_builder import update_required_ui_params, get_mkdocs_yml
@@ -183,7 +183,7 @@ def test_wrk_build(monkeypatch):
         superv_rediscomm = f.read()
     assert ". env/bin/activate && redis-commander --port=8029" in superv_rediscomm, "Startup command for REDIS_COMMANDER was not added"
     # clear test results
-    shutil.rmtree("/tmp/.wrk") 
+    # shutil.rmtree("/tmp/.wrk") 
     shutil.rmtree("/tmp/supervisord"); shutil.rmtree("/tmp/log");
     return
 
