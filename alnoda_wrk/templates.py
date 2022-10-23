@@ -110,3 +110,19 @@ links_template = """
 </style>
 """
 
+frpc_http_template = """
+[common]
+server_addr = {{data.server_url}}
+server_port = 7000              
+token = {{data.token}}    
+tcp_mux = true
+tls_enable = true
+
+[web]
+type = http
+local_port = {{data.local_port}}                           
+subdomain = {{data.subdomain}}         
+use_encryption = true
+use_compression = true
+bandwidth_limit = {{data.bandwidth_limit}}
+"""

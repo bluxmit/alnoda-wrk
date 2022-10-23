@@ -16,6 +16,7 @@ WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 7, "Cheats
 TEXT_EDITOR = "mcedit"
 
 
+
 def safestring(s, length=15):
     """ str, int ->> str 
     Creates a 'safe' string - no spaces, special characters, all lowercase. 
