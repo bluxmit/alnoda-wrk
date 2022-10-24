@@ -113,7 +113,7 @@ links_template = """
 frpc_http_template = """
 [common]
 server_addr = {{data.server_url}}
-server_port = 7000              
+server_port = {{data.server_port}}              
 token = {{data.token}}    
 tcp_mux = true
 tls_enable = true
