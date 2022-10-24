@@ -101,7 +101,7 @@ def expose_port(port):
         res = subprocess.check_output(scm, shell=True, text=True)
         procs = res.split("\n")
         if len(procs) > max_num_frp_processes:
-            return False, f'You cannot share more than {max_num_frp_processes} application(s) at a time'
+            return False, f'You cannot share more than {max_num_frp_processes} application(s) at a time.'
     except: pass
     # write frpc.ini file 
     subdomain = write_frpc_ini(port, frp_bandwidth_limit)
