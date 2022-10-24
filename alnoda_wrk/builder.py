@@ -9,6 +9,7 @@ from .globals import *
 from .ui_builder import build_wrk_ui
 from .wrk_supervisor import init_supervisord, create_supervisord_file
 from .cheatsheet import update_cheatsheet_page_from_new_dict
+from .links import update_links_page_from_new_dict
 
 MKDOCS_REQUIREMENTS_DIR = os.path.join(WORKSPACE_DIR, 'requires')
 mkdocs_file = os.path.join(MKDOCS_REQUIREMENTS_DIR, 'mkdocs.txt')
@@ -131,5 +132,8 @@ def build_workspace(conf_dir_path):
     # Update cheatsheet page 
     if 'cheatsheet' in wrk_params:
         update_cheatsheet_page_from_new_dict(wrk_params['cheatsheet'])
+    # Update links page 
+    if 'links' in wrk_params:
+        update_links_page_from_new_dict(wrk_params['links'])
     return
     

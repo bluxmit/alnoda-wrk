@@ -1,9 +1,10 @@
 ---
 # mandatory
 name: My workspace
-doc_url: link to the documentation page
+doc_url: https://github.com/bluxmit/alnoda-docs
 author: bluxmit
 version: 4.0
+repository: https://github.com/bluxmit/alnoda-workspaces
 description: |
   # Workspace for my work. 
   Portable containerized development environment for awesome challenges
@@ -68,4 +69,32 @@ start:
     folder: "/opt/redis-commander"
     cmd: ". env/bin/activate && redis-commander --port=8029"
 
+
+cheatsheet:
+  Workspace: 
+    - cmd: alnoda-wrk init
+      description: Init Alnoda wrk UI
+    - cmd: helm list -n $test_test | sed 's/\s\s*/ /g' | cut -d' ' -f1 | xargs -I{} helm uninstall {} --namespace $foo-amespace || true
+      description: Complex command with various symbols "@#$$^#%$&$^*%*%(^(^*))""''
+  Python: 
+    - cmd: pip install pandas
+      description: Install pandas 
+    - cmd: python -m pip install pandas
+      description: Another way to install pandas 
+  Common: 
+    - cmd: echo "My name is Slim Shady"
+      description: say my name
+    
+links:
+  Developer help:
+    - url: "https://www.codecademy.com/"
+      name: "Code academy"
+      description: "Learn coding"
+    - url: "https://stackoverflow.com/"
+      name: "Stack overflow"
+      description: "Get help from the community"
+  Free resources:
+    - url: https://lottiefiles.com/
+      name: Lottie Files for developers
+      description: Lightweight, scalable animations for everyone
 

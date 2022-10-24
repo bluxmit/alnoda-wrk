@@ -80,6 +80,24 @@ def remove_cheatsheet_section(section):
     refresh_cheatsheet_page()
     return 
 
+def rename_cheatsheet_section(section, new_name):
+    """ ->>
+    Remove section (empty) from the cheatsheet_dict, 
+    update the json file and refresh the .md page
+
+    :param section: name of the new section
+    :type section: str
+    :param new_name: new name for the new section
+    :type new_name: str
+    """
+    cheatsheet_dict = read_cheatsheet_data()
+    new_cheatsheet_dict = OrderedDict((new_name if k == section else k, v) for k, v in cheatsheet_dict.items())
+    # Save updated dict
+    write_cheatsheet_data(new_cheatsheet_dict)
+    # Update cheatsheet page
+    refresh_cheatsheet_page()
+    return 
+
 def add_cheatsheet_command(section, cmd, description):
     """ ->>
     Add new record to the existing section of the cheatsheet_dict, 
@@ -98,33 +116,57 @@ def add_cheatsheet_command(section, cmd, description):
         section_dict = OrderedDict([(section, {})])
         section_dict.update(cheatsheet_dict)
         cheatsheet_dict = section_dict
-    # Try to add to the section, if exists
-    try: cheatsheet_dict[section][cmd] = description
-    except: pass
+    # Generate unique code and add to section
+    code = get_code()
+    cheatsheet_dict[section][code] = {"cmd": cmd, "description": description}
     # Save updated dict
     write_cheatsheet_data(cheatsheet_dict)
     # Update cheatsheet page
     refresh_cheatsheet_page()
     return 
 
-def remove_cheatsheet_command(section, cmd):
+def remove_cheatsheet_command(section, code):
     """ ->>
     Remove record from the existing section of the cheatsheet_dict, 
     update the json file and refresh the .md page
 
     :param section: name of the new section
     :type section: str
-    :param cmd: command
-    :type cmd: str
+    :param code: code identifier
+    :type code: str
     """
     cheatsheet_dict = read_cheatsheet_data()
-    try: del cheatsheet_dict[section][cmd]
-    except: pass
+    del cheatsheet_dict[section][code] 
     # Save updated dict
     write_cheatsheet_data(cheatsheet_dict)
     # Update cheatsheet page
     refresh_cheatsheet_page()
     return 
+
+def update_cheatsheet_command(section, code, cmd=None, description=None): 
+    """ ->>
+    Update record in the existing section of the cheatsheet_dict: code, description or both. 
+    Update the json file and refresh the.md page 
+
+    :param section: name of the new section
+    :type section: str
+    :param cmd: new command
+    :type cmd: str
+    :param description: new description
+    :type description: str
+    """
+    if cmd is None and description is None: 
+        return
+    cheatsheet_dict = read_cheatsheet_data()
+    if cmd is not None:
+        cheatsheet_dict[section][code]["cmd"] = cmd 
+    if description is not None:
+        cheatsheet_dict[section][code]["description"] = description
+    # Save updated dict
+    write_cheatsheet_data(cheatsheet_dict)
+    # Update cheatsheet page
+    refresh_cheatsheet_page()
+    return
 
 def merge_cheatsheet_dicts(new_dict, cheatsheet_dict):
     """ ->>
@@ -140,17 +182,18 @@ def merge_cheatsheet_dicts(new_dict, cheatsheet_dict):
     """
     # loop through the keys of the new dict, and update them from 
     #   the existing cheatsheet_dict
-    for section, cmds in new_odict.items():
-        # if this key is present in the existing cheatsheet_dict - 
-        #   add keys cheatsheet_dict to the new_odict
+    for section, cmdlist in new_dict.items():
+        # add commads from existing cheatsheet_dict, which are not 
+        # present in the same section of the new_dict
         if section in cheatsheet_dict.keys():
-            for cmd, descr in cheatsheet_dict[section].items():
-                if cmd not in new_odict[section]:
-                    new_odict[section][cmd] = descr
-    # Now add sections from the existing cheatsheet_dict, which 
-    #   are not present in the new_odict
+            new_dict_section_commands = [i['cmd'] for k,i in new_dict[section].items()]
+            for k,i in cheatsheet_dict[section].items():
+                if i['cmd'] not in new_dict_section_commands:
+                    new_dict[section][k] = i
+    # now add sections from the existing cheatsheet_dict, which 
+    #   are not present in the new_dict
     for section in cheatsheet_dict:
-        if section not in new_odict:
+        if section not in new_dict:
             new_dict[section] = cheatsheet_dict[section]
     return new_dict
                           
@@ -160,14 +203,19 @@ def update_cheatsheet_page_from_new_dict(new_dict):
     will be on top. If the same section name is already present in the 
     cheatsheet_dict, the new and old sections will be merged.
 
-    :param section: name of the new section
-    :type section: str
     :param new_dict: new dict with sectios and commands
     :type cmd: dict (or OrderedDict)
     """
-    new_odict = OrderedDict(new_dict)
+    coded_dict = OrderedDict()
+    # transform new_dict to have codes 
+    for section, lists in new_dict.items():
+        coded_dict[section] = {}
+        for i in lists:
+            code = get_code() 
+            coded_dict[section][code] = i
+    # read existing cheatsheet_dict and merge with the new
     cheatsheet_dict = read_cheatsheet_data()
-    merged_dict = merge_cheatsheet_dicts(new_odict, cheatsheet_dict)
+    merged_dict = merge_cheatsheet_dicts(coded_dict, cheatsheet_dict)
     # Save updated dict
     write_cheatsheet_data(merged_dict)
     # Update cheatsheet page

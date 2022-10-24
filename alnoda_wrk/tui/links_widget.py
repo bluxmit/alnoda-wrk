@@ -3,22 +3,23 @@ import copy
 import time
 from .gvars import *
 from ..globals import get_code
-from ..cheatsheet import *
+from ..links import *
 
 CREATE_NEW = "ADD NEW"
 
 
-def get_cheatsheet_widget():
+def get_links_widget():
     superstate = {'selected_section': "", 'mode': ""}
-    state = {'cheatsheet_dict': {}, 'cheatsheet_dict_new': {}, 'sections': [], 'widgets': [], 'new_cmd': "", 'new_descr': "", "updates": {}, "new_section_name": "", "updated_section_name": ""}
+    state = {'links_dict': {}, 'links_dict_new': {}, 'sections': [], 'widgets': [], 'new_url': "", 'new_name': "", 'new_descr': "", "updates": {}, "new_section_name": "", "updated_section_name": ""}
 
     def refresh_state():
-        state['cheatsheet_dict'] = read_cheatsheet_data()
-        state['cheatsheet_dict_new'] = copy.deepcopy(state['cheatsheet_dict']) 
-        state['sections'] = list(state['cheatsheet_dict_new'].keys())
+        state['links_dict'] = read_links_data()
+        state['links_dict_new'] = copy.deepcopy(state['links_dict']) 
+        state['sections'] = list(state['links_dict_new'].keys())
         state['widgets'] = []
         state['updates'] = {}
-        state['new_cmd'] = ""
+        state['new_url'] = ""
+        state['new_name'] = ""
         state['new_descr'] = ""
         state['new_section_name'] = ""
         state['updated_section_name'] = ""
@@ -29,7 +30,7 @@ def get_cheatsheet_widget():
     wrap_widg.layout().addWidget(scrollArea)
     l = 2; ls = 50
     r = 55; rs = 60 
-    fs = 100
+    fs = 113
 
     debt = ttk.TTkLabel(text='Chose section', color=LABEL_COLOR, pos=(l,1), size=(20,1), parent=scrollArea.viewport())
     main_selector = ttk.TTkComboBox(list=[CREATE_NEW]+state['sections'], pos=(25,1), size=(90,1))
@@ -48,14 +49,19 @@ def get_cheatsheet_widget():
         main_selector.setCurrentIndex(ind)
         main_selector.update()
 
-
     # Text input handlers
-    def get_update_cmd_hadler(code):
-        def _processUpdateCmdInput(n): 
+    def get_update_url_hadler(code):
+        def _processUpdateURLInput(n): 
             nonlocal state; nonlocal debt
             if code not in state['updates']: state['updates'][code] = {}
-            state['updates'][code]['upd_cmd'] = n
-        return _processUpdateCmdInput
+            state['updates'][code]['upd_url'] = n
+        return _processUpdateURLInput
+    def get_update_name_hadler(code):
+        def _processUpdateNameInput(n): 
+            nonlocal state; nonlocal debt
+            if code not in state['updates']: state['updates'][code] = {}
+            state['updates'][code]['upd_name'] = n
+        return _processUpdateNameInput
     def get_update_descr_hadler(code): 
         def _processUpdateDescrInput(n): 
             nonlocal state
@@ -65,8 +71,8 @@ def get_cheatsheet_widget():
     def get_rem_handler(section, code):
         def _removeBtn():
             nonlocal state
-            # remove command from cheatsheet
-            remove_cheatsheet_command(section, code)
+            # remove from links
+            remove_links_url(section, code)
             # remove widgets 
             remove_all_widgets()
             # generate new state
@@ -77,12 +83,14 @@ def get_cheatsheet_widget():
     def get_upd_handler(section, code):
         def _updateBtn():
             nonlocal state
-            cmd = None; description = None
-            try: cmd = state['updates'][code]['upd_cmd']
+            url = None; name = None; description = None
+            try: url = state['updates'][code]['upd_url']
+            except: pass
+            try: name = state['updates'][code]['upd_name']
             except: pass
             try: description = state['updates'][code]['upd_descr']
             except: pass
-            update_cheatsheet_command(section, code, cmd=cmd, description=description)
+            update_links_url(section, code, url=pref_url(url), name=name, description=description)
             # remove widgets 
             remove_all_widgets()
             # generate new state
@@ -96,76 +104,88 @@ def get_cheatsheet_widget():
         row = 4
         chap_lab = ttk.TTkLabel(text='MANAGE ITEMS', color=SECTION_COLOR, pos=(l,row), size=(ls,1))
         V.addWidget(chap_lab); state['widgets'].append(chap_lab); row += 2
-        for code,d in state['cheatsheet_dict'][section].items():
-            cmd = d['cmd']; description = d['description']
-            cmd_lab = ttk.TTkLabel(text='command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
-            descr_lab = ttk.TTkLabel(text='description:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
-            V.addWidget(cmd_lab); V.addWidget(descr_lab); row += 1
-            w_cmd = ttk.TTkLineEdit(text=cmd, pos=(l,row), size=(ls,1))
-            w_descr = ttk.TTkLineEdit(text=description, pos=(r,row), size=(rs,1))
-            V.addWidget(w_cmd); V.addWidget(w_descr); row += 1
+        for code,d in state['links_dict'][section].items():
+            url = d['url']; name = d['name']; description = d['description']
+            url_lab = ttk.TTkLabel(text='url:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
+            V.addWidget(url_lab); state['widgets'].append(url_lab)
+            name_lab = ttk.TTkLabel(text='name:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
+            V.addWidget(name_lab); state['widgets'].append(name_lab); row += 1
+            w_url = ttk.TTkLineEdit(text=url, pos=(l,row), size=(ls,1))
+            V.addWidget(w_url); state['widgets'].append(w_url)
+            w_name = ttk.TTkLineEdit(text=name, pos=(r,row), size=(rs,1))
+            V.addWidget(w_name); state['widgets'].append(w_name); row += 1
+            descr_lab = ttk.TTkLabel(text='description:', color=LABEL_COLOR, pos=(l,row), size=(fs,1))
+            V.addWidget(descr_lab); state['widgets'].append(descr_lab); row += 1
+            w_descr = ttk.TTkLineEdit(text=description, pos=(l,row), size=(fs,1))
+            V.addWidget(w_descr); state['widgets'].append(w_descr); row += 1
             remove_btn = ttk.TTkButton(text='Remove', pos=(l,row), size=(20,1), visible=True)
             remove_btn.setBorderColor(TTkColor.fg('#f20e0a'))
             update_btn = ttk.TTkButton(text='Update', pos=(r,row), size=(20,1), visible=True)
-            V.addWidget(remove_btn); V.addWidget(update_btn); row += 2
-            state['widgets'].append(cmd_lab); state['widgets'].append(descr_lab) 
-            state['widgets'].append(w_cmd); state['widgets'].append(w_descr) 
-            state['widgets'].append(remove_btn); state['widgets'].append(update_btn)
+            V.addWidget(remove_btn); state['widgets'].append(remove_btn)
+            V.addWidget(update_btn); state['widgets'].append(update_btn); row += 2
 
             # Bind text inputs
-            w_cmd_hand = get_update_cmd_hadler(code)
+            w_url_hand = get_update_url_hadler(code)
+            w_name_hand = get_update_name_hadler(code)
             w_descr_hand = get_update_descr_hadler(code)
-            w_cmd.textEdited.connect(w_cmd_hand)
+            w_url.textEdited.connect(w_url_hand)
+            w_name.textEdited.connect(w_name_hand)
             w_descr.textEdited.connect(w_descr_hand)
-
             # Button handlers
             remove_btn.clicked.connect(get_rem_handler(section, code))
             update_btn.clicked.connect(get_upd_handler(section, code))
 
-        # New cheatsheet entry widgets
-        new_cmd_lab = ttk.TTkLabel(text='new command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
-        new_descr_lab = ttk.TTkLabel(text='new description:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
-        V.addWidget(new_cmd_lab); V.addWidget(new_descr_lab); row += 1
-        new_w_cmd = ttk.TTkLineEdit(text="", pos=(l,row), size=(ls,1))
-        new_w_descr = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-        V.addWidget(new_w_cmd); V.addWidget(new_w_descr); row += 1
+        # New links entry widgets
+        new_url_lab = ttk.TTkLabel(text='new url:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
+        V.addWidget(new_url_lab); state['widgets'].append(new_url_lab)
+        new_name_lab = ttk.TTkLabel(text='new name:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
+        V.addWidget(new_name_lab); state['widgets'].append(new_name_lab); row += 1
+        new_w_url = ttk.TTkLineEdit(text="", pos=(l,row), size=(ls,1))
+        V.addWidget(new_w_url); state['widgets'].append(new_w_url)
+        new_w_name = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
+        V.addWidget(new_w_name); state['widgets'].append(new_w_name); row += 1
+        new_descr_lab = ttk.TTkLabel(text='new description:', color=LABEL_COLOR, pos=(l,row), size=(fs,1))
+        V.addWidget(new_descr_lab); state['widgets'].append(new_descr_lab); row += 1
+        new_w_description = ttk.TTkLineEdit(text="", pos=(l,row), size=(fs,1))
+        V.addWidget(new_w_description); state['widgets'].append(new_w_description); row += 1
         new_cancel_btn = ttk.TTkButton(text='Cancel', pos=(l,row), size=(20,1), visible=True)
+        V.addWidget(new_cancel_btn); state['widgets'].append(new_cancel_btn)
         new_add_btn = ttk.TTkButton(text='Add', pos=(r,row), size=(20,1), visible=True)
-        V.addWidget(new_cancel_btn); V.addWidget(new_add_btn); row += 1
+        V.addWidget(new_add_btn); state['widgets'].append(new_add_btn); row += 1
         msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(l,row), size=(fs,1), visible=False)
-        V.addWidget(msg_lab)
-        state['widgets'].append(new_cmd_lab); state['widgets'].append(new_descr_lab)
-        state['widgets'].append(new_w_cmd); state['widgets'].append(new_w_descr)
-        state['widgets'].append(new_cancel_btn); state['widgets'].append(new_add_btn)
-        state['widgets'].append(msg_lab)
-
+        V.addWidget(msg_lab); state['widgets'].append(msg_lab)
         # Text input handlers
-        def _processCmdInput(n): 
-            nonlocal state; state['new_cmd'] = n
+        def _processUrlInput(n): 
+            nonlocal state; state['new_url'] = n
+        def _processNameInput(n): 
+            nonlocal state; state['new_name'] = n
         def _processDescrInput(n): 
             nonlocal state; state['new_descr'] = n
-        # Bind text inputs
-        new_w_cmd.textEdited.connect(lambda n: _processCmdInput(n))
-        new_w_descr.textEdited.connect(lambda n: _processDescrInput(n))
-
+        # Bind buttons
+        new_w_url.textEdited.connect(lambda n: _processUrlInput(n))
+        new_w_name.textEdited.connect(lambda n: _processNameInput(n))
+        new_w_description.textEdited.connect(lambda n: _processDescrInput(n))
         # Button handlers
-        def _addCmdDescrBtn():
+        def _addNewEntryBtn():
             nonlocal state
-            if state['new_cmd'] == "":
-                msg_lab._text = "Please enter command"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
+            if state['new_url'] == "":
+                msg_lab._text = "Please enter URL"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
+                return
+            if state['new_name'] == "":
+                msg_lab._text = "Please enter link name"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
                 return
             if state['new_descr'] == "":
                 msg_lab._text = "Please enter description"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
                 return
-            # remove command from cheatsheet
-            add_cheatsheet_command(section, state['new_cmd'], state['new_descr'])
+            # add new to links
+            add_links_url(section, pref_url(state['new_url']), state['new_name'], state['new_descr'])
             # remove widgets 
             remove_all_widgets()
             # generate new state
             refresh_state()
             # generate section view widgets again
             create_section_view_widgets(section)
-        new_add_btn.clicked.connect(_addCmdDescrBtn)
+        new_add_btn.clicked.connect(_addNewEntryBtn)
         def _addCacelBtn():
             # remove widgets 
             remove_all_widgets()
@@ -205,7 +225,7 @@ def get_cheatsheet_widget():
             if len(new_name) == 0:
                 upd_err_lab._text = "Please enter section name"; upd_err_lab.visible=True; upd_err_lab.show(); upd_err_lab.update()
                 return
-            rename_cheatsheet_section(section, new_name)
+            rename_links_section(section, new_name)
             # remove widgets 
             remove_all_widgets()
             # generate new state
@@ -217,7 +237,7 @@ def get_cheatsheet_widget():
         # Remove button handler
         def _RemoveSectionBtn():
             # remove entire section
-            remove_cheatsheet_section(section)
+            remove_links_section(section)
             # remove widgets 
             remove_all_widgets()
             # generate new state
@@ -257,16 +277,13 @@ def get_cheatsheet_widget():
             if section == "":
                 err_lab._text = "Please enter section name"; err_lab.visible=True; err_lab.show(); err_lab.update()
                 return
-            add_cheatsheet_section(section)
+            add_links_section(section)
             # remove widgets 
             remove_all_widgets()
             # generate new state
             refresh_state()
             # update main selector 
             set_main_selector(section)
-            # main_selector.setCurrentIndex(state['sections'].index(section))
-            # create section widgets
-            # create_section_view_widgets(section)
         new_section_btn.clicked.connect(_createSectionBtn)
         
         

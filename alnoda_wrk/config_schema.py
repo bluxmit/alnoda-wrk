@@ -22,6 +22,11 @@
         'required': True,
         'type': 'string',
     },
+    'repository': 
+    {
+        'required': True,
+        'type': 'string',
+    },
     'tags': 
     {
         'required': False,
@@ -232,14 +237,59 @@
         },
         'valuesrules':
         {
-            'type': 'dict',
-            'keysrules': 
+            'type': 'list',
+            'schema': 
             {
-                'type': 'string'
-            },
-            'valuesrules':
+                'type': 'dict',
+                'schema': 
+                {
+                    'cmd': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    },
+                    'description': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    }
+                }
+            }
+        }
+    },
+    'links': 
+    {
+        'required': False,
+        'type': 'dict',
+        'keysrules': 
+        {
+            'type': 'string'
+        },
+        'valuesrules':
+        {
+            'type': 'list',
+            'schema': 
             {
-                'type': 'string'
+                'type': 'dict',
+                'schema': 
+                {
+                    'url': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                        'regex': '((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*'
+                    },
+                    'name': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    },
+                    'description': 
+                    {
+                        'required': True,
+                        'type': 'string',
+                    }
+                }
             }
         }
     }

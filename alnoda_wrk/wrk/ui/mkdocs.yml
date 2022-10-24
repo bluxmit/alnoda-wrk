@@ -6,7 +6,8 @@ nav:
   - Home: README.md
   - My apps: pages/my_apps.md
   - About: about.md
-  - Cheatsheet: cheatsheet.md
+  - My cheatsheet: cheatsheet.md
+  - My links: links.md
   - Docs: https://docs.alnoda.org/
 
 # ===========================================================
@@ -15,7 +16,7 @@ nav:
 
 site_name: My Workspace
 repo_url: https://github.com/bluxmit/alnoda-workspaces
-site_url: https://docs.alnoda.org
+site_url: https://alnoda.com
 edit_uri: ""
 
 # ===========================================================

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import random, string
 
 HOME_DIR = Path.home()
 WORKSPACE_DIR = os.path.join(HOME_DIR, '.wrk') 
@@ -13,6 +14,7 @@ WORKSPACE_HOME_PAGES = ["home", "admin", "my_apps"]
 WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 7, "Cheatsheet": 8, "Docs": 10}
 # external os text editor for interactive inputs
 TEXT_EDITOR = "mcedit"
+
 
 
 def safestring(s, length=15):
@@ -34,3 +36,15 @@ def safestring(s, length=15):
     # make sure string has max length 
     s = s[:length]
     return s
+
+def get_code(length=8):
+    # With combination of lower and upper case
+    result_str = ''.join(random.choice(string.ascii_letters) for i in range(length))
+    return(result_str.lower())
+
+def pref_url(url):
+    # make url ok 
+    correct = False
+    if not url.startswith("https://") or url.startswith("http://"):
+        url = "//"+url 
+    return url

@@ -24,6 +24,7 @@ about_page_template = """
 | version       | {{ version }} |
 | author       | {{ author }} |
 | created    | {{ created }} |
+| repository    | <b><a href="{{repository}}" target="_blank">Source code</a></b> |
 | tags       | {% if tags != "" %}{{ tags }}{% endif %} |
 
 ## Description  
@@ -76,16 +77,52 @@ lineage_template = """
 """
 
 cheatsheet_template = """
+
+{% for section, commands in data.items() -%}
+## {{section}}
+{% for code, cmdict in commands.items() -%}
+- `{{cmdict.cmd}}` - {{cmdict.description}}
+{% endfor %}
+{% endfor %}
+
 <style>
 /* Add TOC to this page */
 .md-sidebar.md-sidebar--secondary {
     display: block !important;
 }
 </style>
-{% for section_name, commands_dict in data.items() -%}
-## {{section_name}}
-{% for cmd, description in commands_dict.items() -%}
-- `{{cmd}}` - {{description}}
+"""
+
+links_template = """
+
+{% for section, links in data.items() -%}
+## {{section}}
+{% for code, link in links.items() -%}
+- <b><a href="{{link.url}}" target="_blank">{{link.name}}</a></b> - {{link.description}}
 {% endfor %}
 {% endfor %}
+
+<style>
+/* Add TOC to this page */
+.md-sidebar.md-sidebar--secondary {
+    display: block !important;
+}
+</style>
+"""
+
+frpc_http_template = """
+[common]
+server_addr = {{data.server_url}}
+server_port = {{data.server_port}}              
+token = {{data.token}}    
+tcp_mux = true
+tls_enable = true
+
+[web]
+type = http
+local_port = {{data.local_port}}                           
+subdomain = {{data.subdomain}}         
+use_encryption = true
+use_compression = true
+bandwidth_limit = {{data.bandwidth_limit}}
 """

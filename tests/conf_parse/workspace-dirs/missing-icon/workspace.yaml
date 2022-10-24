@@ -2,6 +2,7 @@
 # mandatory
 name: My workspace
 doc_url: link to the documentation page
+repository: https://github.com/bluxmit/alnoda-workspaces
 about: |
   # Workspace for my work. 
   Portable containerized development environment for awesome challenges

@@ -128,7 +128,7 @@ def add_wrk_to_lineage(name, version, docs, tags):
     return
 
 
-def update_meta(name=None, version=None, author=None, description=None, docs=None, tags=None, update_created=True):
+def update_meta(name=None, version=None, author=None, description=None, docs=None, tags=None, repository=None, update_created=True):
     """ str, str, str, str, bool ->> 
     Updates meta.json. When called without any args, it will 
     update 'created' field only. 
@@ -143,6 +143,8 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
     :type description: str
     :param docs: link to the workspace documentation
     :type docs: str
+    :param repository: link to the workspace source code
+    :type repository: str
     :param update_created: should 'created' be updated in the meta.json? (Default is True)
     :type update_created: bool
     """
@@ -157,6 +159,8 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
         meta_dict['description'] = description
     if docs is not None:
         meta_dict['docs'] = docs
+    if repository is not None:
+        meta_dict['repository'] = repository
     if tags is not None:    meta_dict['tags'] = tags.lower()
     else:   meta_dict['tags'] = ""
     if update_created:
@@ -200,7 +204,7 @@ def refresh_from_meta():
     mkdocs_dict['site_name'] = meta_dict['name']
     # Refresh workspace docs link on the main page too
     doc_url = meta_dict['docs']
-    if 'http' not in doc_url: doc_url = "https://"+doc_url
+    if 'http' not in doc_url or 'https' not in doc_url: doc_url = "https://"+doc_url
     for e in mkdocs_dict['nav']:
         if 'Docs' in e: e['Docs'] = doc_url
     # write updated mkdocs dict

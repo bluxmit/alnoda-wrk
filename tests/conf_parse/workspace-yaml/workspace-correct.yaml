@@ -4,6 +4,7 @@ name: My workspace
 doc_url: link to the documentation page
 author: bluxmit
 version: 4.0
+repository: https://github.com/bluxmit/alnoda-workspaces
 description: |
   # Workspace for my work. 
   Portable containerized development environment for awesome challenges
