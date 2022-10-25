@@ -82,14 +82,21 @@ def get_links_widget():
         return _removeBtn
     def get_upd_handler(section, code):
         def _updateBtn():
-            nonlocal state
+            nonlocal state; nonlocal superstate
+            selected_section = superstate['selected_section']
             url = None; name = None; description = None
-            try: url = state['updates'][code]['upd_url']
-            except: pass
-            try: name = state['updates'][code]['upd_name']
-            except: pass
-            try: description = state['updates'][code]['upd_descr']
-            except: pass
+            try: 
+                url = state['updates'][code]['upd_url']
+            except: 
+                url = state['links_dict'][selected_section][code]['url']
+            try: 
+                name = state['updates'][code]['upd_name']
+            except: 
+                name = state['links_dict'][selected_section][code]['name']
+            try: 
+                description = state['updates'][code]['upd_descr']
+            except: 
+                name = state['links_dict'][selected_section][code]['description']
             update_links_url(section, code, url=pref_url(url), name=name, description=description)
             # remove widgets 
             remove_all_widgets()

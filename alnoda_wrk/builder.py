@@ -132,8 +132,12 @@ def build_workspace(conf_dir_path):
     # Update cheatsheet page 
     if 'cheatsheet' in wrk_params:
         update_cheatsheet_page_from_new_dict(wrk_params['cheatsheet'])
+    else:
+        update_cheatsheet_page_from_new_dict({})
     # Update links page 
     if 'links' in wrk_params:
         update_links_page_from_new_dict(wrk_params['links'])
+    else:
+        update_links_page_from_new_dict({})
     return
     
