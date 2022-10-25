@@ -4,6 +4,7 @@ import threading
 import time
 import subprocess
 import random
+import socket
 
 from .templates import frpc_http_template
 from .globals import *
@@ -46,17 +47,19 @@ def choose_frp_server():
     port = FRP_SERVERS[suffix]['port']
     return port, suffix
 
-def write_frpc_ini(port, frp_bandwidth_limit):
+def write_frpc_ini(port, server_port, suffix, frp_bandwidth_limit):
     """ Generates and writes frpc.ini file to expose application running 
     on some port. It uses templates and creates random subdomain.
 
-    :param port: workspace application port
+    :param port: workspace application internal port to expose over the Internet
     :type port: int
+    :param server_port: frp server port to use
+    :type port: int
+    :param suffix: frp server suffix to use
+    :type port: str
     :return: URL over which anyone can access your service
     :rtype: str
     """
-    # get server port and suffix
-    server_port, suffix = choose_frp_server()
     # now create frpc file
     frp_data = {}
     frp_data["local_port"] = str(port)
@@ -75,6 +78,25 @@ def write_frpc_ini(port, frp_bandwidth_limit):
         f.write(frpc_ini)
     return subdomain
 
+
+def can_connect_frp_server(server_port):
+    """ Check if respective FRP server port is open and accessible
+
+    :param server_port: frp server port
+    :type server_port: int
+    :return: whether frp server port is pen and accessible
+    :rtype: bool
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(7)
+    result = sock.connect_ex((FRP_SERVER, server_port))
+    can_connect = False
+    if result == 0: 
+        can_connect = True
+    sock.close()
+    return can_connect
+
+
 def expose_port(port):
     """ Exposes application WEB UI running on a specific port
 
@@ -85,6 +107,11 @@ def expose_port(port):
     :return: error message or extra data
     :rtype: str/dict
     """
+    # get server port and suffix
+    server_port, suffix = choose_frp_server()
+    # check connectivity 
+    if not can_connect_frp_server(server_port):
+        return False, f'Cannot connect to the server. Is it blocked by your firewall?'
     # get defaul values for session 
     session_duration_min = SESSION_DURATION_MIN
     max_num_frp_processes = MAX_FRP_PROCESSES
@@ -104,7 +131,7 @@ def expose_port(port):
             return False, f'You cannot share more than {max_num_frp_processes} application(s) at a time.'
     except: pass
     # write frpc.ini file 
-    subdomain = write_frpc_ini(port, frp_bandwidth_limit)
+    subdomain = write_frpc_ini(port, server_port, suffix, frp_bandwidth_limit)
     # create thread that kills frpc thread after session expires
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     time.sleep(2)
