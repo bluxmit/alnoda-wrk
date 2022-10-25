@@ -18,12 +18,6 @@
             "name": "File Browser",
             "description": "Browse, upload and download files and folders to and from the workspace",
             "image": "assets/home/Filebrowser.png"
-        }, 
-        "UNGIT": {
-            "port": 8024,
-            "title": "Ungit",
-            "description": "Manage Git repositories and work flow using beautiful UI",
-            "image": "assets/home/Ungit.jpg"
         }
     },
     "my_apps": {
