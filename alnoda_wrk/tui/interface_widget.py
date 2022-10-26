@@ -41,25 +41,25 @@ def get_tab_widgets(tab, ui_conf):
     app_select = ttk.TTkComboBox(list=apps_list, pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(app_select)
 
-    row+=2; ttk.TTkLabel(text='Title', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    inp_title = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(inp_title)
+    row+=2; inp_title_lab = ttk.TTkLabel(text='Title', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    inp_title = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(inp_title_lab); scrollArea.viewport().addWidget(inp_title)
 
-    row+=2; ttk.TTkLabel(text='Description', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    inp_descr = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(inp_descr)
+    row+=2; inp_descr_lab = ttk.TTkLabel(text='Description', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    inp_descr = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(inp_descr_lab); scrollArea.viewport().addWidget(inp_descr)
 
-    row+=2; ttk.TTkLabel(text='Port (range 8021-8040)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    inp_port = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(inp_port)
+    row+=2; inp_port_lab = ttk.TTkLabel(text='Port (range 8021-8040)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    inp_port = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(inp_port_lab); scrollArea.viewport().addWidget(inp_port)
 
-    row+=2; ttk.TTkLabel(text='Image', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    inp_img = ttk.TTkButton(text="", pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
-    scrollArea.viewport().addWidget(inp_descr)
+    row+=2; inp_img_lab = ttk.TTkLabel(text='Image', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    inp_img = ttk.TTkButton(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(inp_img_lab); scrollArea.viewport().addWidget(inp_img)
 
-    row+=2; ttk.TTkLabel(text='Path (optional)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    inp_path = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(inp_path)
+    row+=2; inp_path_lab = ttk.TTkLabel(text='Path (optional)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    inp_path = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(inp_path_lab); scrollArea.viewport().addWidget(inp_path)
 
     row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
@@ -75,6 +75,18 @@ def get_tab_widgets(tab, ui_conf):
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
         choice = apps_list[i]
         extra['choice'] = choice
+        
+        inp_title_lab.visible=True; inp_title_lab.show(); inp_title_lab.update()
+        inp_title.visible=True; inp_title.show(); inp_title.update()
+        inp_descr_lab.visible=True; inp_descr_lab.show(); inp_descr_lab.update()
+        inp_descr.visible=True; inp_descr.show(); inp_descr.update()
+        inp_port_lab.visible=True; inp_port_lab.show(); inp_port_lab.update()
+        inp_port.visible=True; inp_port.show(); inp_port.update()
+        inp_img_lab.visible=True; inp_img_lab.show(); inp_img_lab.update()
+        inp_img.visible=True; inp_img.show(); inp_img.update()
+        inp_path_lab.visible=True; inp_path_lab.show(); inp_path_lab.update()
+        inp_path.visible=True; inp_path.show(); inp_path.update()
+
         if choice != CREATE_NEW:
             appd = new_ui_conf[tab][choice]
             if "path" not in appd: appd['path'] = ""

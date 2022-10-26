@@ -275,8 +275,11 @@ def get_cheatsheet_widget():
         remove_all_widgets()
         choices = [CREATE_NEW]+state['sections']
         choice = choices[i]
-        selected_section = state['sections'][i-1]
-        superstate['selected_section'] = selected_section
+        try:
+            selected_section = state['sections'][i-1]
+            superstate['selected_section'] = selected_section
+        except:
+            pass
         if choice != CREATE_NEW:
             superstate['mode'] = "section-view"
             refresh_state(); create_section_view_widgets(choice)

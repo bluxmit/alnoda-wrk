@@ -29,13 +29,13 @@ def get_aliases_widget():
     alias_select = ttk.TTkComboBox(list=state['alias_list'], pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(alias_select)
 
-    row+=2; ttk.TTkLabel(text='Short name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(name_inp)
+    row+=2; name_inp_lab = ttk.TTkLabel(text='Short name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(name_inp_lab); scrollArea.viewport().addWidget(name_inp)
 
-    row+=2; ttk.TTkLabel(text='Command', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    cmd_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(cmd_inp)
+    row+=2; cmd_inp_lab = ttk.TTkLabel(text='Command', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    cmd_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1),  visible=False)
+    scrollArea.viewport().addWidget(cmd_inp_lab); scrollArea.viewport().addWidget(cmd_inp)
     
     row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
@@ -51,6 +51,10 @@ def get_aliases_widget():
         refresh_state()
         choice = state['alias_list'][i]
         state['choice'] = choice
+        name_inp_lab.visible=True; name_inp_lab.show(); name_inp_lab.update()
+        name_inp.visible=True; name_inp.show(); name_inp.update()
+        cmd_inp_lab.visible=True; cmd_inp_lab.show(); cmd_inp_lab.update()
+        cmd_inp.visible=True; cmd_inp.show(); cmd_inp.update()
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
         if choice != CREATE_NEW:
             name_inp._text = choice; name_inp.update() 
@@ -96,7 +100,7 @@ def get_aliases_widget():
         cmd_inp._text = ""; cmd_inp.update()
         btn_cancel.hide()
         btn_save.hide()
-        msg_lab._color = WAIT_COLOR; msg_lab._text = "Changes will apply only in new terminal windows"; msg_lab.update()
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Please restart terminal to apply changes"; msg_lab.update()
     # Bind remove button
     remove_btn.clicked.connect(_removeBtn)
 
@@ -111,7 +115,7 @@ def get_aliases_widget():
             msg_lab._color = ERROR_COLOR; msg_lab._text = "Please enter command"; msg_lab.update()
             return
         if not name.isidentifier():
-            msg_lab._color = ERROR_COLOR; msg_lab._text = "Alias short name is not appropriate"; msg_lab.update()
+            msg_lab._color = ERROR_COLOR; msg_lab._text = "Alias name is not appropriate (one word, no special chars)"; msg_lab.update()
             return
         # Start app/service
         add_user_alias(name, cmd)
@@ -123,7 +127,7 @@ def get_aliases_widget():
         alias_select.setCurrentIndex(state['alias_list'].index(name))
         alias_select.update()
         # Show success color message
-        msg_lab._color = WAIT_COLOR; msg_lab._text = "Alias added. Available only in new terminal windows"; msg_lab.update()
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Alias added. Please restart terminal to use"; msg_lab.update()
         return
     # Bind save button
     btn_save.clicked.connect(_saveBtn)

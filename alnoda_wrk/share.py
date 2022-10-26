@@ -87,13 +87,16 @@ def can_connect_frp_server(server_port):
     :return: whether frp server port is pen and accessible
     :rtype: bool
     """
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(7)
-    result = sock.connect_ex((FRP_SERVER, server_port))
     can_connect = False
-    if result == 0: 
-        can_connect = True
-    sock.close()
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(7)
+        result = sock.connect_ex((FRP_SERVER, server_port))
+        if result == 0: 
+            can_connect = True
+        sock.close()
+    except:
+        can_connect = False
     return can_connect
 
 
@@ -111,7 +114,7 @@ def expose_port(port):
     server_port, suffix = choose_frp_server()
     # check connectivity 
     if not can_connect_frp_server(server_port):
-        return False, f'Cannot connect to the server. Is it blocked by your firewall?'
+        return False, f'Cannot connect to the server. No Internet connection? Firewall blocking?'
     # get defaul values for session 
     session_duration_min = SESSION_DURATION_MIN
     max_num_frp_processes = MAX_FRP_PROCESSES

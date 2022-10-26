@@ -36,13 +36,13 @@ def get_apps_services_widget():
     app_select = ttk.TTkComboBox(list=state['apps_list'], pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(app_select)
 
-    row+=2; ttk.TTkLabel(text='Command', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    cmd_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(cmd_inp)
+    row+=2; cmd_inp_lab = ttk.TTkLabel(text='Command', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    cmd_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(cmd_inp_lab); scrollArea.viewport().addWidget(cmd_inp)
 
-    row+=2; name_lab = ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(name_inp)
+    row+=2; name_inp_lab = ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(name_inp_lab); scrollArea.viewport().addWidget(name_inp)
 
     row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
@@ -62,6 +62,12 @@ def get_apps_services_widget():
         app_select._list = state['apps_list']; app_select.update()
         choice = state['apps_list'][i]
         state['choice'] = choice
+
+        cmd_inp_lab.visible=True; cmd_inp_lab.show(); cmd_inp_lab.update()
+        cmd_inp.visible=True; cmd_inp.show(); cmd_inp.update()
+        name_inp_lab.visible=True; name_inp_lab.show(); name_inp_lab.update()
+        name_inp.visible=True; name_inp.show(); name_inp.update()
+
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
         if choice != CREATE_NEW:
             name_inp._text = choice; name_inp.update() 

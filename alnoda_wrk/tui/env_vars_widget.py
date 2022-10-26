@@ -29,13 +29,13 @@ def get_env_vars_widget():
     var_select = ttk.TTkComboBox(list=state['vars_list'], pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(var_select)
 
-    row+=2; ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(name_inp)
+    row+=2; name_inp_lab = ttk.TTkLabel(text='Name', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    name_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(name_inp_lab); scrollArea.viewport().addWidget(name_inp)
 
-    row+=2; ttk.TTkLabel(text='Value', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
-    value_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1))
-    scrollArea.viewport().addWidget(value_inp)
+    row+=2; value_inp_lab = ttk.TTkLabel(text='Value', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    value_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(value_inp_lab); scrollArea.viewport().addWidget(value_inp)
     
     row+=2; msg_lab = ttk.TTkLabel(text='', color=ERROR_COLOR, pos=(r,row), size=(rs,1), parent=scrollArea.viewport())
 
@@ -51,6 +51,10 @@ def get_env_vars_widget():
         refresh_state()
         choice = state['vars_list'][i]
         state['choice'] = choice
+        name_inp_lab.visible=True; name_inp_lab.show(); name_inp_lab.update()
+        name_inp.visible=True; name_inp.show(); name_inp.update()
+        value_inp_lab.visible=True; value_inp_lab.show(); value_inp_lab.update()
+        value_inp.visible=True; value_inp.show(); value_inp.update()
         msg_lab._color = ERROR_COLOR; msg_lab._text = ""; msg_lab.update()
         if choice != CREATE_NEW:
             name_inp._text = choice; name_inp.update() 
@@ -96,7 +100,7 @@ def get_env_vars_widget():
         value_inp._text = ""; value_inp.update()
         btn_cancel.hide()
         btn_save.hide()
-        msg_lab._color = WAIT_COLOR; msg_lab._text = "Changes will apply only in new terminal windows"; msg_lab.update()
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Please restart terminal to apply changes"; msg_lab.update()
     # Bind remove button
     remove_btn.clicked.connect(_removeBtn)
 
@@ -123,7 +127,7 @@ def get_env_vars_widget():
         var_select.setCurrentIndex(state['vars_list'].index(name))
         var_select.update()
         # Show success color message
-        msg_lab._color = WAIT_COLOR; msg_lab._text = "Variable added. Available only in new terminal windows"; msg_lab.update()
+        msg_lab._color = WAIT_COLOR; msg_lab._text = "Variable added. Please restart terminal to use"; msg_lab.update()
         return
     # Bind save button
     btn_save.clicked.connect(_saveBtn)

@@ -20,7 +20,7 @@ def open_admin():
     from .links_widget import get_links_widget
     from .share_widget import get_share_widget
 
-    options = ["Home", "Share", "Features", "Description", "Cheatsheet", "Links", "Preferences", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
+    options = ["Home", "Share", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -95,7 +95,7 @@ def open_admin():
             elif label == "Cheatsheet":         widget = CheatsheetWidget
             elif label == "Links":              widget = LinksWidget
             elif label == "Share":              widget = ShareWidget
-            elif label == "Preferences":    
+            elif label == "Appearance":    
                 widget = get_preferences_widget()
                 RightFrame.layout().addWidget(widget)
                 widget.show()
