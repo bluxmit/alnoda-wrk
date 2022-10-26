@@ -19,8 +19,9 @@ def open_admin():
     from .cheatsheet_widget import get_cheatsheet_widget
     from .links_widget import get_links_widget
     from .share_widget import get_share_widget
+    from .processes_widget import get_processes_widget
 
-    options = ["Home", "Share", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
+    options = ["Home", "Share", "Processes", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -82,6 +83,10 @@ def open_admin():
         ShareWidget = get_share_widget()
         RightFrame.layout().addWidget(ShareWidget)
 
+        # Processes widget
+        ProcessesWidget = get_processes_widget()
+        RightFrame.layout().addWidget(ProcessesWidget)
+
         @ttk.pyTTkSlot(str)
         def _listCallback(label):
             widget = None
@@ -95,6 +100,7 @@ def open_admin():
             elif label == "Cheatsheet":         widget = CheatsheetWidget
             elif label == "Links":              widget = LinksWidget
             elif label == "Share":              widget = ShareWidget
+            elif label == "Processes":          widget = ProcessesWidget
             elif label == "Appearance":    
                 widget = get_preferences_widget()
                 RightFrame.layout().addWidget(widget)
