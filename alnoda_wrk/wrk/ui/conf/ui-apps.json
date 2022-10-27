@@ -1,11 +1,5 @@
 {
     "home": {
-        "IDE": {
-            "port": 8021,
-            "title": "IDE",
-            "description": "Browser-based version of Visual Studio Code. Develop in any language, install hundreeds of extensions",
-            "image": "assets/home/IDE.jpg"
-            },
         "TERMINAL": {
             "port": 8022,
             "title": "Terminal",
