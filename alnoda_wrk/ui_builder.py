@@ -249,6 +249,7 @@ def update_home_page(wrk_params, conf_dir_path):
         # update and owerwrite ui_apps
         ui_apps = read_ui_conf() 
         ui_apps = update_ui_page_from_wrk_params(ui_apps, wrk_params, 'home')
+        ui_apps['home'] = dict(sorted(ui_apps['home'].items(), key=lambda x: x[1]['port']))
         update_ui_conf(ui_apps)
     return
 
