@@ -1,8 +1,10 @@
 import TermTk as ttk
 import copy
 import time
+from .helper_vidgets import get_file_viewer
 from .gvars import *
 from ..globals import get_code
+from ..processes import *
 
 CREATE_NEW = "START NEW"
 
@@ -11,7 +13,17 @@ def get_processes_widget():
     state = {'processes': {}, 'widgets': [], 'new_cmd': "", 'new_name': "", 'new_flags': ""}
 
     def refresh_state():
-        # state['processes'] = get_pm2_processes()  # not implemented 
+        procs, pnames = get_processes()
+        processes = {}
+        for p in procs:
+            pname = p['name']
+            processes[pname] = {}
+            processes[pname]['status'] = p['pm2_env']['status']
+            processes[pname]['stdout_log'] = p['pm2_env']['pm_out_log_path']
+            processes[pname]['stderr_log'] = p['pm2_env']['pm_err_log_path'] 
+            processes[pname]['cpu'] = p['monit']['cpu'] 
+            processes[pname]['memory'] = p['monit']['memory'] 
+        state['processes'] = processes
         state['widgets'] = []
         state['new_cmd'] = ""
         state['new_name'] = ""
@@ -35,7 +47,7 @@ def get_processes_widget():
         def _StopBtn():
             nonlocal state
             # stop process with pm2
-            
+            stop_process(name)
             # remove widgets 
             remove_all_widgets()
             # generate new state
@@ -43,26 +55,53 @@ def get_processes_widget():
             # generate section view widgets again
             create_process_widgets()
         return _StopBtn
-
+    def get_stdout_handler(stdout_path):
+        nonlocal wrap_widg
+        def _stdoutBtn():
+            nonlocal wrap_widg
+            fw = get_file_viewer(stdout_path, wrap_widg)
+        return _stdoutBtn
+    def get_stderr_handler(stderr_path):
+        nonlocal wrap_widg
+        def _stderrBtn():
+            nonlocal wrap_widg
+            fw = get_file_viewer(stderr_path, wrap_widg)
+        return _stderrBtn
     def create_process_widgets():
         nonlocal state
         row = 1
-        for name, cmd in state['processes'].items():
-            cmd_lab = ttk.TTkLabel(text='command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
-            name_lab = ttk.TTkLabel(text='process name:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
-            V.addWidget(cmd_lab); V.addWidget(name_lab); row += 1
-            state['widgets'].append(cmd_lab); state['widgets'].append(name_lab) 
-            w_cmd = ttk.TTkLineEdit(text=cmd, pos=(l,row), size=(ls,1))
-            w_name = ttk.TTkLineEdit(text=name, pos=(r,row), size=(rs,1))
-            V.addWidget(w_cmd); V.addWidget(w_name); row += 1
-            state['widgets'].append(w_cmd); state['widgets'].append(w_name)
+        for name, vals in state['processes'].items():
+            # read process params from state
+            status = vals['status']
+            stdout_log = vals['stdout_log']
+            stderr_log = vals['stderr_log'] 
+            cpu = vals['cpu'] 
+            memory = vals['memory']
+            # generate widgets
+            name_lab = ttk.TTkLabel(text='process name:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
+            V.addWidget(name_lab); state['widgets'].append(name_lab); row += 1  
+            w_name = ttk.TTkLineEdit(text=name, pos=(l,row), size=(ls,1)) 
+            if status in ['online']:
+                status_lab = ttk.TTkLabel(text=status, color=SUCCESS_COLOR, pos=(r,row), size=(rs,1))
+            else:
+                status_lab = ttk.TTkLabel(text=status, color=ERROR_COLOR, pos=(r,row), size=(rs,1))
+            V.addWidget(w_name); V.addWidget(status_lab); row += 1
+            state['widgets'].append(w_name); state['widgets'].append(status_lab)
+            # Logs buttons
+            stdout_log_btn = ttk.TTkButton(text='std.out logs', pos=(l,row), size=(ls,1), visible=True) 
+            stderr_log_btn = ttk.TTkButton(text='std.error logs', pos=(r,row), size=(rs,1), visible=True)
+            V.addWidget(stdout_log_btn); V.addWidget(stderr_log_btn); row += 1
+            state['widgets'].append(stdout_log_btn); state['widgets'].append(stderr_log_btn)
+            stdout_log_btn.clicked.connect(get_stdout_handler(stdout_log))
+            stderr_log_btn.clicked.connect(get_stderr_handler(stderr_log))    
+            # Stop button
             stop_btn = ttk.TTkButton(text='Stop', pos=(l,row), size=(20,1), visible=True)
             stop_btn.setBorderColor(TTkColor.fg('#f20e0a'))
             V.addWidget(stop_btn); state['widgets'].append(stop_btn)
-            # Button handlers
-            stop_btn.clicked.connect(get_stop_handler(name))
+            stop_btn.clicked.connect(get_stop_handler(name)); row += 2
 
-        # New Process 
+        # New Process
+        row += 2
         new_cmd_lab = ttk.TTkLabel(text='new command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
         new_name_lab = ttk.TTkLabel(text='new process name:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
         V.addWidget(new_cmd_lab); V.addWidget(new_name_lab); row += 1
@@ -97,23 +136,26 @@ def get_processes_widget():
         # Button handlers
         def _startProcessBtn():
             nonlocal state
-            if state['new_cmd'] == "":
+            new_cmd = state['new_cmd']
+            new_name = state['new_name']
+            new_flags = state['new_flags']
+            if new_cmd == "":
                 msg_lab._text = "Please enter command"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
                 return
-            if state['new_name'] == "":
+            if new_name == "":
                 msg_lab._text = "Please enter process name"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
                 return
-            if state['new_name'] in list(state['processes'].keys()):
+            if new_name in list(state['processes'].keys()):
                 msg_lab._text = "Process with this name is already present"; msg_lab.visible=True; msg_lab.show(); msg_lab.update()
                 return
             # start with PM2
-            #   <- not implemented
-            # remove widgets 
+            start_process(name=new_name, cmd=new_cmd, flags=new_flags)
+            # remove remove_all_widgets 
             remove_all_widgets()
             # generate new state
             refresh_state()
             # generate section view widgets again
-            create_section_view_widgets(section)
+            create_process_widgets()
         new_start_btn.clicked.connect(_startProcessBtn)
         def _addCacelBtn():
             nonlocal state
