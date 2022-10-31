@@ -6,7 +6,7 @@ from ..fileops import read_styles_scss, write_styles_scss, get_mkdocs_yml, updat
 from ..ui_builder import update_logo_favicon
 
 
-def get_preferences_widget():
+def get_appearance_widget():
     # Get existing styles 
     d_styles = read_styles_scss()
     new_d_styles = copy.deepcopy(d_styles)

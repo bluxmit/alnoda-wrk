@@ -11,7 +11,7 @@ def open_admin():
     from .home import WrkHomeTab
     from .features_widget import get_features_widget
     from .description_widget import get_description_widget
-    from .preferences_widget import get_preferences_widget
+    from .appearance_widget import get_appearance_widget
     from .interface_widget import get_interface_widget
     from .apps_services import get_apps_services_widget
     from .env_vars_widget import get_env_vars_widget
@@ -102,7 +102,7 @@ def open_admin():
             elif label == "Share":              widget = ShareWidget
             elif label == "Processes":          widget = ProcessesWidget
             elif label == "Appearance":    
-                widget = get_preferences_widget()
+                widget =  get_appearance_widget()
                 RightFrame.layout().addWidget(widget)
                 widget.show()
             if widget:

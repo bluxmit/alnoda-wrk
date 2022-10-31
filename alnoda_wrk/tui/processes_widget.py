@@ -19,7 +19,7 @@ def get_processes_widget():
         return
     refresh_state()
 
-    wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=True)
+    wrap_widg = ttk.TTkFrame(layout=ttk.TTkVBoxLayout(columnMinHeight=1), border=0, visible=False)
     scrollArea = ttk.TTkScrollArea(parent=None, border=0, minHeight=25)
     wrap_widg.layout().addWidget(scrollArea)
     l = 2; ls = 50
