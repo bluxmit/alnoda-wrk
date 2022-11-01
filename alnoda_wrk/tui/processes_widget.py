@@ -79,7 +79,11 @@ def get_processes_widget():
             memory = vals['memory']
             # generate widgets
             name_lab = ttk.TTkLabel(text='process name:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
-            V.addWidget(name_lab); state['widgets'].append(name_lab); row += 1  
+            V.addWidget(name_lab); state['widgets'].append(name_lab)
+            stop_btn = ttk.TTkButton(text='Stop', pos=(r,row), size=(20,1), visible=True)
+            stop_btn.setBorderColor(TTkColor.fg('#f20e0a')); row += 1  
+            V.addWidget(stop_btn); state['widgets'].append(stop_btn)
+            stop_btn.clicked.connect(get_stop_handler(name))
             w_name = ttk.TTkLineEdit(text=name, pos=(l,row), size=(ls,1)) 
             if status in ['online']:
                 status_lab = ttk.TTkLabel(text=status, color=SUCCESS_COLOR, pos=(r,row), size=(rs,1))
@@ -90,18 +94,14 @@ def get_processes_widget():
             # Logs buttons
             stdout_log_btn = ttk.TTkButton(text='std.out logs', pos=(l,row), size=(ls,1), visible=True) 
             stderr_log_btn = ttk.TTkButton(text='std.error logs', pos=(r,row), size=(rs,1), visible=True)
-            V.addWidget(stdout_log_btn); V.addWidget(stderr_log_btn); row += 1
+            V.addWidget(stdout_log_btn); V.addWidget(stderr_log_btn); row += 2
             state['widgets'].append(stdout_log_btn); state['widgets'].append(stderr_log_btn)
             stdout_log_btn.clicked.connect(get_stdout_handler(stdout_log))
             stderr_log_btn.clicked.connect(get_stderr_handler(stderr_log))    
-            # Stop button
-            stop_btn = ttk.TTkButton(text='Stop', pos=(l,row), size=(20,1), visible=True)
-            stop_btn.setBorderColor(TTkColor.fg('#f20e0a'))
-            V.addWidget(stop_btn); state['widgets'].append(stop_btn)
-            stop_btn.clicked.connect(get_stop_handler(name)); row += 2
+            row += 1
 
         # New Process
-        row += 2
+        if len(state['processes']) > 0: row += 2
         new_cmd_lab = ttk.TTkLabel(text='new command:', color=LABEL_COLOR, pos=(l,row), size=(ls,1))
         new_name_lab = ttk.TTkLabel(text='new process name:', color=LABEL_COLOR, pos=(r,row), size=(rs,1))
         V.addWidget(new_cmd_lab); V.addWidget(new_name_lab); row += 1
