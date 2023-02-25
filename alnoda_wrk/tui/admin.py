@@ -21,7 +21,7 @@ def open_admin():
     from .share_widget import get_share_widget
     from .processes_widget import get_processes_widget
 
-    options = ["Home", "Share", "Processes", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Env variables", "Aliases"]
+    options = ["Home", "Share", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Processes", "Env variables", "Aliases"]
 
 
     def AlnodaAdminTUI(root= None):

@@ -19,7 +19,7 @@ FRP_SERVERS = {
     'kvopp': {'port': 7003},
     'fowopd': {'port': 7004}
 }
-FRP_SERVER = "opensource-platform.com"
+FRP_SERVER = "alnoda.net"
 # token is temporarily static, later will be requested from server
 FRP_TOKEN = "d326ffbd243ee8ceb85d29169e4b92e7"
 # Can be configured in future

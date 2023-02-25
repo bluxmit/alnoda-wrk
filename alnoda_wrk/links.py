@@ -16,6 +16,9 @@ def read_links_data():
     :return: existing links as dict
     :rtype: OrderedDict
     """
+    if not os.path.exists(LINKS_DATA_FILE):
+        with open(LINKS_DATA_FILE, "x") as f:
+            f.write("{}")
     with open(LINKS_DATA_FILE) as json_file:
         links_dict = json.load(json_file)
     return OrderedDict(links_dict)

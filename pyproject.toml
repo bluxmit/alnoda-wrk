@@ -8,6 +8,7 @@ readme = "README.md"
 
 [tool.poetry.scripts]
 "alnoda-wrk" = "alnoda_wrk.main:app"
+"wrk" = "alnoda_wrk.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.8"
