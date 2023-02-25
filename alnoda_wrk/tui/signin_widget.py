@@ -56,12 +56,12 @@ def get_signin_widget():
         r = 25; rs = 90 
         row = 1 
         ### WIDGETS IF NOT AUTHENTICATED
-        not_auth_lab = ttk.TTkLabel(text=f'Not authenticated', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=True)
-        row+=2; auth_to_lab = ttk.TTkLabel(text=f'Authenticate to https://alnoda.org', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=True)
-        row+=2; token_inp_lab = ttk.TTkLabel(text='Security token', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=True)
-        token_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=True)
-        row+=2; signin_btn = ttk.TTkButton(text='Authenticate', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=True)
-        row+=2; error_lab = ttk.TTkLabel(text='Failed', color=ERROR_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+        not_auth_lab = ttk.TTkLabel(text=f'Not authenticated', pos=(l,row), size=(ls,1), visible=True)
+        row+=2; auth_to_lab = ttk.TTkLabel(text=f'Authenticate to https://alnoda.org', pos=(l,row), size=(ls,1), visible=True)
+        row+=2; token_inp_lab = ttk.TTkLabel(text='Security token', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=True)
+        token_inp = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=True)
+        row+=2; signin_btn = ttk.TTkButton(text='Authenticate', pos=(l,row), size=(ls,1), visible=True)
+        row+=2; error_lab = ttk.TTkLabel(text='Failed', color=ERROR_COLOR, pos=(l,row), size=(ls,1), visible=False)
         not_siged_widgets = [not_auth_lab, auth_to_lab, token_inp_lab, token_inp, signin_btn, error_lab]; state['widgets'] = state['widgets'] + not_siged_widgets
         for widget in not_siged_widgets: V.addWidget(widget)
             # Text input handlers
