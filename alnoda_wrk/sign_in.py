@@ -1,4 +1,6 @@
+import os
 import requests
+import json
 from .globals import WORKSPACE_DIR, ALNODA_API_URL
 
 TOKEN_VERIFY_PATH = f"api/v1/token/verify/"
@@ -16,7 +18,7 @@ def read_auth():
         return {}
     with open(AUTH_FILE) as json_file:
         auth_dict = json.load(json_file)
-    return Oauth_dict
+    return auth_dict
 
 def write_auth(token, username):
     """ {} ->> 
@@ -27,8 +29,9 @@ def write_auth(token, username):
     :param usernname: user name at alnoda.org
     :type token: str
     """
-    with open(LINKS_DATA_FILE, 'w') as file:
-        json.dump(links_dict, file, indent=4 * ' ')
+    with open(AUTH_FILE, 'w') as file:
+        auth_dict = {'username': username, 'token': token}
+        json.dump(auth_dict, file, indent=4 * ' ')
     return 
 
 def add_token(token):
@@ -42,9 +45,13 @@ def add_token(token):
             result = response.json()
             if result['verified']:
                 username = result['username']
-                # save token, username
-                
+                write_auth(token, username)
+                return True
         except: pass
+        return False
 
-
-
+def delete_auth():
+    """ Delete authentication dict """
+    if os.path.exists(AUTH_FILE):
+        os.remove(AUTH_FILE)
+    return

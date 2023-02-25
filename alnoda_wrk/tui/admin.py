@@ -20,8 +20,9 @@ def open_admin():
     from .links_widget import get_links_widget
     from .share_widget import get_share_widget
     from .processes_widget import get_processes_widget
+    from .signin_widget import get_signin_widget
 
-    options = ["Home", "Share", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Processes", "Env variables", "Aliases"]
+    options = ["Home", "Sign In", "Share", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Processes", "Env variables", "Aliases"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -46,6 +47,10 @@ def open_admin():
         hello_widget = WrkHomeTab(border=0)
         r_widget = hello_widget
         RightFrame.layout().addWidget(hello_widget)
+
+        # SignIn widget
+        SignInWidget = get_signin_widget()
+        RightFrame.layout().addWidget(SignInWidget)
 
         # FeaturesWidget
         FeaturesWidget = get_features_widget()
@@ -87,10 +92,12 @@ def open_admin():
         ProcessesWidget = get_processes_widget()
         RightFrame.layout().addWidget(ProcessesWidget)
 
+
         @ttk.pyTTkSlot(str)
         def _listCallback(label):
             widget = None
             if   label == "Home":               widget = hello_widget
+            elif label == "Sign In":            widget = SignInWidget
             elif label == "Features":           widget = FeaturesWidget
             elif label == "Description":        widget = DescriptionWidget
             elif label == "Intrerface":         widget = InterfaceWidget
