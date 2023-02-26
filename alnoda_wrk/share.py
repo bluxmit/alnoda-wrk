@@ -24,7 +24,7 @@ FRP_SERVER = "alnoda.net"
 # token is temporarily static, later will be requested from server
 FRP_TOKEN = "d326ffbd243ee8ceb85d29169e4b92e7"
 # Can be configured in future
-FRP_BANDWIDTH_LIMIT = "400KB"
+FRP_BANDWIDTH_LIMIT = "500KB"
 MAX_FRP_PROCESSES = 1
 SESSION_DURATION_MIN = 20
 # For authenticated users

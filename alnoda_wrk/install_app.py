@@ -18,6 +18,8 @@ def fetch_app_details(app_code, version=None):
             result = response.json()
             if 'error' in result:
                 return False, result['error']
+            elif len(result) == 0:
+                return False, {}
             else:
                 return True, result
         except: pass
