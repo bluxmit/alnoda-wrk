@@ -4,14 +4,19 @@ import os, shutil
 import requests
 import subprocess
 from packaging import version as Version
-from .globals import WORKSPACE_DIR, ALNODA_API_URL
-from .fileops import read_ui_conf, read_lineage
-from .alnoda_api import AlnodaApi
 import typer
+from .globals import clnstr, WORKSPACE_DIR, ALNODA_API_URL
+from .fileops import read_ui_conf, update_ui_conf, read_lineage
+from .ui_builder import copy_pageapp_image
+from .alnoda_api import AlnodaApi
+from .wrk_supervisor import create_supervisord_file
+from .fileops import read_ui_conf, update_ui_conf, read_meta
+from .meta_about import update_meta, refresh_from_meta
 
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
 ALLOWED_FREE_PORT_RANGE_MIN = 8031
 ALLOWED_FREE_PORT_RANGE_MAX = 8040
+DEFAULT_APP_INSTALL_PAGE = 'home'
 
 
 class AlnodaApiApp(AlnodaApi):
@@ -41,26 +46,6 @@ def get_free_ports():
         if p not in taken_ports:
             free_ports.append(p)
     return free_ports
-
-
-def install_app(app_meta):
-    """ Install application using install script """
-    install_script = app_meta['install_script']
-    # make sure temp folder for this app exist, and it is new
-    if not os.path.exists(APP_INSTALL_TEMP_LOC): os.makedirs(APP_INSTALL_TEMP_LOC)
-    app_temp_dir = os.path.join(APP_INSTALL_TEMP_LOC, app_code)
-    # just inn case, delete if this app_temp_dir already exist
-    if shutil.os.path.exists(app_temp_dir): shutil.rmtree(app_temp_dir)
-    # create this folder anew
-    os.makedirs(app_temp_dir)
-    # save install script there
-    script_path = os.path.join(app_temp_dir, 'install.sh')
-    with open(script_path, 'w') as f:
-        f.write(install_script)
-    os.chmod(script_path, 0o755)
-    # install applicationn and its dependencies using the script
-    result = subprocess.run(['bash', script_path], capture_output=True, text=True)
-    
 
 
 def check_compatibility(app_code, version_id):
@@ -95,7 +80,32 @@ def check_compatibility(app_code, version_id):
     return False
 
 
-def install_app(app_code, version=None, silent=False):
+def make_apinstall_temp_dir(app_code):
+    """ mAke sure temporary folder for installation artifacts exists """
+    # make sure temp folder for this app exist, and it is new
+    if not os.path.exists(APP_INSTALL_TEMP_LOC): os.makedirs(APP_INSTALL_TEMP_LOC)
+    app_temp_dir = os.path.join(APP_INSTALL_TEMP_LOC, app_code)
+    # just inn case, delete if this app_temp_dir already exist
+    if shutil.os.path.exists(app_temp_dir): shutil.rmtree(app_temp_dir)
+    # create this folder anew
+    os.makedirs(app_temp_dir)
+    return app_temp_dir
+
+
+def install_app(app_meta, install_temp_dir):
+    """ Install application using install script """
+    install_script = clnstr(app_meta['install_script'])
+    # save install script there
+    script_path = os.path.join(install_temp_dir, 'install.sh')
+    with open(script_path, 'w') as f:
+        f.write(install_script)
+    os.chmod(script_path, 0o755)
+    # install applicationn and its dependencies using the script
+    result = subprocess.run(['bash', script_path], capture_output=True, text=True)
+    return result
+
+
+def add_app(app_code, version=None, silent=False):
     """ Install app locally """
     # fetch app version
     if version is not None: 
@@ -125,8 +135,57 @@ def install_app(app_code, version=None, silent=False):
         # if app port is one of the free ports, take it
         if app_port in free_ports:
             prescribed_port = app_port
+    ### Folder for innstall artefacts
+    install_temp_dir = make_apinstall_temp_dir(app_code)
     ### Install app using the script
-    install_app(app_meta)
+    install_result = install_app(app_meta, install_temp_dir)
+    if not silent: typer.echo(install_result)
+    ### Add startup script
+    if 'start_script' in app_meta:
+        start_script = clnstr(app_meta['start_script'])
+        create_supervisord_file(name=app_code, cmd=start_script, folder=None, env_vars=None)
+        if not silent: typer.echo("Application will start after workspace is restarted")
+    ### Add UI
+    if 'app_port' in app_meta:
+        # do we need port-mapping?
+        if prescribed_port != app_port:
+            socat_cmd = f"socat tcp-listen:{prescribed_port},reuseaddr,fork tcp:localhost:{app_port}"
+            create_supervisord_file(name=f'{app_code}-soc', cmd=socat_cmd, folder=None, env_vars=None)
+        # copy image from S3
+        ui_page = DEFAULT_APP_INSTALL_PAGE
+        img_loc_prefix = ""
+        if ui_page == 'home': img_loc_prefix = "assets/home/"
+        image_url = app_meta['image_url']
+        img_response = requests.get(image_url)
+        img_content = img_response.content
+        img_name = f'{app_code}.webp'
+        image_path = os.path.join(install_temp_dir, img_name)
+        with open(image_path, 'wb') as f:
+            f.write(img_content)
+        copy_pageapp_image(ui_page, image_path)
+        # add UI shortcut to the workspace dashboard
+        ui_conf = read_ui_conf()
+        page_conf = ui_conf[ui_page]
+        ui_dict = {
+            'title': app_meta['name'],
+            'port': prescribed_port,
+            'description': app_meta['description'],
+            'image': f'{img_loc_prefix}{img_name}'
+        }
+        page_conf[app_code] = ui_dict
+        update_ui_conf(ui_conf)
+    ### Add workspace tags
+    if 'tags' in app_meta:  
+        app_tags = app_meta['tags']
+        try:
+            new_meta = read_meta()
+            new_meta['tags'] = new_meta['tags'] + ', '.join(app_tags)
+            update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'], docs=new_meta['docs'], tags=new_meta['tags'])
+            refresh_from_meta()
+        except: pass
+    ### Done!
+    if not silent: typer.echo("done")
+
     
 
 

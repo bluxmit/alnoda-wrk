@@ -49,3 +49,8 @@ def pref_url(url):
     if not url.startswith("https://") or url.startswith("http://"):
         url = "//"+url 
     return url
+
+def clnstr(s):
+    """Replace some chars from string input """
+    s_ = s.replace('\r','').replace('\t','').replace('\b','').replace('\f','').replace('\ooo','')
+    return s_
