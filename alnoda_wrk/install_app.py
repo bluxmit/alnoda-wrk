@@ -5,7 +5,7 @@ import requests
 import subprocess
 from packaging import version as Version
 import typer
-from .globals import clnstr, WORKSPACE_DIR, ALNODA_API_URL
+from .globals import clnstr, WORKSPACE_DIR
 from .fileops import read_ui_conf, update_ui_conf, read_lineage
 from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi
@@ -48,7 +48,7 @@ def get_free_ports():
     return free_ports
 
 
-def check_compatibility(app_code, version_id):
+def check_compatibility(app_code, version_id, version):
     """ Fetch app version compatibility and reconcile with this workspace legacy """
     api_comp = AlnodaApiApp('compatibility', app_code=app_code, version_id=version_id)
     res, app_compat = api_comp.fetch()
@@ -114,11 +114,14 @@ def add_app(app_code, version=None, silent=False):
         api = AlnodaApiApp('meta',app_code=app_code)
     res, app_meta = api.fetch()
     if res is False:
+        if not silent: typer.echo("App or app version not found")
         return False, "App or app version not found"
+    if not silent: typer.echo("starting...")
     version_id = app_meta['version_id']
+    version = app_meta['version']
     ### check compatibility
     if not silent: 
-        is_compatible = check_compatibility(app_code, version_id)
+        is_compatible = check_compatibility(app_code, version_id, version)
         if not is_compatible:
             typer.echo("WARNING: This app is not explicitly compatible with any of the lineage workspace versions!")
             should_continue = typer.confirm("Do you want to continue?")
@@ -185,18 +188,4 @@ def add_app(app_code, version=None, silent=False):
         except: pass
     ### Done!
     if not silent: typer.echo("done")
-
-    
-
-
-
-
-
-
-
-
-
-    
-
-        
 
