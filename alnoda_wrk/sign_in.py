@@ -1,10 +1,11 @@
 import os
 import requests
 import json
-from .globals import WORKSPACE_DIR, ALNODA_API_URL
+from .globals import WORKSPACE_DIR, ALNODA_API_DOMAIN, ALNODA_API_VERSION
+from .alnoda_api import AlnodaApi
 
-TOKEN_VERIFY_PATH = f"api/v1/token/verify/"
-VERIFY_TOKEN_URL = f'{ALNODA_API_URL}/{TOKEN_VERIFY_PATH}'
+TOKEN_VERIFY_PATH = f"api/{ALNODA_API_VERSION}/token/verify/"
+VERIFY_TOKEN_URL = f'{ALNODA_API_DOMAIN}/{TOKEN_VERIFY_PATH}'
 AUTH_FILE = os.path.join(WORKSPACE_DIR, 'auth.json') 
 
 

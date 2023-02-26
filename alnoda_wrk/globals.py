@@ -14,7 +14,8 @@ WORKSPACE_HOME_PAGES = ["home", "admin", "my_apps"]
 WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 7, "Cheatsheet": 8, "Docs": 10}
 # external os text editor for interactive inputs
 TEXT_EDITOR = "mcedit"
-ALNODA_API_URL = "https://api.alnoda.org"
+ALNODA_API_DOMAIN = "https://api.alnoda.org"
+ALNODA_API_VERSION = 'v1'
 
 
 def safestring(s, length=15):
