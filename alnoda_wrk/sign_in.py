@@ -4,6 +4,7 @@ import json
 from .globals import WORKSPACE_DIR, ALNODA_API_URL
 
 TOKEN_VERIFY_PATH = f"api/v1/token/verify/"
+VERIFY_TOKEN_URL = f'{ALNODA_API_URL}/{TOKEN_VERIFY_PATH}'
 AUTH_FILE = os.path.join(WORKSPACE_DIR, 'auth.json') 
 
 
@@ -36,10 +37,9 @@ def write_auth(token, username):
 
 def add_token(token):
     """ Add verify security token, and save it (update auth file) if token is verified """
-    url = f'{ALNODA_API_URL}/{TOKEN_VERIFY_PATH}'
     # Data to send in the POST request
     data = {'token': token}
-    response = requests.post(url, data=data)
+    response = requests.post(VERIFY_TOKEN_URL, data=data)
     if response.status_code == 200:
         try:
             result = response.json()
@@ -49,6 +49,26 @@ def add_token(token):
                 return True
         except: pass
         return False
+
+def verify_authenticated():
+    """ Check if workspace is autheticated """
+    auth = read_auth()
+    if len(auth) == 0: return False
+    try:
+        username_ = auth['username']
+        token_ = auth['token']
+        data = {'token': token_}
+        response = requests.post(VERIFY_TOKEN_URL, data=data)
+        if response.status_code == 200:
+            try:
+                result = response.json()
+                if result['verified']:
+                    username = result['username']
+                    if username_ == username:
+                        return True
+            except: pass
+    except: pass
+    return False
 
 def delete_auth():
     """ Delete authentication dict """
