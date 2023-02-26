@@ -8,6 +8,7 @@ import socket
 
 from .templates import frpc_http_template
 from .globals import *
+from .sign_in import verify_authenticated
 
 FRP_FOLDER = os.path.join(HOME_DIR, '.frp')
 FRPC_INI_FILE = os.path.join(FRP_FOLDER, 'frpc.ini')
@@ -23,9 +24,13 @@ FRP_SERVER = "alnoda.net"
 # token is temporarily static, later will be requested from server
 FRP_TOKEN = "d326ffbd243ee8ceb85d29169e4b92e7"
 # Can be configured in future
-FRP_BANDWIDTH_LIMIT = "500KB"
+FRP_BANDWIDTH_LIMIT = "400KB"
 MAX_FRP_PROCESSES = 1
 SESSION_DURATION_MIN = 20
+# For authenticated users
+AUTHENTICATED_FRP_BANDWIDTH_LIMIT = "1MB"
+AUTHENTICATED_MAX_FRP_PROCESSES = 1
+AUTHENTICATED_SESSION_DURATION_MIN = 40
 
 
 def init_frp_dir():
@@ -119,6 +124,11 @@ def expose_port(port):
     session_duration_min = SESSION_DURATION_MIN
     max_num_frp_processes = MAX_FRP_PROCESSES
     frp_bandwidth_limit = FRP_BANDWIDTH_LIMIT
+    # improve limits for authenticated users
+    if verify_authenticated():
+        session_duration_min = AUTHENTICATED_SESSION_DURATION_MIN
+        max_num_frp_processes = AUTHENTICATED_MAX_FRP_PROCESSES 
+        frp_bandwidth_limit = AUTHENTICATED_FRP_BANDWIDTH_LIMIT 
     # create command for frp process
     timelimit = session_duration_min * 60
     frpcmd = f"{FRPC_BINARY} -c {FRPC_INI_FILE}"
