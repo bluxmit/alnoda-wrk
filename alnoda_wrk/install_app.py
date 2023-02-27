@@ -23,7 +23,9 @@ class AlnodaApiApp(AlnodaApi):
     def __init__(self, what, **kwargs):
         app_code = kwargs['app_code']
         if what == 'meta':
-            if 'version' in kwargs:  path = f'app/{app_code}/{version}/meta/'
+            if 'version' in kwargs:  
+                version = kwargs['version']
+                path = f'app/{app_code}/{version}/meta/'
             else:  path = f'app/{app_code}/meta/'
         elif what == 'compatibility':
             version_id = kwargs['version_id']
@@ -81,7 +83,7 @@ def check_compatibility(app_code, version_id, version):
 
 
 def make_apinstall_temp_dir(app_code):
-    """ mAke sure temporary folder for installation artifacts exists """
+    """ make sure temporary folder for installation artifacts exists """
     # make sure temp folder for this app exist, and it is new
     if not os.path.exists(APP_INSTALL_TEMP_LOC): os.makedirs(APP_INSTALL_TEMP_LOC)
     app_temp_dir = os.path.join(APP_INSTALL_TEMP_LOC, app_code)
@@ -121,13 +123,15 @@ def add_app(app_code, version=None, silent=False):
     version = app_meta['version']
     ### check compatibility
     if not silent: 
+        typer.echo("checking compatibility...")
         is_compatible = check_compatibility(app_code, version_id, version)
         if not is_compatible:
-            typer.echo("WARNING: This app is not explicitly compatible with any of the lineage workspace versions!")
+            typer.echo("WARNING: This app is not explicitly compatible the workspace lineage")
             should_continue = typer.confirm("Do you want to continue?")
             if not should_continue: return
     ### Check if app exposes UI and wrkspace has free ports
     if 'app_port' in app_meta:
+        if not silent: typer.echo("assigning port...")
         app_port = app_meta['app_port']
         free_ports = get_free_ports()
         # if app has UI, but workspace has no free ports - stop here
@@ -141,15 +145,18 @@ def add_app(app_code, version=None, silent=False):
     ### Folder for innstall artefacts
     install_temp_dir = make_apinstall_temp_dir(app_code)
     ### Install app using the script
+    if not silent: typer.echo("running install script...")
     install_result = install_app(app_meta, install_temp_dir)
     if not silent: typer.echo(install_result)
     ### Add startup script
     if 'start_script' in app_meta:
+        if not silent: typer.echo("setting startup configuration...")
         start_script = clnstr(app_meta['start_script'])
         create_supervisord_file(name=app_code, cmd=start_script, folder=None, env_vars=None)
-        if not silent: typer.echo("Application will start after workspace is restarted")
+        if not silent: typer.echo("-- application will start after workspace is restarted --")
     ### Add UI
     if 'app_port' in app_meta:
+        if not silent: typer.echo("updating workspace UI...")
         # do we need port-mapping?
         if prescribed_port != app_port:
             socat_cmd = f"socat tcp-listen:{prescribed_port},reuseaddr,fork tcp:localhost:{app_port}"
@@ -179,6 +186,7 @@ def add_app(app_code, version=None, silent=False):
         update_ui_conf(ui_conf)
     ### Add workspace tags
     if 'tags' in app_meta:  
+        if not silent: typer.echo("adding workspace tags...")
         app_tags = app_meta['tags']
         try:
             new_meta = read_meta()
