@@ -22,7 +22,7 @@ def open_admin():
     from .processes_widget import get_processes_widget
     from .signin_widget import get_signin_widget
 
-    options = ["Home", "Sign In", "Share", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "Processes", "Env variables", "Aliases"]
+    options = ["Home", "Sign In", "Collaborate", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "PM2 processes", "Env vars (zsh)", "Aliases (zsh)"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -102,12 +102,12 @@ def open_admin():
             elif label == "Description":        widget = DescriptionWidget
             elif label == "Intrerface":         widget = InterfaceWidget
             elif label == "Apps & Services":    widget = AppsServicesWidget
-            elif label == "Env variables":      widget = EnvVarsWidget
-            elif label == "Aliases":            widget = AliasesWidget
+            elif label == "Env vars (zsh)":     widget = EnvVarsWidget
+            elif label == "Aliases (zsh)":      widget = AliasesWidget
             elif label == "Cheatsheet":         widget = CheatsheetWidget
             elif label == "Links":              widget = LinksWidget
-            elif label == "Share":              widget = ShareWidget
-            elif label == "Processes":          widget = ProcessesWidget
+            elif label == "Collaborate":        widget = ShareWidget
+            elif label == "PM2 processes":      widget = ProcessesWidget
             elif label == "Appearance":    
                 widget =  get_appearance_widget()
                 RightFrame.layout().addWidget(widget)

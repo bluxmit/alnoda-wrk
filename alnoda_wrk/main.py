@@ -42,6 +42,12 @@ def build(folder: str):
     return
 
 @app.command()
+def id():
+    """ Show workspace id """
+    workspace_id = get_workspace_id()
+    typer.echo(workspace_id)
+
+@app.command()
 def edit(what: str = "description"):
     """ Edit Workspace meta (description by default) interactively """
     if what == "description":
@@ -96,3 +102,4 @@ def install(application):
         app_code = application 
         add_app(app_code, version=None, silent=False)
     return
+

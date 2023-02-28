@@ -149,6 +149,10 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
     :type update_created: bool
     """
     meta_dict = read_meta()
+    # if workspace_id not yet in meta - generate new, and add it to meta
+    if 'workspace_id' not in meta_dict:
+        meta_dict['workspace_id'] = get_code()
+    # update meta_dict with the respective input
     if name is not None:
         meta_dict['name'] = name
     if version is not None:
@@ -285,3 +289,14 @@ def edit_workspace_description():
     # update about page with the new description
     refresh_about() 
     return
+
+
+def get_workspace_id():
+    """  ->> str
+    Simply return workspace id from meta
+
+    :return: Markdown table with history of this workspace lineage
+    :rtype: str
+    """
+    meta_dict = read_meta()
+    return meta_dict['workspace_id']
