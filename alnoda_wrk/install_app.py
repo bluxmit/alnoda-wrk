@@ -28,8 +28,8 @@ class AlnodaApiApp(AlnodaApi):
                 path = f'app/{app_code}/{version}/meta/'
             else:  path = f'app/{app_code}/meta/'
         elif what == 'compatibility':
-            version_id = kwargs['version_id']
-            path = f'app/{app_code}/{version_id}/compat/'
+            version_code = kwargs['version_code']
+            path = f'app/{app_code}/{version_code}/compat/'
         super().__init__(path)
 
 
@@ -50,9 +50,9 @@ def get_free_ports():
     return free_ports
 
 
-def check_compatibility(app_code, version_id, version):
+def check_compatibility(app_code, version_code, version):
     """ Fetch app version compatibility and reconcile with this workspace legacy """
-    api_comp = AlnodaApiApp('compatibility', app_code=app_code, version_id=version_id)
+    api_comp = AlnodaApiApp('compatibility', app_code=app_code, version_code=version_code)
     res, app_compat = api_comp.fetch()
     if res is False: return False
     if 'all_workspaces' in app_compat: return True
@@ -120,11 +120,12 @@ def add_app(app_code, version=None, silent=False):
         return False, "App or app version not found"
     if not silent: typer.echo("starting...")
     version_id = app_meta['version_id']
+    version_code = app_meta['version_code']
     version = app_meta['version']
     ### check compatibility
     if not silent: 
         typer.echo("checking compatibility...")
-        is_compatible = check_compatibility(app_code, version_id, version)
+        is_compatible = check_compatibility(app_code, version_code, version)
         if not is_compatible:
             typer.echo("WARNING: This app is not explicitly compatible the workspace lineage")
             should_continue = typer.confirm("Do you want to continue?")

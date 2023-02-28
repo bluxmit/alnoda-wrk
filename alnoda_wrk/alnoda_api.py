@@ -2,7 +2,6 @@ import requests
 import json
 
 from .globals import ALNODA_API_DOMAIN, ALNODA_API_VERSION
-ALNODA_API_DOMAIN = "https://api.alnoda.org"
 
 
 class AlnodaApi:
