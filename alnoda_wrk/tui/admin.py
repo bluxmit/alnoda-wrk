@@ -14,15 +14,14 @@ def open_admin():
     from .appearance_widget import get_appearance_widget
     from .interface_widget import get_interface_widget
     from .apps_services import get_apps_services_widget
-    from .env_vars_widget import get_env_vars_widget
-    from .aliases_widget import get_aliases_widget
-    from .cheatsheet_widget import get_cheatsheet_widget
-    from .links_widget import get_links_widget
     from .share_widget import get_share_widget
+    from .zsh_widget import get_zsh_widget
     from .processes_widget import get_processes_widget
     from .signin_widget import get_signin_widget
+    from .my_notes_widget import get_my_notes_widget
 
-    options = ["Home", "Sign In", "Collaborate", "Features", "Description", "Cheatsheet", "Links", "Appearance", "Intrerface", "Apps & Services", "PM2 processes", "Env vars (zsh)", "Aliases (zsh)"]
+    # temporary exclude : "PM2 processes"
+    options = ["Home", "Sign In", "Collaborate", "Features", "Description", "Appearance", "Intrerface", "Apps & Services", "Zsh", "My notes"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -68,22 +67,6 @@ def open_admin():
         AppsServicesWidget = get_apps_services_widget()
         RightFrame.layout().addWidget(AppsServicesWidget)
 
-        # EnvVarsWidget
-        EnvVarsWidget = get_env_vars_widget()
-        RightFrame.layout().addWidget(EnvVarsWidget)
-
-        # AliasesWidget
-        AliasesWidget = get_aliases_widget()
-        RightFrame.layout().addWidget(AliasesWidget)
-
-        # Cheatsheet widget
-        CheatsheetWidget = get_cheatsheet_widget()
-        RightFrame.layout().addWidget(CheatsheetWidget)
-
-        # Links widget
-        LinksWidget = get_links_widget()
-        RightFrame.layout().addWidget(LinksWidget)
-
         # Share widget
         ShareWidget = get_share_widget()
         RightFrame.layout().addWidget(ShareWidget)
@@ -91,6 +74,14 @@ def open_admin():
         # Processes widget
         ProcessesWidget = get_processes_widget()
         RightFrame.layout().addWidget(ProcessesWidget)
+
+        # zsh widget
+        ZshWidget = get_zsh_widget()
+        RightFrame.layout().addWidget(ZshWidget)
+
+        # My notes
+        MyNotesWidget = get_my_notes_widget()
+        RightFrame.layout().addWidget(MyNotesWidget)
 
 
         @ttk.pyTTkSlot(str)
@@ -102,11 +93,9 @@ def open_admin():
             elif label == "Description":        widget = DescriptionWidget
             elif label == "Intrerface":         widget = InterfaceWidget
             elif label == "Apps & Services":    widget = AppsServicesWidget
-            elif label == "Env vars (zsh)":     widget = EnvVarsWidget
-            elif label == "Aliases (zsh)":      widget = AliasesWidget
-            elif label == "Cheatsheet":         widget = CheatsheetWidget
-            elif label == "Links":              widget = LinksWidget
             elif label == "Collaborate":        widget = ShareWidget
+            elif label == "Zsh":                widget = ZshWidget
+            elif label == "My notes":           widget = MyNotesWidget
             elif label == "PM2 processes":      widget = ProcessesWidget
             elif label == "Appearance":    
                 widget =  get_appearance_widget()
