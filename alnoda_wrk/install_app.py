@@ -8,10 +8,10 @@ import typer
 from .globals import clnstr, WORKSPACE_DIR
 from .fileops import read_ui_conf, update_ui_conf, read_lineage
 from .ui_builder import copy_pageapp_image
-from .alnoda_api import AlnodaApi
+from .alnoda_api import AlnodaApi, AlnodaSignedApi
 from .wrk_supervisor import create_supervisord_file
 from .fileops import read_ui_conf, update_ui_conf, read_meta
-from .meta_about import update_meta, refresh_from_meta
+from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id
 
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
 ALLOWED_FREE_PORT_RANGE_MIN = 8031
@@ -109,6 +109,10 @@ def install_app(app_meta, install_temp_dir):
 
 def add_app(app_code, version=None, silent=False):
     """ Install app locally """
+    # check app is not already installed
+    if app_already_installed(app_code):
+        if not silent: typer.echo("app already installed")
+        return
     # fetch app version
     if version is not None: 
         api = AlnodaApiApp('meta', app_code=app_code, version=version)
@@ -122,6 +126,8 @@ def add_app(app_code, version=None, silent=False):
     version_id = app_meta['version_id']
     version_code = app_meta['version_code']
     version = app_meta['version']
+    app_name = app_meta['name']
+    app_desctiption = app_meta['description']
     ### check compatibility
     if not silent: 
         typer.echo("checking compatibility...")
@@ -195,6 +201,14 @@ def add_app(app_code, version=None, silent=False):
             update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'], docs=new_meta['docs'], tags=new_meta['tags'])
             refresh_from_meta()
         except: pass
+    ### log installed app to meta 
+    log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption)
+    ### if auth token is present - log to alnoda.org
+    s_api = AlnodaSignedApi("workspace/history/add/app/")
+    success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
+    if not success:
+        error = result['error']
+        if not silent: typer.echo(f"could not update workspace app history at alnoda.org: {result}")
     ### Done!
     if not silent: typer.echo("done")
 

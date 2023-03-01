@@ -9,7 +9,7 @@ import click
 import configparser
 from pathlib import Path
 from distutils.dir_util import copy_tree
-from datetime import date
+from datetime import date, datetime
 from .conf_parser import read_conf_dir
 from jinja2 import Template
 from .globals import *
@@ -17,6 +17,7 @@ from .fileops import *
 from .templates import *
 
 WORKSPACE_ABOUT_FILE = os.path.join(WORKSPACE_UI_DIR, 'docs', 'about.md')
+ALNODA_APPS_KEY = 'alnoda.org.apps'
 
 def get_ports_table():
     """  ->> str
@@ -128,10 +129,10 @@ def add_wrk_to_lineage(name, version, docs, tags):
     return
 
 
-def update_meta(name=None, version=None, author=None, description=None, docs=None, tags=None, repository=None, update_created=True):
+def update_meta(name=None, version=None, author=None, description=None, docs=None, tags=None, repository=None):
     """ str, str, str, str, bool ->> 
-    Updates meta.json. When called without any args, it will 
-    update 'created' field only. 
+    Updates meta.json. When called without any args, it will ensure 
+    that 'workspace_id' and 'created' fields are added to meta. 
 
     :param name: workspace name
     :type name: str
@@ -150,8 +151,8 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
     """
     meta_dict = read_meta()
     # if workspace_id not yet in meta - generate new, and add it to meta
-    if 'workspace_id' not in meta_dict:
-        meta_dict['workspace_id'] = get_code()
+    if 'workspace_id' not in meta_dict: meta_dict['workspace_id'] = get_code(length=16)
+    if 'created' not in meta_dict: meta_dict['created'] = datetime.today().strftime('%Y-%m-%d')
     # update meta_dict with the respective input
     if name is not None:
         meta_dict['name'] = name
@@ -167,8 +168,6 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
         meta_dict['repository'] = repository
     if tags is not None:    meta_dict['tags'] = tags.lower()
     else:   meta_dict['tags'] = ""
-    if update_created:
-        meta_dict['created'] = str(date.today())
     write_meta(meta_dict)
     return
 
@@ -300,3 +299,51 @@ def get_workspace_id():
     """
     meta_dict = read_meta()
     return meta_dict['workspace_id']
+
+
+def app_already_installed(app_code):
+    """  ->> str
+    Check if app is already installed and present in the meta
+
+    :param app_code: app code on the alnoda.org
+    :type app_code: str
+    :return: is app code present in meta?
+    :rtype: bool
+    """
+    if ALNODA_APPS_KEY not in meta_dict: return False
+    else:
+        if app_code in meta_dict[ALNODA_APPS_KEY]:
+            return True
+    return False
+
+
+def log_app_installed(app_code, name, version, desctiption):
+    """  ->> str
+    Log in meta that some app is installed
+
+    :param app_code: app code on the alnoda.org
+    :type app_code: str
+    :param name:  app name on the alnoda.org
+    :type name: str
+    :param version:  app version on the alnoda.org
+    :type version: str
+    :param desctiption:  app description on the alnoda.org
+    :type desctiption: str
+    """
+    meta_dict = read_meta()
+    # if apps is not yet present in meta - add it
+    if ALNODA_APPS_KEY not in meta_dict:
+        meta_dict[ALNODA_APPS_KEY] = {}
+    # if this app is already present - return
+    if app_code in meta_dict[ALNODA_APPS_KEY]: return
+    # add app to meta and save meta
+    meta_dict[ALNODA_APPS_KEY][app_code] = {
+        'name': name,
+        'version': version,
+        'desctiption': desctiption,
+        'date': datetime.today().strftime('%Y-%m-%d')
+    }
+    write_meta(meta_dict)
+    return
+
+
