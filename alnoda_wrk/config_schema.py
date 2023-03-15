@@ -17,6 +17,10 @@
     {
         'required': True,
     },
+    'date': 
+    {
+        'required': False,
+    },
     'description': 
     {
         'required': True,

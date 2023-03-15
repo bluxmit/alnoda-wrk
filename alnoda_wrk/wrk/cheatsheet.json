@@ -68,6 +68,10 @@
         }
     },
     "Git": {
+        "zwwtneif": {
+            "cmd": "lazygit",
+            "description": "open lazygit UI (alias - lg)"
+        },
         "qcjakpth": {
             "cmd": "git config --global credential.helper cache",
             "description": "save git user, email and password (after next enter)"
@@ -119,10 +123,6 @@
         "gpncpvmm": {
             "cmd": "git branch --delete [branch-name]",
             "description": "delete branch"
-        },
-        "zwwtneif": {
-            "cmd": "lazygit",
-            "description": "open lazygit UI (alias - lg)"
         }
     },
     "Text editors": {
