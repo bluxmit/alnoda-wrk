@@ -5,6 +5,7 @@ from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
 from .wrk_supervisor import create_supervisord_file
 from .tui.admin import open_admin
+from .install_app import add_app
 
 app = typer.Typer()
 
@@ -39,6 +40,12 @@ def build(folder: str):
     typer.echo(f"Building the workspace from {folder} ...")
     build_workspace(folder)
     return
+
+@app.command()
+def id():
+    """ Show workspace id """
+    workspace_id = get_workspace_id()
+    typer.echo(workspace_id)
 
 @app.command()
 def edit(what: str = "description"):
@@ -80,3 +87,19 @@ def admin():
     Open Admin TUI
     """
     open_admin()
+
+@app.command()
+def install(application):
+    """
+    Install app from alnoda.org
+    """
+    if '==' in application:
+        app_ = application.split('==')
+        app_code = app_[0]
+        version = app_[1] 
+        add_app(app_code, version=version, silent=False)
+    else:
+        app_code = application 
+        add_app(app_code, version=None, silent=False)
+    return
+

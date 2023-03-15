@@ -43,7 +43,7 @@ def get_env_vars_widget():
     row+=2; remove_btn = ttk.TTkButton(text='Remove', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     remove_btn.setBorderColor(TTkColor.fg('#f20e0a'))
 
-    row+=14; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=12; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
 
     def varSelectHandler(i):

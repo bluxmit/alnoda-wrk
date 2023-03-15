@@ -16,6 +16,9 @@ def read_cheatsheet_data():
     :return: existing cheatsheet as dict
     :rtype: OrderedDict
     """
+    if not os.path.exists(CHEATSHEET_DATA_FILE):
+        with open(CHEATSHEET_DATA_FILE, "x") as f:
+            f.write("{}")
     with open(CHEATSHEET_DATA_FILE) as json_file:
         cheatsheet_dict = json.load(json_file)
     return OrderedDict(cheatsheet_dict)

@@ -52,7 +52,7 @@ def init_wrk():
             this_path = os.path.dirname(os.path.realpath(__file__))
             shutil.copytree(os.path.join(this_path, 'wrk'), WORKSPACE_DIR)
             # update meta 
-            update_meta()   #<- only update created date
+            update_meta()   #<- generate workspace ID and save created date
             refresh_about() #<- and update about page with the new date
         else:
             logging.info(f'Workspace initialized in {WORKSPACE_DIR}')
