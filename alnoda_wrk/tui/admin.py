@@ -16,7 +16,6 @@ def open_admin():
     from .apps_services import get_apps_services_widget
     from .share_widget import get_share_widget
     from .zsh_widget import get_zsh_widget
-    from .processes_widget import get_processes_widget
     from .signin_widget import get_signin_widget
     from .my_notes_widget import get_my_notes_widget
 
@@ -71,10 +70,6 @@ def open_admin():
         ShareWidget = get_share_widget()
         RightFrame.layout().addWidget(ShareWidget)
 
-        # Processes widget
-        ProcessesWidget = get_processes_widget()
-        RightFrame.layout().addWidget(ProcessesWidget)
-
         # zsh widget
         ZshWidget = get_zsh_widget()
         RightFrame.layout().addWidget(ZshWidget)
@@ -96,7 +91,6 @@ def open_admin():
             elif label == "Collaborate":        widget = ShareWidget
             elif label == "Zsh":                widget = ZshWidget
             elif label == "My notes":           widget = MyNotesWidget
-            elif label == "PM2 processes":      widget = ProcessesWidget
             elif label == "Appearance":    
                 widget =  get_appearance_widget()
                 RightFrame.layout().addWidget(widget)
