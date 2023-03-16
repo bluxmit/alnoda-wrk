@@ -55,7 +55,7 @@ def check_compatibility(app_code, version_code, version):
     api_comp = AlnodaApiApp('compatibility', app_code=app_code, version_code=version_code)
     res, app_compat = api_comp.fetch()
     if res is False: return False
-    if 'all_workspaces' in app_compat: return True
+    if 'all_workspaces' in app_compat or len(app_compat)==0: return True
     # if there are defined compatibilities rules, fetch workspace lineage
     lineage = read_lineage()
     lineage_dict = {e['name']:e for e in lineage}
@@ -160,7 +160,10 @@ def add_app(app_code, version=None, silent=False):
         if not silent: typer.echo("setting startup configuration...")
         start_script = clnstr(app_meta['start_script'])
         create_supervisord_file(name=app_code, cmd=start_script, folder=None, env_vars=None)
-        if not silent: typer.echo("-- application will start after workspace is restarted --")
+        if not silent: 
+            typer.echo("-------------------------------------------------------------")
+            typer.echo("---- application will start after workspace is restarted ----")
+            typer.echo("-------------------------------------------------------------")
     ### Add UI
     if 'app_port' in app_meta:
         if not silent: typer.echo("updating workspace UI...")

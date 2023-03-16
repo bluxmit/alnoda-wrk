@@ -310,6 +310,7 @@ def app_already_installed(app_code):
     :return: is app code present in meta?
     :rtype: bool
     """
+    meta_dict = read_meta()
     if ALNODA_APPS_KEY not in meta_dict: return False
     else:
         if app_code in meta_dict[ALNODA_APPS_KEY]:

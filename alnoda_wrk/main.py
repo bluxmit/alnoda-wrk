@@ -6,6 +6,7 @@ from .meta_about import *
 from .wrk_supervisor import create_supervisord_file
 from .tui.admin import open_admin
 from .install_app import add_app
+from .zsh import add_user_env_var
 
 app = typer.Typer()
 
@@ -103,3 +104,10 @@ def install(application):
         add_app(app_code, version=None, silent=False)
     return
 
+@app.command()
+def setvar(name, value):
+    """
+    Set environmental variable name='value'
+    """
+    add_user_env_var(name, value)
+    return

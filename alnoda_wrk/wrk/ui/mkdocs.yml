@@ -16,7 +16,7 @@ nav:
 
 site_name: My Workspace
 repo_url: https://github.com/bluxmit/alnoda-workspaces
-site_url: https://alnoda.com
+site_url: https://alnoda.org
 edit_uri: ""
 
 # ===========================================================
@@ -44,8 +44,8 @@ theme:
 
 extra:
   # Link to open when your logo is clicked
-  homepage: https://docs.alnoda.org
-  host_url: http://docs.alnoda.org
+  homepage: https://alnoda.org
+  host_url: http://alnoda.org
 
 plugins:
   # Enable Macros and jinja2 templates
