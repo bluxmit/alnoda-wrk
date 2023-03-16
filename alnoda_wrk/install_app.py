@@ -137,7 +137,17 @@ def add_app(app_code, version=None, silent=False):
             should_continue = typer.confirm("Do you want to continue?")
             if not should_continue: return
     ### Check if app exposes UI and wrkspace has free ports
-    if 'app_port' in app_meta:
+    app_has_UI = False
+    if 'app_port' in app_meta and app_meta['app_port'] is not None and app_meta['app_port'] != 'None' and len(str(app_meta['app_port']))>0:
+        app_has_UI = True
+        try: app_port = int(app_meta['app_port'])
+        except:
+            app_has_UI = False
+            if not silent: 
+                typer.echo("Application UI port is misconfigured!")
+                typer.echo("Installation FAILED")
+            return
+    if app_has_UI:
         if not silent: typer.echo("assigning port...")
         app_port = app_meta['app_port']
         free_ports = get_free_ports()
@@ -149,14 +159,17 @@ def add_app(app_code, version=None, silent=False):
         # if app port is one of the free ports, take it
         if app_port in free_ports:
             prescribed_port = app_port
-    ### Folder for innstall artefacts
+    ### Folder for install artefacts
     install_temp_dir = make_apinstall_temp_dir(app_code)
     ### Install app using the script
     if not silent: typer.echo("running install script...")
     install_result = install_app(app_meta, install_temp_dir)
     if not silent: typer.echo(install_result)
     ### Add startup script
-    if 'start_script' in app_meta:
+    app_should_run_as_daemon = False
+    if 'start_script' in app_meta and app_meta['start_script'] is not None and app_meta['start_script'] != 'None' and len(str(app_meta['start_script']))>0:
+        app_should_run_as_daemon = True
+    if app_should_run_as_daemon:
         if not silent: typer.echo("setting startup configuration...")
         start_script = clnstr(app_meta['start_script'])
         create_supervisord_file(name=app_code, cmd=start_script, folder=None, env_vars=None)
@@ -165,7 +178,7 @@ def add_app(app_code, version=None, silent=False):
             typer.echo("---- application will start after workspace is restarted ----")
             typer.echo("-------------------------------------------------------------")
     ### Add UI
-    if 'app_port' in app_meta:
+    if app_has_UI:
         if not silent: typer.echo("updating workspace UI...")
         # do we need port-mapping?
         if prescribed_port != app_port:
@@ -211,7 +224,7 @@ def add_app(app_code, version=None, silent=False):
     success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
     if not success:
         error = result['error']
-        if not silent: typer.echo(f"could not update workspace app history at alnoda.org: {result}")
+        if not silent: typer.echo(f"could not update workspace app history at alnoda.org: {error}")
     ### Done!
     if not silent: typer.echo("done")
 
