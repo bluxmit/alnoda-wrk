@@ -318,7 +318,16 @@ def app_already_installed(app_code):
     return False
 
 
-def log_app_installed(app_code, name, version, desctiption):
+def is_port_in_app_use(port):
+    """ Check if alnoda apps do not use this port """
+    meta_dict = read_meta()
+    if "alnoda.org.apps" not in meta_dict: return False
+    for k,v in meta_dict['alnoda.org.apps']:
+        if "port" in v and v['port'] == port: return True
+    return False
+
+
+def log_app_installed(app_code, name, version, desctiption, app_port=None):
     """  ->> str
     Log in meta that some app is installed
 
@@ -330,6 +339,8 @@ def log_app_installed(app_code, name, version, desctiption):
     :type version: str
     :param desctiption:  app description on the alnoda.org
     :type desctiption: str
+    : param app_port: port app is listening to
+    :type app_port: int
     """
     meta_dict = read_meta()
     # if apps is not yet present in meta - add it
@@ -342,7 +353,8 @@ def log_app_installed(app_code, name, version, desctiption):
         'name': name,
         'version': version,
         'desctiption': desctiption,
-        'date': datetime.today().strftime('%Y-%m-%d')
+        'date': datetime.today().strftime('%Y-%m-%d'),
+        'app_port': app_port
     }
     write_meta(meta_dict)
     return

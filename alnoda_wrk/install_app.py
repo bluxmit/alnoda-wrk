@@ -1,6 +1,7 @@
 """ Module to install applications from alnoda.org
 """
 import os, shutil
+import socket
 import requests
 import subprocess
 from packaging import version as Version
@@ -11,7 +12,7 @@ from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi, AlnodaSignedApi
 from .wrk_supervisor import create_supervisord_file
 from .fileops import read_ui_conf, update_ui_conf, read_meta
-from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id
+from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use
 
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
 ALLOWED_FREE_PORT_RANGE_MIN = 8031
@@ -97,6 +98,8 @@ def make_apinstall_temp_dir(app_code):
 def install_app(app_meta, install_temp_dir):
     """ Install application using install script """
     install_script = clnstr(app_meta['install_script'])
+    require_terminal_restart = False
+    if 'wrk' in install_script and 'alias' in install_script: require_terminal_restart = True
     # save install script there
     script_path = os.path.join(install_temp_dir, 'install.sh')
     with open(script_path, 'w') as f:
@@ -104,7 +107,13 @@ def install_app(app_meta, install_temp_dir):
     os.chmod(script_path, 0o755)
     # install applicationn and its dependencies using the script
     result = subprocess.run(['bash', script_path], capture_output=True, text=True)
-    return result
+    return result, require_terminal_restart
+
+
+def is_os_port_in_use(port):
+    """ Simply check if port is free """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('0.0.0.0', port)) == 0
 
 
 def add_app(app_code, version=None, silent=False):
@@ -139,12 +148,22 @@ def add_app(app_code, version=None, silent=False):
     ### Check if app exposes UI and wrkspace has free ports
     app_has_UI = False
     if 'app_port' in app_meta and app_meta['app_port'] is not None and app_meta['app_port'] != 'None' and len(str(app_meta['app_port']))>0:
-        app_has_UI = True
-        try: app_port = int(app_meta['app_port'])
-        except:
-            app_has_UI = False
+        app_has_UI = True; port_correct = True
+        # first check that port is int
+        try: 
+            app_port = int(app_meta['app_port'])
+            # then check port is within a proper port range
+            if app_port <= 0 or app_port >= 65535: port_correct = False
+        except: app_has_UI = False; port_correct = False
+        if not port_correct:
             if not silent: 
                 typer.echo("Application UI port is misconfigured!")
+                typer.echo("Installation FAILED")
+            return
+        # now check port is free
+        if is_os_port_in_use(app_port) or is_port_in_app_use(port): 
+            if not silent: 
+                typer.echo(f"Application listens to port {app_port}, but it is already in use")
                 typer.echo("Installation FAILED")
             return
     if app_has_UI:
@@ -163,7 +182,7 @@ def add_app(app_code, version=None, silent=False):
     install_temp_dir = make_apinstall_temp_dir(app_code)
     ### Install app using the script
     if not silent: typer.echo("running install script...")
-    install_result = install_app(app_meta, install_temp_dir)
+    install_result, require_terminal_restart = install_app(app_meta, install_temp_dir)
     if not silent: typer.echo(install_result)
     ### Add startup script
     app_should_run_as_daemon = False
@@ -178,6 +197,7 @@ def add_app(app_code, version=None, silent=False):
             typer.echo("---- application will start after workspace is restarted ----")
             typer.echo("-------------------------------------------------------------")
     ### Add UI
+    app_port = None
     if app_has_UI:
         if not silent: typer.echo("updating workspace UI...")
         # do we need port-mapping?
@@ -205,6 +225,11 @@ def add_app(app_code, version=None, silent=False):
             'description': app_meta['description'],
             'image': f'{img_loc_prefix}{img_name}'
         }
+        if 'ui_path' in app_meta and app_meta['ui_path'] is not None and app_meta['ui_path'] != 'None' and len(str(app_meta['ui_path']))>0:
+            ui_path = app_meta['ui_path'] 
+            if ui_path[0] == "/": 
+                ui_path = ui_path[1:]
+            ui_dict['path'] = ui_path
         page_conf[app_code] = ui_dict
         update_ui_conf(ui_conf)
     ### Add workspace tags
@@ -218,7 +243,7 @@ def add_app(app_code, version=None, silent=False):
             refresh_from_meta()
         except: pass
     ### log installed app to meta 
-    log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption)
+    log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption, app_port=app_port)
     ### if auth token is present - log to alnoda.org
     s_api = AlnodaSignedApi("workspace/history/add/app/")
     success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
@@ -226,5 +251,7 @@ def add_app(app_code, version=None, silent=False):
         error = result['error']
         if not silent: typer.echo(f"could not update workspace app history at alnoda.org: {error}")
     ### Done!
+    if require_terminal_restart:
+        if not silent: typer.echo("---- RESTART TERMINAL TO APPLY CHANGES ----")
     if not silent: typer.echo("done")
 

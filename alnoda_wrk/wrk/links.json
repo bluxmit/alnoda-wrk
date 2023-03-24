@@ -1,4 +1,26 @@
 {
+    "Alnoda": {
+        "meddkrqr": {
+            "url": "https://alnoda.org/",
+            "name": "Alnoda home page",
+            "description": "Homepage of Alnoda project"
+        },
+        "gjlpespp": {
+            "url": "https://alnoda.org/registry/",
+            "name": "Alnoda apps",
+            "description": "Search and list apps to install in the alnoda workspaces"
+        },
+        "gjdherqk": {
+            "url": "https://alnoda.org/registry/workspaces/",
+            "name": "Alnoda workspaces",
+            "description": "Search and list alnoda workspaces"
+        },
+        "wednndqf": {
+            "url": "https://docs.alnoda.org/",
+            "name": "Alnoda docs",
+            "description": "Alnoda documentation"
+        }
+    },
     "Developer tools": {
         "jhwxqski": {
             "url": "https://devhints.io/",

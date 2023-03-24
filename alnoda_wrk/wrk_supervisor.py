@@ -49,7 +49,7 @@ def create_supervisord_file(name, cmd, folder=None, env_vars=None):
     """
     init_supervisord() # <- make sure folders exist
     # make sure name is safestring 
-    name = safestring(name)
+    name = safestring(name, length=35)
     params = {"name": name, "cmd": cmd}
     if folder: params["folder"] = folder
     if env_vars: params["env_vars"] = env_vars

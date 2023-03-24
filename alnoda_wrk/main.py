@@ -3,10 +3,11 @@ import typer
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
-from .wrk_supervisor import create_supervisord_file
+from .wrk_supervisor import create_supervisord_file, stop_app
 from .tui.admin import open_admin
 from .install_app import add_app
-from .zsh import add_user_env_var
+from .zsh import add_user_env_var, add_user_alias
+from .sign_in import add_token, delete_auth
 
 app = typer.Typer()
 
@@ -77,10 +78,17 @@ def refresh():
 @app.command()
 def start(name: str, cmd: str):
     """
-    Start application
+    Start application or service as daemon
     """
     create_supervisord_file(name, cmd)
     return
+
+@app.command()
+def stop(name: str):
+    """
+    Stop daemonnized application or service 
+    """
+    stop_app(name)
 
 @app.command()
 def admin():
@@ -107,7 +115,28 @@ def install(application):
 @app.command()
 def setvar(name, value):
     """
-    Set environmental variable name='value'
+    Set terminal environmental variable name='value'
     """
     add_user_env_var(name, value)
     return
+
+@app.command()
+def alias(name, cmd):
+    """
+    Set alias for zsh name='value'
+    """
+    add_user_alias(name, cmd)
+
+@app.command()
+def signin(token):
+    """
+    Autheticate workspace at alnoda.org 
+    """
+    add_token(token)
+
+@app.command()
+def signout():
+    """
+    Log out workspace from alnoda.org 
+    """
+    delete_auth()

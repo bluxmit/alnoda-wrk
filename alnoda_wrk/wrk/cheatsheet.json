@@ -1,4 +1,42 @@
 {
+    "Alnoda workspace": {
+        "bpphdlrf": {
+            "cmd": "wrk signin [security token]",
+            "description": "Authenticate workspace at alnoda.org"
+        },
+        "xxphjxxf": {
+            "cmd": "wrk signout",
+            "description": "Log out workspace from alnoda.org"
+        },
+        "asahyfjk": {
+            "cmd": "wrk install [alnoda.org app id]",
+            "description": "Install application from alnoda.org. Sometimes workspace restart is required!"
+        },
+        "vsphygrh": {
+            "cmd": "wrk update [name,description,author,version] 'new value text'",
+            "description": "Change workspace name, description, author or version"
+        },
+        "fdfhygrg": {
+            "cmd": "wrk start [service name] '[service start command]'",
+            "description": "Start application or service as daemon. Workspace restart is required!"
+        },
+        "popnfggg": {
+            "cmd": "wrk stop [service name] ",
+            "description": "Stop service that runs as daemon. Workspace restart is required!"
+        },
+        "bnphpprl": {
+            "cmd": "wrk alias [name] '[command]'",
+            "description": "Set alias tor interactive terminal. Restart terminal session to apply."
+        },
+        "bnlppcwl": {
+            "cmd": "wrk setvar [name] '[value]'",
+            "description": "Set ENV variable tor interactive terminal. Restart terminal session to apply."
+        },
+        "dsuuyggg": {
+            "cmd": "wrk admin",
+            "description": "Launch workspace admin in terminal"
+        }
+    },
     "Common": {
         "vzphysrw": {
             "cmd": "p [file name]",
