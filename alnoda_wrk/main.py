@@ -18,7 +18,7 @@ def cls():
 
 @app.command()
 def deps():
-    """ Install/Update mkdocs dependencies """
+    """ Install/Update wrk dependencies """
     install_mkdocs_deps()
     return
     

@@ -322,7 +322,7 @@ def is_port_in_app_use(port):
     """ Check if alnoda apps do not use this port """
     meta_dict = read_meta()
     if "alnoda.org.apps" not in meta_dict: return False
-    for k,v in meta_dict['alnoda.org.apps']:
+    for k,v in meta_dict['alnoda.org.apps'].items():
         if "port" in v and v['port'] == port: return True
     return False
 
