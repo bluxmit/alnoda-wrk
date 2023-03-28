@@ -6,6 +6,7 @@ import requests
 import subprocess
 from packaging import version as Version
 import typer
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from .globals import clnstr, WORKSPACE_DIR
 from .fileops import read_ui_conf, update_ui_conf, read_lineage
 from .ui_builder import copy_pageapp_image
@@ -121,12 +122,12 @@ def add_app(app_code, version=None, silent=False):
     """ Install app locally """
     # check app is not already installed
     if app_already_installed(app_code):
-        if not silent: typer.echo("app already installed")
+        if not silent: typer.echo("✅ app already installed")
         return
     # ensure only one installation at a time
     if os.path.isfile(INSTALL_PID_FILE):
         if not silent: 
-            typer.echo("Another app is being installed right now. Please install only one app at a time!")
+            typer.echo("🛑 Another app is being installed right now. Please install only one app at a time!")
             typer.echo(f"(if this is an error, remove pid file with 'rm {INSTALL_PID_FILE}')")
         return
     with open(INSTALL_PID_FILE, 'w', encoding='utf-8') as f:
@@ -140,11 +141,11 @@ def add_app(app_code, version=None, silent=False):
             api = AlnodaApiApp('meta',app_code=app_code)
         res, app_meta = api.fetch()
         if res is False:
-            if not silent: typer.echo("App or app version not found")
-            return False, "App or app version not found"
+            if not silent: typer.echo("🛑 App or app version not found")
+            return 
         if not silent: 
-            typer.echo("starting...")
-            typer.echo("***|x|*** Please DO NOT close this terminal window untill app is fully installed! ***|x|***")
+            typer.echo("✨ starting...")
+            typer.echo("⚠️ Please DO NOT close this terminal window untill app is fully installed!")
         version_id = app_meta['version_id']
         version_code = app_meta['version_code']
         version = app_meta['version']
@@ -152,11 +153,11 @@ def add_app(app_code, version=None, silent=False):
         app_desctiption = app_meta['description']
         ### check compatibility
         if not silent: 
-            typer.echo("checking compatibility...")
+            typer.echo("➡️ checking compatibility...")
             is_compatible = check_compatibility(app_code, version_code, version)
             if not is_compatible:
-                typer.echo("WARNING: This app is not explicitly compatible the workspace lineage")
-                should_continue = typer.confirm("Do you want to continue?")
+                typer.echo("⚠️ WARNING: This app is not explicitly compatible the workspace lineage")
+                should_continue = typer.confirm("Do you want to continue❓")
                 if not should_continue: return
         ### Check if app exposes UI and wrkspace has free ports
         app_has_UI = False
@@ -170,8 +171,8 @@ def add_app(app_code, version=None, silent=False):
             except: app_has_UI = False; port_correct = False
             if not port_correct:
                 if not silent: 
-                    typer.echo("Application UI port is misconfigured!")
-                    typer.echo("Installation FAILED")
+                    typer.echo("🛑 Application UI port is misconfigured!")
+                    typer.echo("😢 Sorry cannot continue!")
                 return
             # now check port is free
             if is_os_port_in_use(app_port) or is_port_in_app_use(app_port): 
@@ -180,12 +181,13 @@ def add_app(app_code, version=None, silent=False):
                     typer.echo("Installation FAILED")
                 return
         if app_has_UI:
-            if not silent: typer.echo("assigning port...")
+            if not silent: typer.echo("➡️ assigning port...")
             app_port = app_meta['app_port']
             free_ports = get_free_ports()
             # if app has UI, but workspace has no free ports - stop here
             if len(free_ports) == 0:
-                return False, "Limit of applications with UI reached"
+                typer.echo("😢 Sorry, the limit of 10 applications with UI reached")
+                return False, "✋ Limit of applications with UI reached"
             # prescribe first free port to the app
             prescribed_port = free_ports[0]
             # if app port is one of the free ports, take it
@@ -194,24 +196,33 @@ def add_app(app_code, version=None, silent=False):
         ### Folder for install artefacts
         install_temp_dir = make_apinstall_temp_dir(app_code)
         ### Install app using the script
-        if not silent: typer.echo("running install script...")
-        install_result, require_terminal_restart = install_app(app_meta, install_temp_dir)
-        if not silent: typer.echo(install_result)
+        if not silent:
+            typer.echo("➡️ executing installation script...")
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                transient=True,
+            ) as progress:
+                progress.add_task(description="installing... ...", total=None)
+                install_result, require_terminal_restart = install_app(app_meta, install_temp_dir)
+            print("✔️ app installed")
+        else: install_result, require_terminal_restart = install_app(app_meta, install_temp_dir)
+        # if not silent: typer.echo(install_result)
         ### Add startup script
         app_should_run_as_daemon = False
         if 'start_script' in app_meta and app_meta['start_script'] is not None and app_meta['start_script'] != 'None' and len(str(app_meta['start_script']))>0:
             app_should_run_as_daemon = True
         if app_should_run_as_daemon:
-            if not silent: typer.echo("setting startup configuration...")
+            if not silent: typer.echo("➡️ setting startup configuration...")
             start_script = clnstr(app_meta['start_script'])
             create_supervisord_file(name=app_code, cmd=start_script, folder=None, env_vars=None)
             if not silent: 
                 typer.echo("-------------------------------------------------------------")
-                typer.echo("---- application will start after workspace is restarted ----")
+                typer.echo("- ⚠️ application will start after workspace is restarted ⚠️ -")
                 typer.echo("-------------------------------------------------------------")
         ### Add UI
         if app_has_UI:
-            if not silent: typer.echo("updating workspace UI...")
+            if not silent: typer.echo("➡️ updating workspace UI...")
             # do we need port-mapping?
             if prescribed_port != app_port:
                 socat_cmd = f"socat tcp-listen:{prescribed_port},reuseaddr,fork tcp:localhost:{app_port}"
@@ -246,7 +257,7 @@ def add_app(app_code, version=None, silent=False):
             update_ui_conf(ui_conf)
         ### Add workspace tags
         if 'tags' in app_meta:  
-            if not silent: typer.echo("adding workspace tags...")
+            if not silent: typer.echo("➡️ adding workspace tags...")
             app_tags = app_meta['tags']
             try:
                 new_meta = read_meta()
@@ -261,14 +272,14 @@ def add_app(app_code, version=None, silent=False):
         success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
         if not success:
             error = result['error']
-            if not silent: typer.echo(f"could not update workspace app history at alnoda.org: {error}")
+            if not silent: typer.echo(f"❗ Could not update workspace app history at alnoda.org: {error}")
         ### Done!
         if require_terminal_restart:
-            if not silent: typer.echo("---- RESTART TERMINAL TO APPLY CHANGES ----")
-        if not silent: typer.echo("done")
+            if not silent: typer.echo("---- ⚠️ RESTART TERMINAL TO APPLY CHANGES ----")
+        if not silent: typer.echo("🚀 done")
     # except entire installation failed
     except:
-        if not silent: typer.echo("Sorry, could not install.")
+        if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or pplication might not work correctly")
     finally: 
         if os.path.exists(INSTALL_PID_FILE): os.remove(INSTALL_PID_FILE)
     return
