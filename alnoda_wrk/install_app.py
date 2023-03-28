@@ -142,7 +142,9 @@ def add_app(app_code, version=None, silent=False):
         if res is False:
             if not silent: typer.echo("App or app version not found")
             return False, "App or app version not found"
-        if not silent: typer.echo("starting...")
+        if not silent: 
+            typer.echo("starting...")
+            typer.echo("***|x|*** Please DO NOT close this terminal window untill app is fully installed! ***|x|***")
         version_id = app_meta['version_id']
         version_code = app_meta['version_code']
         version = app_meta['version']
