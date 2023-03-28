@@ -43,7 +43,6 @@ class AlnodaSignedApi:
                 }
             self.authenticated = True
         except: pass
-
     def fetch(self, data):
         if not self.authenticated:
             return False, {'error': 'Not authenticated at alnoda.org'} 

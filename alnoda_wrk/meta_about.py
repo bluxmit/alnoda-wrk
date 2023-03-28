@@ -144,11 +144,14 @@ def update_meta(name=None, version=None, author=None, description=None, docs=Non
     :type description: str
     :param docs: link to the workspace documentation
     :type docs: str
+    :param tags: workspace tags. String of comma-separated tags
+    :type tags: str
     :param repository: link to the workspace source code
     :type repository: str
     :param update_created: should 'created' be updated in the meta.json? (Default is True)
     :type update_created: bool
     """
+    # first read existing meta
     meta_dict = read_meta()
     # if workspace_id not yet in meta - generate new, and add it to meta
     if 'workspace_id' not in meta_dict: meta_dict['workspace_id'] = get_code(length=16)

@@ -118,6 +118,22 @@ def is_os_port_in_use(port):
         return s.connect_ex(('0.0.0.0', port)) == 0
 
 
+def add_app_tags_to_wrk(app_meta):
+    """ Add application tags to the workspace tags """
+    try:
+        app_tags_set = set(app_meta['tags'])
+        wrk_meta = read_meta()
+        wrk_tags_ = wrk_meta['tags'].split(",")
+        wrk_tags = [t.strip().replace(" ","") for t in wrk_tags_]
+        wrk_tags_set = set(wrk_tags)
+        new_wrk_tags_set = wrk_tags_set.union(app_tags_set)
+        new_wrk_tags_list = list(new_wrk_tags_set)
+        new_wrk_tags = ", ".join(new_wrk_tags_list)
+        update_meta(tags=new_wrk_tags)
+        refresh_from_meta()
+    except: pass
+
+
 def add_app(app_code, version=None, silent=False):
     """ Install app locally """
     # check app is not already installed
@@ -218,7 +234,7 @@ def add_app(app_code, version=None, silent=False):
             create_supervisord_file(name=app_code, cmd=start_script, folder=None, env_vars=None)
             if not silent: 
                 typer.echo("-------------------------------------------------------------")
-                typer.echo("- ⚠️ application will start after workspace is restarted ⚠️ -")
+                typer.echo("- ⚠️ application will start after workspace is restarted ⚠️  -")
                 typer.echo("-------------------------------------------------------------")
         ### Add UI
         if app_has_UI:
@@ -258,15 +274,10 @@ def add_app(app_code, version=None, silent=False):
         ### Add workspace tags
         if 'tags' in app_meta:  
             if not silent: typer.echo("➡️ adding workspace tags...")
-            app_tags = app_meta['tags']
-            try:
-                new_meta = read_meta()
-                new_meta['tags'] = new_meta['tags'] + ', '.join(app_tags)
-                update_meta(name=new_meta['name'], version=new_meta['version'], author=new_meta['author'], docs=new_meta['docs'], tags=new_meta['tags'])
-                refresh_from_meta()
-            except: pass
-        ### log installed app to meta 
-        log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption, app_port=app_port)
+            add_app_tags_to_wrk(app_meta)
+        ### log installed app to meta
+        try: log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption, app_port=app_port) # when app has UI (app_port is defined)
+        except: log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption) # when app does not have UI (app_port is NOT defined)
         ### if auth token is present - log to alnoda.org
         s_api = AlnodaSignedApi("workspace/history/add/app/")
         success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
@@ -279,7 +290,7 @@ def add_app(app_code, version=None, silent=False):
         if not silent: typer.echo("🚀 done")
     # except entire installation failed
     except:
-        if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or pplication might not work correctly")
+        if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or application might not work correctly")
     finally: 
         if os.path.exists(INSTALL_PID_FILE): os.remove(INSTALL_PID_FILE)
     return
