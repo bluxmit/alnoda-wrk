@@ -285,9 +285,12 @@ def add_app(app_code, version=None, silent=False):
             error = result['error']
             if not silent: typer.echo(f"❗ Could not update workspace app history at alnoda.org: {error}")
         ### Done!
-        if require_terminal_restart:
-            if not silent: typer.echo("---- ⚠️ RESTART TERMINAL TO APPLY CHANGES ----")
-        if not silent: typer.echo("🚀 done")
+        if not silent and require_terminal_restart: typer.echo("---- ⚠️ RESTART TERMINAL REQUIRED TO APPLY CHANGES ----")
+        if not silent: 
+            typer.echo("✍️ If app is not working try restarting terminal window or entire workspace")
+            typer.echo("🚀 done")
+        
+
     # except entire installation failed
     except:
         if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or application might not work correctly")
