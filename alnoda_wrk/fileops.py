@@ -165,7 +165,6 @@ def read_styles_scss():
         col_ = col_.replace("!important","")
         col_ = col_.strip()
         return col_
-
     def col_map(line, group, styles_dict):
         if "--md-primary-fg-color" in line:             styles_dict[group]["primary"] = get_color(line)
         elif "--md-accent-fg-color" in line:            styles_dict[group]["accent"] = get_color(line)
@@ -177,7 +176,6 @@ def read_styles_scss():
         elif "--md-code-fg-color" in line:              styles_dict[group]["code_text"] = get_color(line)
         elif "--md-code-fg-color" in line:              styles_dict[group]["code_text"] = get_color(line)
         return styles_dict
-
     with open(WORKSPACE_UI_SCSS_STYLES_FILE) as styles_file:
         styles_lines = styles_file.readlines()
     styles_dict = {}
