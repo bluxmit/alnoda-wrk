@@ -96,6 +96,7 @@ def check_compatibility(app_code, version_code, version):
         this_app_dict = {}
         try: this_app_dict = meta['alnoda.org.apps']
         except: pass
+        has_compatibles_list = False; satisfies_compatibles_list = False  # if there re rules of type 'compatible'
         apps_compatibility_dict = {e['another_app']:e for e in apps_compatibility}
         for a,d in apps_compatibility_dict.items():
             compatibility_type = d['compatibility_type']
@@ -111,24 +112,45 @@ def check_compatibility(app_code, version_code, version):
                 this = this_app_dict[a]
                 this_version_ = str(this['version'])
                 this_version = Version.parse(this_version_)
-                if compatibility_type in ['requires', 'compatible']:
-                    if required_geq is not None and len(str(required_geq)) > 0:
+                if compatibility_type in ['requires']:
+                    if required_geq is not None and len(str(required_geq))>0:
                         if this_version < required_geq_version: 
                             app_compatible = False
                             app_compatibility_message = f"This app requires another app (id) {a} version greater or equal {required_geq}, but this workspace has version {this_version_} of the required app"
-                    if required_leq is not None and len(str(required_leq)) > 0:
+                        else: satisfies_compatibles_list = True
+                    if required_leq is not None and len(str(required_leq))>0:
                         if this_version > required_required_leq: 
                             app_compatible = False
                             app_compatibility_message = f"This app requires another app (id) {a} version smaller or equal {required_leq}, but this workspace has version {this_version_} of the required app"
+                        else: satisfies_compatibles_list = True
+                elif compatibility_type in ['compatible']:
+                    has_compatibles_list = True
+                    if (required_geq is not None and len(str(required_geq))>0) and (required_leq is not None and len(str(required_leq))>0):
+                        if (this_version > required_geq_version) and (this_version < required_required_leq): 
+                            satisfies_compatibles_list = True
+                    elif required_geq is not None and len(str(required_geq))>0:
+                        if this_version > required_geq_version: 
+                            satisfies_compatibles_list = True
+                    elif required_leq is not None and len(str(required_leq))>0:
+                        if this_version < required_required_leq: 
+                            satisfies_compatibles_list = True
+                    elif (required_geq is None or len(str(required_geq))==0) and (required_leq is None or len(str(required_leq))==0):
+                        satisfies_compatibles_list = True # <- compatible with all versions
                 elif compatibility_type in ['incompatible']:
-                    if required_geq is not None and  len(str(required_geq)) > 0:
+                    if required_geq is not None and  len(str(required_geq))>0:
                         if this_version >= required_geq_version: 
                             app_compatible = False
                             app_compatibility_message = f"This app is incompatible with app (id) {a} version greater or equal {required_geq}, and this workspace has version {this_version_} of this app"
-                    if required_leq is not None and len(str(required_leq)) > 0:
+                    if required_leq is not None and len(str(required_leq))>0:
                         if this_version <= required_required_leq:
                             app_compatible = False
                             app_compatibility_message = f"This app is incompatible with app (id) {a} version smaller or equal {required_leq}, and this workspace has version {this_version_} of this app"
+                    if (required_geq is None or len(str(required_geq))==0) and (required_leq is None or len(str(required_leq))==0):
+                        app_compatible = False
+                        app_compatibility_message = f"This app is incompatible with all versions of app (id) {a}, and this workspace has this app installed"
+        if app_compatible and has_compatibles_list == True and satisfies_compatibles_list == False:
+            app_compatible = False
+            app_compatibility_message = f"This app has a list of compatible apps and versions, but this workspace has none of those installed"
     return wrk_compatible, wrk_compatibility_message, app_compatible, app_compatibility_message
 
 
