@@ -364,6 +364,15 @@ def add_app(app_code, version=None, silent=False):
         if not silent: 
             typer.echo("✍️ If app is not working try restarting terminal window or entire workspace")
             typer.echo("🚀 done")
+        # If remarks are present, display (optional, enclose in try-except)
+        try:
+            if not silent and 'remarks' in app_meta and app_meta['remarks'] is not None and len(str(app_meta['remarks']))>0:
+                remarks = app_meta['remarks']
+                typer.echo("***********************************************")
+                typer.echo(remarks)
+                typer.echo("***********************************************")
+        except: pass
+
     # except entire installation failed
     except:
         if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or application might not work correctly")
