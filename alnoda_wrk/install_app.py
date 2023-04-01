@@ -236,6 +236,9 @@ def add_app(app_code, version=None, silent=False):
         version = app_meta['version']
         app_name = app_meta['name']
         app_desctiption = app_meta['description']
+        ### check if install script has recursive installation with alnoda-wrk (we need to delete INSTALL_PID_FILE THEN)
+        if 'wrk' in app_meta['install_script'] and 'install' in app_meta['install_script']:
+            if os.path.exists(INSTALL_PID_FILE): os.remove(INSTALL_PID_FILE)
         ### check compatibility (it is optional, so wrap in try-except)
         if not silent: 
             # try:
@@ -372,7 +375,6 @@ def add_app(app_code, version=None, silent=False):
                 typer.echo(remarks)
                 typer.echo("***********************************************")
         except: pass
-
     # except entire installation failed
     except:
         if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or application might not work correctly")

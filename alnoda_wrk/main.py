@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 import typer
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
@@ -98,7 +99,7 @@ def admin():
     open_admin()
 
 @app.command()
-def install(application):
+def install(application, silent: Optional[bool] = typer.Argument(False)):
     """
     Install app from alnoda.org
     """
@@ -106,10 +107,10 @@ def install(application):
         app_ = application.split('==')
         app_code = app_[0]
         version = app_[1] 
-        add_app(app_code, version=version, silent=False)
+        add_app(app_code, version=version, silent=silent)
     else:
         app_code = application 
-        add_app(app_code, version=None, silent=False)
+        add_app(app_code, version=None, silent=silent)
     return
 
 @app.command()
