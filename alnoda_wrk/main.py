@@ -9,6 +9,7 @@ from .tui.admin import open_admin
 from .install_app import add_app
 from .zsh import add_user_env_var, add_user_alias
 from .sign_in import add_token, delete_auth
+from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command
 
 app = typer.Typer()
 
@@ -141,3 +142,17 @@ def signout():
     Log out workspace from alnoda.org 
     """
     delete_auth()
+
+@app.command()
+def cheatsec(name):
+    """
+    Add cheatsheet section 
+    """
+    add_cheatsheet_section(name)
+
+@app.command()
+def cheat(section, cmd, description):
+    """
+    Add cheatsheet command to some section
+    """
+    add_cheatsheet_command(section, cmd, description)
