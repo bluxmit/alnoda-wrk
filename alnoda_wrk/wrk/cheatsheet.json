@@ -210,26 +210,6 @@
             "cmd": "kill [PID]",
             "description": "kill process with [PID]"
         },
-        "xdqeqjpu": {
-            "cmd": "pm2 ls",
-            "description": "lits processes started with pm2 process manager"
-        },
-        "mxjnjuii": {
-            "cmd": "pm2 start [application] --name [name]",
-            "description": "start application and daemonize with pm2 process manager"
-        },
-        "dugqmnbq": {
-            "cmd": "pm2 start [application] --name [name] -- [flags]",
-            "description": "start application with flags"
-        },
-        "lktpjikg": {
-            "cmd": "pm2 stop [application]",
-            "description": "stop application daemonized by pm2 process manager"
-        },
-        "jkgrmegv": {
-            "cmd": "pm2 monit",
-            "description": "open UI for the running processes"
-        },
         "pdbtvvph": {
             "cmd": "tmux ls",
             "description": "list tmux sessions"
