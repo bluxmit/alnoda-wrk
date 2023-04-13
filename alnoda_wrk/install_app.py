@@ -14,6 +14,7 @@ from .alnoda_api import AlnodaApi, AlnodaSignedApi
 from .wrk_supervisor import create_supervisord_file
 from .fileops import read_ui_conf, update_ui_conf, read_meta
 from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use
+from .links import add_links_section, add_links_url
 
 INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
@@ -353,6 +354,20 @@ def add_app(app_code, version=None, silent=False):
         if 'tags' in app_meta:  
             if not silent: typer.echo("➡️ adding workspace tags...")
             add_app_tags_to_wrk(app_meta)
+        ### add links
+        doc_url = ''; website = ''; repository_url = ''
+        try: doc_url = app_meta['doc_url']
+        except: pass
+        try: website = app_meta['website']
+        except: pass
+        try: repository_url = app_meta['repository_url']
+        except: pass
+        if len(doc_url + website + repository_url) > 0:
+            secn = "Installed"
+            add_links_section(secn)
+            if len(doc_url)>0: add_links_url(secn, doc_url, app_name, 'Documentation')
+            if len(website)>0: add_links_url(secn, website, app_name, 'Website')
+            if len(repository_url)>0: add_links_url(secn, repository_url, app_name, 'Repository')
         ### log installed app to meta
         try: log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption, app_port=app_port) # when app has UI (app_port is defined)
         except: log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption) # when app does not have UI (app_port is NOT defined)
@@ -367,6 +382,7 @@ def add_app(app_code, version=None, silent=False):
         if not silent: 
             typer.echo("✍️ If app is not working try restarting terminal window or entire workspace")
             typer.echo("🚀 done")
+            typer.echo("R E S T A R T    T E R M I N A L    N O W   !!!!!!!!")
         # If remarks are present, display (optional, enclose in try-except)
         try:
             if not silent and 'remarks' in app_meta and app_meta['remarks'] is not None and len(str(app_meta['remarks']))>0:

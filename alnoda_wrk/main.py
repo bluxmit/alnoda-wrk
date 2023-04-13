@@ -10,6 +10,7 @@ from .install_app import add_app
 from .zsh import add_user_env_var, add_user_alias
 from .sign_in import add_token, delete_auth
 from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command
+from .links import add_links_section, add_links_url
 
 app = typer.Typer()
 
@@ -156,3 +157,17 @@ def cheat(section, cmd, description):
     Add cheatsheet command to some section
     """
     add_cheatsheet_command(section, cmd, description)
+
+@app.command()
+def linksec(name):
+    """
+    Add links section 
+    """
+    add_links_section(name)
+
+@app.command()
+def link(section, url, name, description):
+    """
+    Add new record to the existing link section  
+    """
+    add_links_url(section, url, name, description)
