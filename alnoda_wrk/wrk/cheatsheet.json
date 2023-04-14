@@ -267,7 +267,7 @@
     },
     "Shortcuts": {
         "hyfxrxqx": {
-            "cmd": "pm2 start python --name http-server --  -m http.server 8030",
+            "cmd": "python -m http.server 8030",
             "description": "launch static web server on port 8030 (My app o 8030)"
         },
         "solbshdg": {

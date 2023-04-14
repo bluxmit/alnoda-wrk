@@ -255,4 +255,5 @@ def add_zshrc_line(line):
     with open(ZSHRC_FILE, "a") as f:
         # Append 'hello' at the end of file
         f.write(line)
+        f.write("\n")
     return
