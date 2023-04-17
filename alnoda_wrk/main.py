@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 import typer
+import subprocess
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
 from .meta_about import *
@@ -101,7 +102,7 @@ def admin():
     open_admin()
 
 @app.command()
-def install(application, silent: Optional[bool] = typer.Argument(False)):
+def install(application, page: Optional[str] = typer.Argument("home"), silent: Optional[bool] = typer.Argument(False)):
     """
     Install app from alnoda.org
     """
@@ -109,10 +110,10 @@ def install(application, silent: Optional[bool] = typer.Argument(False)):
         app_ = application.split('==')
         app_code = app_[0]
         version = app_[1] 
-        add_app(app_code, version=version, silent=silent)
+        add_app(app_code, version=version, page=page, silent=silent)
     else:
         app_code = application 
-        add_app(app_code, version=None, silent=silent)
+        add_app(app_code, version=None, page=page, silent=silent)
     return
 
 @app.command()
@@ -171,3 +172,13 @@ def link(section, url, name, description):
     Add new record to the existing link section  
     """
     add_links_url(section, url, name, description)
+
+@app.command()
+def kill():
+    """
+    Restart workspace when running in k8s. Stops otherwise
+    """
+    typer.echo(f"⚠️ WARNING: this will stop the workspace.")
+    should_continue = typer.confirm("Do you want to continue❓")
+    if not should_continue: return
+    else: subprocess.Popen("/sbin/killall5", shell=True, stdout=subprocess.PIPE)

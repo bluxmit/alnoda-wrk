@@ -7,7 +7,7 @@ import subprocess
 from packaging import version as Version
 import typer
 from rich.progress import Progress, SpinnerColumn, TextColumn
-from .globals import clnstr, WORKSPACE_DIR
+from .globals import clnstr, WORKSPACE_DIR, WORKSPACE_HOME_PAGES
 from .fileops import read_ui_conf, update_ui_conf, read_lineage
 from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi, AlnodaSignedApi
@@ -20,7 +20,6 @@ INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
 ALLOWED_FREE_PORT_RANGE_MIN = 8031
 ALLOWED_FREE_PORT_RANGE_MAX = 8040
-DEFAULT_APP_INSTALL_PAGE = 'home'
 
 
 class AlnodaApiApp(AlnodaApi):
@@ -204,7 +203,7 @@ def add_app_tags_to_wrk(app_meta):
     except: pass
 
 
-def add_app(app_code, version=None, silent=False):
+def add_app(app_code, version=None, page="home", silent=False):
     """ Install app locally """
     # check app is not already installed
     if app_already_installed(app_code):
@@ -218,6 +217,10 @@ def add_app(app_code, version=None, silent=False):
         return
     with open(INSTALL_PID_FILE, 'w', encoding='utf-8') as f:
         f.write(str(os.getpid()))
+    # check the page is proper
+    if page not in WORKSPACE_HOME_PAGES:
+        if not silent: typer.echo(f"🛑 wrong page: {page}. Allowed pages: {', '.join(WORKSPACE_HOME_PAGES)}")
+        return
     # Wrap entire installation in try-except-finally
     try:
         # fetch app version
@@ -244,16 +247,17 @@ def add_app(app_code, version=None, silent=False):
         if not silent: 
             # try:
             typer.echo("➡️ checking compatibility...")
-            wrk_compatible, wrk_compatibility_message, app_compatible, app_compatibility_message = check_compatibility(app_code, version_code, version)
-            if not wrk_compatible:
-                typer.echo(f"⚠️ WARNING: {wrk_compatibility_message}")
-                should_continue = typer.confirm("Do you want to continue❓")
-                if not should_continue: return
-            if not app_compatible:
-                typer.echo(f"⚠️ WARNING: {app_compatibility_message}")
-                should_continue = typer.confirm("Do you want to continue❓")
-                if not should_continue: return
-            # except: pass
+            try:
+                wrk_compatible, wrk_compatibility_message, app_compatible, app_compatibility_message = check_compatibility(app_code, version_code, version)
+                if not wrk_compatible:
+                    typer.echo(f"⚠️ WARNING: {wrk_compatibility_message}")
+                    should_continue = typer.confirm("Do you want to continue❓")
+                    if not should_continue: return
+                if not app_compatible:
+                    typer.echo(f"⚠️ WARNING: {app_compatibility_message}")
+                    should_continue = typer.confirm("Do you want to continue❓")
+                    if not should_continue: return
+            except: typer.echo("⚠️ WARNING: compatibilities are not logical, skipping...")
         ### Check if app exposes UI and wrkspace has free ports
         app_has_UI = False
         if 'app_port' in app_meta and app_meta['app_port'] is not None and app_meta['app_port'] != 'None' and len(str(app_meta['app_port']))>0:
@@ -314,6 +318,7 @@ def add_app(app_code, version=None, silent=False):
             if not silent: 
                 typer.echo("-------------------------------------------------------------")
                 typer.echo("- ⚠️ application will start after workspace is restarted ⚠️  -")
+                typer.echo("---       restart workspace with    'wrk kill'             ---")
                 typer.echo("-------------------------------------------------------------")
         ### Add UI
         if app_has_UI:
@@ -323,7 +328,7 @@ def add_app(app_code, version=None, silent=False):
                 socat_cmd = f"socat tcp-listen:{prescribed_port},reuseaddr,fork tcp:localhost:{app_port}"
                 create_supervisord_file(name=f'{app_code}-soc', cmd=socat_cmd, folder=None, env_vars=None)
             # copy image from S3
-            ui_page = DEFAULT_APP_INSTALL_PAGE
+            ui_page = page
             img_loc_prefix = ""
             if ui_page == 'home': img_loc_prefix = "assets/home/"
             image_url = app_meta['image_url']
