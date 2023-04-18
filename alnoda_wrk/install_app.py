@@ -401,5 +401,7 @@ def add_app(app_code, version=None, page="home", silent=False):
         if not silent: typer.echo("🛑 Sorry, there was an error. Installation could fail or application might not work correctly")
     finally: 
         if os.path.exists(INSTALL_PID_FILE): os.remove(INSTALL_PID_FILE)
+        try: subprocess.Popen("cd /home/project", shell=True, stdout=subprocess.PIPE)
+        except: pass
     return
 
