@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "alnoda_wrk"
-version = "0.4.5"
+version = "0.4.6"
 description = "A tool to build Alnoda workspaces"
 authors = ["bluxmit <bluxmit@gmail.com>"]
 license = "GNU Affero General Public License v3.0"

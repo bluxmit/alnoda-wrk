@@ -119,9 +119,27 @@ def install(application, page: Optional[str] = typer.Argument("home"), silent: O
 @app.command()
 def setvar(name, value):
     """
-    Set terminal environmental variable name='value'
+    Set zsh environmental variable name value. Same as 'wrk env'
     """
     add_user_env_var(name, value)
+    return
+
+@app.command()
+def env(name, value):
+    """
+    Set zsh environmental variable name value. Same as 'wrk setvar'
+    """
+    add_user_env_var(name, value)
+    return
+
+@app.command()
+def addpath(folder):
+    """
+    Add folder to PATH. Only applies to zsh
+    """
+    varname = "PATH"
+    varval = f'$PATH:{folder}'
+    add_user_env_var(varname, varval)
     return
 
 @app.command()
