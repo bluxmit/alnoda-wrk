@@ -1,3 +1,3 @@
 [
-    {"ind": 1, "name": "Ubuntu workspace", "version": 4.0, "link": "https://docs.alnoda.org/ubuntu-workspace/", "tags": "multi-process, supervisor, zsh, apt, nix, cron, tmux, git, lazygit, python, pip, pipx, nodeenv, mc, nano, vim, tilde, htop, glances, ncdu, curl, wget, tar, zip"}
+    {"ind": 1, "name": "Ubuntu workspace", "version": 4.0, "link": "https://docs.alnoda.org/ubuntu-workspace/", "tags": "multi-process, supervisor, zsh, apt, nix, asdf, cron, tmux, git, lazygit, python, pip, pipx, nodeenv, mc, nano, vim, tilde, htop, glances, ncdu, curl, wget, tar, zip"}
 ]

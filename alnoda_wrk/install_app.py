@@ -107,7 +107,7 @@ def check_compatibility(app_code, version_code, version):
             if a not in this_app_dict:
                 if compatibility_type == 'requires':
                     app_compatible = False
-                    app_compatibility_message = f"This app requires another app (id) {a}, but it is not installed in this workspace. Check out compatible version at alnoda.org"
+                    app_compatibility_message = f"This app requires another app - {a}, but it is not installed in this workspace. Check out compatible version at alnoda.org"
             else:
                 this = this_app_dict[a]
                 this_version_ = str(this['version'])
@@ -116,12 +116,12 @@ def check_compatibility(app_code, version_code, version):
                     if required_geq is not None and len(str(required_geq))>0:
                         if this_version < required_geq_version: 
                             app_compatible = False
-                            app_compatibility_message = f"This app requires another app (id) {a} version greater or equal {required_geq}, but this workspace has version {this_version_} of the required app"
+                            app_compatibility_message = f"This app requires another app - {a} version greater or equal {required_geq}, but this workspace has version {this_version_} of the required app"
                         else: satisfies_compatibles_list = True
                     if required_leq is not None and len(str(required_leq))>0:
                         if this_version > required_required_leq: 
                             app_compatible = False
-                            app_compatibility_message = f"This app requires another app (id) {a} version smaller or equal {required_leq}, but this workspace has version {this_version_} of the required app"
+                            app_compatibility_message = f"This app requires another app - {a} version smaller or equal {required_leq}, but this workspace has version {this_version_} of the required app"
                         else: satisfies_compatibles_list = True
                 elif compatibility_type in ['compatible']:
                     has_compatibles_list = True
