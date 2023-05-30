@@ -57,7 +57,6 @@ def get_free_ports():
 def check_workspace_compatibility(workspaces_compatibility):
     """  Check if app requirement for the workspaces_compatibility is satisfied """
     wrk_compatible = False; wrk_compatibility_message = "For this app I cannot find any compatible workspace in the lineage"
-    workspaces_compatibility = []
     if len(workspaces_compatibility) == 0: #<- compatible with all workspaces
         return True, "app is compatible with all workspaces"
     else:
@@ -70,7 +69,7 @@ def check_workspace_compatibility(workspaces_compatibility):
             w_ver = str(w['version'])
             reqw = workspaces_compatibility_dict[n]
             ctype = reqw['type']
-            if ctype == 'incompatible': return False, f"app is incompatible with all workspaces '{n}'"
+            if ctype == 'incompatible': return False, f"app is incompatible with workspaces '{n}' (all versions)"
             elif ctype ==  'all':     
                 wrk_compatible=True; wrk_compatibility_message=f"app is compatible with all workspaces '{n}'"
             elif ctype ==  "exact" and str(w_ver) == str(reqw['compatibility']['exact']):
@@ -110,8 +109,8 @@ def check_app_compatibility(apps_compatibility):
         # First we will check none of the installed apps is incompatible with the app
         incompatible_apps_list = [k for k,v in apps_compatibility_dict.items() if v['compatibility_type'] == 'incompatible']
         incomp_apps = [a for a in this_app_dict.keys() if a in incompatible_apps_list]
-        if len (incomp_apps): 
-            return False, f"This workspace has incompatible app(s): {', '.join([incomp_apps])}"
+        if len(incomp_apps) > 0: 
+            return False, f"This workspace has incompatible app(s): {', '.join(incomp_apps)}"
         # Next we will check if the new app has required apps
         required_apps_dict = {k:v for k,v in apps_compatibility_dict.items() if v['compatibility_type'] == 'requires'}
         if len(required_apps_dict) > 0:
@@ -242,7 +241,7 @@ def add_app(app_code, version=None, page="home", silent=False):
             if os.path.exists(INSTALL_PID_FILE): os.remove(INSTALL_PID_FILE)
         ### check compatibility (it is optional, so wrap in try-except)
         if not silent: 
-            res = False, app_compat = {}
+            res = False; app_compat = {}
             try: 
                 api_comp = AlnodaApiApp('compatibility', app_code=app_code, version_code=version_code)
                 res, app_compat = api_comp.fetch()

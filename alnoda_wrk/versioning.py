@@ -1,4 +1,4 @@
-from packaging.version import Version, parse, LegacyVersion
+from packaging.version import Version, parse
 
 def parse_version(vstr):
     """ Parse version string """
@@ -41,11 +41,11 @@ def check_range_compatible(w_ver, compdict):
     _,geq_semver,_ = parse_version('0.0.0'); _,leq_semver,_ = parse_version('999999.999999.999999')
     try:
         _,geq_semver,_ = parse_version(str(compdict['required_geq'])) 
-        if not is_sem_geq: continue
+        if not is_sem_geq: return False
     except: return False
     try:
         _,leq_semver,_ = parse_version(str(compdict['required_leq'])) 
-        if not is_sem_leq: continue
+        if not is_sem_leq: return False
     except: return False
     # finally check whether w_semver falls into the range
     if w_semver < geq_semver: return False 
