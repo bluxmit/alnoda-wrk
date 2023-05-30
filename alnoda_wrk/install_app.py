@@ -116,7 +116,7 @@ def check_app_compatibility(apps_compatibility):
         required_apps_dict = {k:v for k,v in apps_compatibility_dict.items() if v['compatibility_type'] == 'requires'}
         if len(required_apps_dict) > 0:
             for rc, rd in required_apps_dict.items(): 
-                if rc not in this_app_dict.keys(): return False, f"This application requires {rd['name']} (id - {rc}), which is not installed in this workspace"
+                if rc not in this_app_dict.keys(): return False, f"This application requires {rc}, which is not installed in this workspace"
                 else:
                     a_wer = this_app_dict[rc]['version']
                     rd_subtype, rd_compatibility = get_rd_subtype_compatibility(rd)
