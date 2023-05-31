@@ -34,6 +34,10 @@ about_page_template = """
 This workspace has features of the following workspaces (build history)
 {{ lineage_table }}
 
+## Apps 
+This workspace has apps from __alnoda.org__
+{{ alnoda_apps_table }}
+
 ## UI tabs and ports
 UI shortcuts for apps and their respective ports (allowed port range is 8021-8040)
 {{ ports_table }}
@@ -125,4 +129,12 @@ subdomain = {{data.subdomain}}
 use_encryption = true
 use_compression = true
 bandwidth_limit = {{data.bandwidth_limit}}
+"""
+
+alnoda_apps_template = """
+| ID          | Application                          | Version       | Description   |
+| ----------- | ------------------------------------ | ------------- | ------------- | 
+{% for a,d in data.apps.items() -%}
+| {{a}}       | {{d.name}}        | {{d.version}}      | {{d.description}}
+{% endfor %}
 """

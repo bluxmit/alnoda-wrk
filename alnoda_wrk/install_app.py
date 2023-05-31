@@ -13,7 +13,7 @@ from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi, AlnodaSignedApi
 from .wrk_supervisor import create_supervisord_file
 from .fileops import read_ui_conf, update_ui_conf, read_meta
-from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use
+from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use, refresh_about
 from .links import add_links_section, add_links_url
 from .versioning import parse_version, check_semantic_compatibility, check_range_compatible
 
@@ -137,15 +137,15 @@ def check_app_compatibility(apps_compatibility):
                     a_wer = this_app_dict[rc]['version']
                     rd_subtype, rd_compatibility = get_rd_subtype_compatibility(rd)
                     if rd_subtype == 'all': app_compatible = True
-                    elif rd_subtype == 'exact' and str(rd_compatibility['exact']) == str(a_wer):
+                    if rd_subtype == 'exact' and str(rd_compatibility['exact']) == str(a_wer):
                         app_compatible = True
-                    elif rd_subtype == 'semantic' and check_semantic_compatibility(a_wer, compdict=rd_compatibility): 
+                    if rd_subtype == 'semantic' and check_semantic_compatibility(a_wer, compdict=rd_compatibility): 
                         app_compatible = True
-                    elif rd_subtype == 'range' and check_range_compatible(a_wer, compdict=rd_compatibility): 
+                    if rd_subtype == 'range' and check_range_compatible(a_wer, compdict=rd_compatibility): 
                         app_compatible = True
             # if we didn't find any of the compatible apps, return False
             if not app_compatible:
-                return False, f"This app has a list of compatible applications: {', '.join(compatible_apps_dict.keys())}. None of the compatible apps (or compatible versions) are found in the workspace"
+                return False, f"This app has a list of compatible applications and versions. None of the compatible apps (or compatible versions) are found in the workspace"
     return app_compatible, app_compatibility_message
 
 
@@ -207,9 +207,9 @@ def add_app(app_code, version=None, page="home", silent=False):
     # ensure only one installation at a time
     if os.path.isfile(INSTALL_PID_FILE):
         if not silent: 
-            typer.echo("🛑 Another app is being installed right now. Please install only one app at a time!")
-            typer.echo(f"(if this is an error, remove pid file with 'rm {INSTALL_PID_FILE}')")
-        return
+            typer.echo("🛑 Another app is being installed right now. Simultaneous installations can harm the workspace!")
+            should_continue = typer.confirm("Do you want to continue❓")
+            if not should_continue: return
     with open(INSTALL_PID_FILE, 'w', encoding='utf-8') as f:
         f.write(str(os.getpid()))
     # check the page is proper
@@ -234,7 +234,7 @@ def add_app(app_code, version=None, page="home", silent=False):
         version_code = app_meta['version_code']
         version = app_meta['version']
         app_name = app_meta['name']
-        app_desctiption = app_meta['description']
+        app_description = app_meta['description']
         ### check if install script has recursive installation with alnoda-wrk (we need to delete INSTALL_PID_FILE THEN)
         if 'wrk' in app_meta['install_script'] and 'install' in app_meta['install_script']:
             if os.path.exists(INSTALL_PID_FILE): os.remove(INSTALL_PID_FILE)
@@ -314,7 +314,7 @@ def add_app(app_code, version=None, page="home", silent=False):
             ) as progress:
                 progress.add_task(description="installing... ...", total=None)
                 install_result, require_terminal_restart = install_app(app_meta, install_temp_dir)
-            print("✔️ app installed")
+            typer.echo("✔️ app installed")
         else: install_result, require_terminal_restart = install_app(app_meta, install_temp_dir)
         # if not silent: typer.echo(install_result)
         ### Add startup script
@@ -384,8 +384,8 @@ def add_app(app_code, version=None, page="home", silent=False):
             if len(website)>0: add_links_url(secn, website, app_name, 'Website')
             if len(repository_url)>0: add_links_url(secn, repository_url, app_name, 'Repository')
         ### log installed app to meta
-        try: log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption, app_port=app_port) # when app has UI (app_port is defined)
-        except: log_app_installed(app_code, name=app_name, version=version, desctiption=app_desctiption) # when app does not have UI (app_port is NOT defined)
+        try: log_app_installed(app_code, name=app_name, version=version, description=app_description, app_port=app_port) # when app has UI (app_port is defined)
+        except: log_app_installed(app_code, name=app_name, version=version, description=app_description) # when app does not have UI (app_port is NOT defined)
         ### if auth token is present - log to alnoda.org
         s_api = AlnodaSignedApi("workspace/history/add/app/")
         success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
@@ -393,6 +393,7 @@ def add_app(app_code, version=None, page="home", silent=False):
             error = result['error']
             if not silent: typer.echo(f"❗ Could not update workspace app history at alnoda.org: {error}")
         ### Done!
+        refresh_about()
         if not silent and require_terminal_restart: typer.echo("---- ⚠️ RESTART TERMINAL REQUIRED TO APPLY CHANGES ----")
         if not silent: 
             typer.echo("✍️ If app is not working try restarting terminal window or entire workspace")

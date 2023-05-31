@@ -191,7 +191,11 @@ def refresh_about():
         meta_dict['tags'] = better_tags(meta_dict['tags'])
     # Add lineage table
     meta_dict['lineage_table'] = get_lineage_table()
-    meta_dict['lineage_table'] = get_lineage_table()
+    # Add alnoda.org apps
+    if 'alnoda.org.apps' not in meta_dict: meta_dict['alnoda.org.apps'] = {}
+    atm = Template(alnoda_apps_template)
+    apps_str = atm.render(data={"apps":meta_dict['alnoda.org.apps']})
+    meta_dict['alnoda_apps_table'] = apps_str
     # Generate template for the About page
     tm = Template(about_page_template)
     new_about = tm.render(meta_dict)
@@ -330,7 +334,7 @@ def is_port_in_app_use(port):
     return False
 
 
-def log_app_installed(app_code, name, version, desctiption, app_port=None):
+def log_app_installed(app_code, name, version, description, app_port=None):
     """  ->> str
     Log in meta that some app is installed
 
@@ -340,8 +344,8 @@ def log_app_installed(app_code, name, version, desctiption, app_port=None):
     :type name: str
     :param version:  app version on the alnoda.org
     :type version: str
-    :param desctiption:  app description on the alnoda.org
-    :type desctiption: str
+    :param description:  app description on the alnoda.org
+    :type description: str
     : param app_port: port app is listening to
     :type app_port: int
     """
@@ -355,7 +359,7 @@ def log_app_installed(app_code, name, version, desctiption, app_port=None):
     meta_dict[ALNODA_APPS_KEY][app_code] = {
         'name': name,
         'version': version,
-        'desctiption': desctiption,
+        'description': description,
         'date': datetime.today().strftime('%Y-%m-%d'),
         'app_port': app_port
     }

@@ -12,6 +12,8 @@ from .zsh import add_user_env_var, add_user_alias
 from .sign_in import add_token, delete_auth
 from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command
 from .links import add_links_section, add_links_url
+from .fileops import read_meta
+from .upgrade import get_wrk_versions, update_wrk_to_latest
 
 app = typer.Typer()
 
@@ -100,6 +102,23 @@ def admin():
     Open Admin TUI
     """
     open_admin()
+
+@app.command()
+def apps():
+    """ Display list of apps installed from alnoda.org
+    """
+    meta_dict = read_meta()
+    if "alnoda.org.apps" not in meta_dict  or len(meta_dict["alnoda.org.apps"]) == 0:
+        typer.echo(f"you don't have any apps installed!")
+        return
+    else:
+        for k,v in meta_dict["alnoda.org.apps"].items():
+            try:
+                typer.echo(f"❇️ {k}")
+                typer.echo(f"Name:        {v['name']}")
+                typer.echo(f"Version:     {v['version']}")
+                typer.echo(f"Description: {v['description']}")
+            except: pass
 
 @app.command()
 def install(application, page: Optional[str] = typer.Argument("home"), silent: Optional[bool] = typer.Argument(False)):
@@ -200,3 +219,21 @@ def kill():
     should_continue = typer.confirm("Do you want to continue❓")
     if not should_continue: return
     else: subprocess.Popen("/sbin/killall5", shell=True, stdout=subprocess.PIPE)
+
+
+@app.command()
+def upgrade():
+    """
+    Upgrade wrk version
+    """
+    success, curret_version, latest_version = get_wrk_versions()
+    if not success:
+        typer.echo(f"Could not get alnoda_wrk versions. No Internet connection?")
+    else:
+        if curret_version == latest_version:
+            typer.echo(f"✔️ Already latest version {curret_version}")
+        else:
+            typer.echo(f"Current version {curret_version}")
+            should_continue = typer.confirm("New version available {latest_version}. Do you want to upgrade❓")
+            if not should_continue: return
+            update_wrk_to_latest()
