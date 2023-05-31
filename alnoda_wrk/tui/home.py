@@ -1,9 +1,11 @@
-
+import TermTk as ttk
 from TermTk.TTkCore.cfg import TTkCfg
 from TermTk.TTkCore.color import TTkColor
 from TermTk import TTkFrame
 from TermTk.TTkWidgets.image import TTkImage
 import pyfiglet
+from ..upgrade import get_wrk_versions, update_wrk_to_latest
+from .gvars import *
 
 class WrkHomeTab(TTkFrame):
     peppered=[
@@ -42,13 +44,20 @@ class WrkHomeTab(TTkFrame):
     def paintEvent(self):
         c = [0xFF,0xFF,0xAA]
         for y, line in enumerate(WrkHomeTab.Homelogo_1):
-            self._canvas.drawText(pos=(self.left_padding+9,3+y),text=line, color=TTkColor.fg(f'#{c[0]:02X}{c[1]:02X}{c[2]:02X}'))
+            self._canvas.drawText(pos=(self.left_padding+9,2+y),text=line, color=TTkColor.fg(f'#{c[0]:02X}{c[1]:02X}{c[2]:02X}'))
             c[2]-=0x11
 
         for y, line in enumerate(WrkHomeTab.Homelogo_2):
-            self._canvas.drawText(pos=(self.left_padding+14,11+y),text=line, color=TTkColor.fg(f'#{c[0]:02X}{c[1]:02X}{c[2]:02X}'))
+            self._canvas.drawText(pos=(self.left_padding+15,10+y),text=line, color=TTkColor.fg(f'#{c[0]:02X}{c[1]:02X}{c[2]:02X}'))
 
-        self._canvas.drawText(pos=(self.left_padding+25,18),text=f"Portable containerized environments", color=TTkColor.fg('#AAAAFF'))
-        self._canvas.drawText(pos=(self.left_padding+31,19),text="https://docs.alnoda.org", color=TTkColor.fg('#44FFFF'))
+        self._canvas.drawText(pos=(self.left_padding+25,17),text=f"Portable containerized environments", color=TTkColor.fg('#AAAAFF'))
+        self._canvas.drawText(pos=(self.left_padding+33,18),text="https://alnoda.org", color=TTkColor.fg('#44FFFF'))
+
+        success, curret_version, latest_version = get_wrk_versions()
+        if success:
+            self._canvas.drawText(pos=(self.left_padding+35,20),text=f"version {curret_version}", color=LABEL_COLOR)
+            if not curret_version == latest_version:
+                self._canvas.drawText(pos=(self.left_padding+25,21),text=f"(new version version {latest_version} available)")
+
 
         TTkFrame.paintEvent(self)

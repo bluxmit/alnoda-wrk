@@ -20,7 +20,7 @@ def open_admin():
     from .my_notes_widget import get_my_notes_widget
 
     # temporary exclude : "PM2 processes"
-    options = ["Home", "Sign In", "Collaborate", "Features", "Description", "Appearance", "Intrerface", "Apps & Services", "Zsh", "My notes"]
+    options = ["Home", "Sign In", "Share", "Features", "Description", "Appearance", "Intrerface", "Apps & Services", "Zsh", "My notes"]
 
 
     def AlnodaAdminTUI(root= None):
@@ -88,7 +88,7 @@ def open_admin():
             elif label == "Description":        widget = DescriptionWidget
             elif label == "Intrerface":         widget = InterfaceWidget
             elif label == "Apps & Services":    widget = AppsServicesWidget
-            elif label == "Collaborate":        widget = ShareWidget
+            elif label == "Share":              widget = ShareWidget
             elif label == "Zsh":                widget = ZshWidget
             elif label == "My notes":           widget = MyNotesWidget
             elif label == "Appearance":    
