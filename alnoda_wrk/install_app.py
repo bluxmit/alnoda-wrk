@@ -15,7 +15,7 @@ from .wrk_supervisor import create_supervisord_file
 from .fileops import read_ui_conf, update_ui_conf, read_meta
 from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use
 from .links import add_links_section, add_links_url
-from .versioning import parse_version
+from .versioning import parse_version, check_semantic_compatibility, check_range_compatible
 
 INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
@@ -56,28 +56,27 @@ def get_free_ports():
 
 def check_workspace_compatibility(workspaces_compatibility):
     """  Check if app requirement for the workspaces_compatibility is satisfied """
-    wrk_compatible = False; wrk_compatibility_message = "For this app I cannot find any compatible workspace in the lineage"
+    wrk_compatible = False; wrk_compatibility_message = f"Could not find workspace in the lineage, which is compatible with this app"
     if len(workspaces_compatibility) == 0: #<- compatible with all workspaces
         return True, "app is compatible with all workspaces"
     else:
-        workspaces_compatibility_dict = {e['workspace_name']:e for e in workspaces_compatibility}
-        # fetch this workspace lineage
         lineage = read_lineage()
-        # identify which of the lineage workspaces are relevant for the check
-        lineage_dict = {e['name']:e for e in lineage if e['name'] in workspaces_compatibility_dict}
-        for n,w in lineage_dict.items():
-            w_ver = str(w['version'])
-            reqw = workspaces_compatibility_dict[n]
-            ctype = reqw['type']
-            if ctype == 'incompatible': return False, f"app is incompatible with workspaces '{n}' (all versions)"
-            elif ctype ==  'all':     
-                wrk_compatible=True; wrk_compatibility_message=f"app is compatible with all workspaces '{n}'"
-            elif ctype ==  "exact" and str(w_ver) == str(reqw['compatibility']['exact']):
-                wrk_compatible=True; wrk_compatibility_message=f"app is compatible with workspace '{n}' version {w_ver}"
-            elif ctype == 'semantic':
-                if check_semantic_compatibility(w_ver, compdict = reqw['compatibility']): wrk_compatible = True; wrk_compatibility_message = "Compatibility with {n} version {req_ver}" 
-            elif ctype == 'range':
-                if check_range_compatible(w_ver, compdict = reqw['compatibility']): wrk_compatible = True; wrk_compatibility_message = "Compatibility with {n} version {req_ver}" 
+        lineage_dict = {e['name']:e for e in lineage}
+        for W in workspaces_compatibility:
+            Wname = W['workspace_name']
+            ctype = W['type']
+            if Wname in lineage_dict:
+                w = lineage_dict[Wname]
+                w_ver = str(w['version'])
+                if ctype == 'incompatible': return False, f"app is incompatible with workspaces '{Wname}' (all versions)"
+                elif ctype ==  'all':     
+                    wrk_compatible=True; wrk_compatibility_message=f"app is compatible with all workspaces '{Wname}'"
+                elif ctype ==  "exact" and str(w_ver) == str(W['compatibility']['exact']):
+                    wrk_compatible=True; wrk_compatibility_message=f"app is compatible with workspace '{Wname}' version {w_ver}"
+                elif ctype == 'semantic':
+                    if check_semantic_compatibility(w_ver, compdict = W['compatibility']): wrk_compatible = True; wrk_compatibility_message = f"Compatibility with {Wname} version {w_ver}" 
+                elif ctype == 'range':
+                    if check_range_compatible(w_ver, compdict = W['compatibility']): wrk_compatible = True; wrk_compatibility_message = f"Compatibility with {Wname} version {w_ver}" 
     return wrk_compatible, wrk_compatibility_message
 
 
@@ -100,39 +99,39 @@ def check_app_compatibility(apps_compatibility):
     # check workspace compatibility
     if len(apps_compatibility) == 0: return True, "" #<- no compatibility restrictions
     else:
-        apps_compatibility_dict = {e['another_app']:e for e in apps_compatibility}
         # fetch this workspace app data
         meta = read_meta()
         this_app_dict = {}
         try: this_app_dict = meta['alnoda.org.apps']
         except: pass
         # First we will check none of the installed apps is incompatible with the app
-        incompatible_apps_list = [k for k,v in apps_compatibility_dict.items() if v['compatibility_type'] == 'incompatible']
-        incomp_apps = [a for a in this_app_dict.keys() if a in incompatible_apps_list]
-        if len(incomp_apps) > 0: 
-            return False, f"This workspace has incompatible app(s): {', '.join(incomp_apps)}"
+        incompatible_apps_list = [k['another_app'] for k in apps_compatibility if k['compatibility_type'] == 'incompatible']
+        incompatibility_apps = [k for k in this_app_dict.keys() if k in incompatible_apps_list]
+        if len(incompatibility_apps) > 0:
+            return False, f"This workspace has incompatible app(s): {', '.join(incompatibility_apps)}"
         # Next we will check if the new app has required apps
-        required_apps_dict = {k:v for k,v in apps_compatibility_dict.items() if v['compatibility_type'] == 'requires'}
-        if len(required_apps_dict) > 0:
-            for rc, rd in required_apps_dict.items(): 
-                if rc not in this_app_dict.keys(): return False, f"This application requires {rc}, which is not installed in this workspace"
-                else:
-                    a_wer = this_app_dict[rc]['version']
-                    rd_subtype, rd_compatibility = get_rd_subtype_compatibility(rd)
-                    if rd_subtype == 'all': continue
-                    elif rd_subtype == 'exact' and str(rd_compatibility['exact']) != str(a_wer):
-                        return False, f"this app requires '{rc}' version {rd_compatibility['exact']}. But you have version {a_wer}"
-                    elif rd_subtype == 'semantic':
-                        if not check_semantic_compatibility(a_wer, compdict=rd_compatibility): 
-                            return False, "this app requires a different version of '{rc}'" 
-                    elif rd_subtype == 'range':
-                        if not check_range_compatible(a_wer, compdict=rd_compatibility): 
-                            return False, "this app requires a different version of '{rc}'"
+        required_apps_list = [a for a in apps_compatibility if a['compatibility_type'] == 'requires']
+        for rd in  required_apps_list:
+            rc = rd['another_app']
+            if rc not in this_app_dict.keys(): return False, f"This application requires {rc}, which is not installed in this workspace"
+            else:
+                a_wer = this_app_dict[rc]['version']
+                rd_subtype, rd_compatibility = get_rd_subtype_compatibility(rd)
+                if rd_subtype == 'all': continue
+                elif rd_subtype == 'exact' and str(rd_compatibility['exact']) != str(a_wer):
+                    return False, f"this app requires '{rc}' version {rd_compatibility['exact']}. But you have version {a_wer}"
+                elif rd_subtype == 'semantic':
+                    if not check_semantic_compatibility(a_wer, compdict=rd_compatibility): 
+                        return False, "this app requires a different version of '{rc}'" 
+                elif rd_subtype == 'range':
+                    if not check_range_compatible(a_wer, compdict=rd_compatibility): 
+                        return False, "this app requires a different version of '{rc}'"
         # Finally we will check if the new app has any of the compatible apps
-        compatible_apps_dict = {k:v for k,v in apps_compatibility_dict.items() if v['compatibility_type'] == 'compatible'}
-        if len(compatible_apps_dict) > 0:
+        compatible_apps_list = [a for a in apps_compatibility if a['compatibility_type'] == 'compatible']
+        if len(compatible_apps_list) > 0:
             app_compatible = False
-            for rc, rd in compatible_apps_dict.items(): 
+            for rd in compatible_apps_list: 
+                rc = rd['another_app']
                 if rc not in this_app_dict.keys(): continue 
                 else:
                     a_wer = this_app_dict[rc]['version']
@@ -146,7 +145,7 @@ def check_app_compatibility(apps_compatibility):
                         app_compatible = True
             # if we didn't find any of the compatible apps, return False
             if not app_compatible:
-                return False, f"this workspace does not have any of the compatible applications. Please  install at leas one: {', '.join(compatible_apps_dict.keys())}"
+                return False, f"This app has a list of compatible applications: {', '.join(compatible_apps_dict.keys())}. None of the compatible apps (or compatible versions) are found in the workspace"
     return app_compatible, app_compatibility_message
 
 

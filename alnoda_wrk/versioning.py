@@ -39,14 +39,11 @@ def check_range_compatible(w_ver, compdict):
     is_sem, w_semver, w_semdict = parse_version(w_ver) 
     if not is_sem: return False
     _,geq_semver,_ = parse_version('0.0.0'); _,leq_semver,_ = parse_version('999999.999999.999999')
-    try:
-        _,geq_semver,_ = parse_version(str(compdict['required_geq'])) 
-        if not is_sem_geq: return False
-    except: return False
-    try:
-        _,leq_semver,_ = parse_version(str(compdict['required_leq'])) 
-        if not is_sem_leq: return False
-    except: return False
+    # parse semantic versions from the range
+    is_sem_geq, t_geq_semver,_ = parse_version(str(compdict['required_geq'])) 
+    if is_sem_geq: geq_semver = t_geq_semver
+    is_sem_leq, t_leq_semver,_ = parse_version(str(compdict['required_leq'])) 
+    if is_sem_leq: leq_semver = t_leq_semver
     # finally check whether w_semver falls into the range
     if w_semver < geq_semver: return False 
     if w_semver > leq_semver: return False 
