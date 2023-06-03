@@ -398,7 +398,7 @@ def add_app(app_code, version=None, page="home", silent=False):
         if not silent: 
             typer.echo("✍️ If app is not working try restarting terminal window or entire workspace")
             typer.echo("🚀 done")
-            typer.echo("R E S T A R T    T E R M I N A L    N O W   !!!!!!!!")
+            typer.echo("R E S T A R T    T E R M I N A L    N O W   (CTRL+D) !!!!!!!!")
         # If remarks are present, display (optional, enclose in try-except)
         try:
             if not silent and 'remarks' in app_meta and app_meta['remarks'] is not None and len(str(app_meta['remarks']))>0:

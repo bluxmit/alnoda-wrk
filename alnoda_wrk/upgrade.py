@@ -27,9 +27,9 @@ def get_wrk_versions():
     # try gettig latest version from pypi
     req = requests.get(PYPI_URL_PATTERN.format(package='alnoda_wrk'))
     if req.status_code == 200:
-        j = json.loads(req.text.encode(req.encoding))
-        releases = j['releases']
-        latest_version = list(j['releases'].keys())[-1]
+        try: j = json.loads(req.text.encode(req.encoding))
+        except: j = json.loads(req.text)
+        latest_version = j["info"]["version"]
     success = (curret_version is not None and latest_version is not None)
     return success, curret_version, latest_version
 
