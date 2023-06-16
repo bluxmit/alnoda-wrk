@@ -121,10 +121,13 @@ def apps():
             except: pass
 
 @app.command()
-def install(application, page: Optional[str] = typer.Argument("home"), silent: Optional[bool] = typer.Argument(False)):
+def install(application, page: Optional[str] = typer.Argument("home")):
     """
     Install app from alnoda.org
     """
+    print(os.getenv("WRK_SILENT"))
+    silent = bool(os.getenv("WRK_SILENT", default = "True"))
+    print(silent)
     if '==' in application:
         app_ = application.split('==')
         app_code = app_[0]

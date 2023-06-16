@@ -288,7 +288,7 @@ def add_app(app_code, version=None, page="home", silent=False):
                 if not silent: 
                     typer.echo(f"Application listens to port {app_port}, but it is already in use")
                     typer.echo("Installation FAILED")
-                return
+                    return
         if app_has_UI:
             if not silent: typer.echo("➡️ assigning port...")
             app_port = app_meta['app_port']
