@@ -14,6 +14,7 @@ from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command
 from .links import add_links_section, add_links_url
 from .fileops import read_meta
 from .upgrade import get_wrk_versions, update_wrk_to_latest
+from .globals import get_bool_env_var
 
 app = typer.Typer()
 
@@ -125,9 +126,7 @@ def install(application, page: Optional[str] = typer.Argument("home")):
     """
     Install app from alnoda.org
     """
-    print(os.getenv("WRK_SILENT"))
-    silent = bool(os.getenv("WRK_SILENT", default = "True"))
-    print(silent)
+    silent = get_bool_env_var("WRK_SILENT", default=True)
     if '==' in application:
         app_ = application.split('==')
         app_code = app_[0]

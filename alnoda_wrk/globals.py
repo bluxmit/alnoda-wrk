@@ -54,3 +54,14 @@ def clnstr(s):
     """Replace some chars from string input """
     s_ = s.replace('\r','').replace('\t','').replace('\b','').replace('\f','').replace('\ooo','')
     return s_
+
+def get_bool_env_var(var_name, default=False):
+    true_values = {"yes", "y", "true", "True", "t", "1"}
+    false_values = {"no", "n", "false",  "False", "f", "0"}
+    value = os.environ.get(var_name, "").lower()
+    if value in true_values:
+        return True
+    elif value in false_values:
+        return False
+    else:
+        return default
