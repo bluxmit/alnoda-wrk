@@ -19,7 +19,7 @@ from .versioning import parse_version, check_semantic_compatibility, check_range
 
 INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
-ALLOWED_FREE_PORT_RANGE_MIN = 8031
+ALLOWED_FREE_PORT_RANGE_MIN = 8029
 ALLOWED_FREE_PORT_RANGE_MAX = 8040
 
 
@@ -37,7 +37,7 @@ class AlnodaApiApp(AlnodaApi):
         super().__init__(path)
 
 
-def get_free_ports():
+def get_free_ports(silent):
     """ Check if workspace has free ports, and return one of them """
     ui_conf = read_ui_conf()
     # what ports are already taken:
@@ -50,7 +50,8 @@ def get_free_ports():
     free_ports = []
     for p in range(ALLOWED_FREE_PORT_RANGE_MIN, ALLOWED_FREE_PORT_RANGE_MAX+1):
         if p not in taken_ports:
-            free_ports.append(p)
+            if not silent and not is_os_port_in_use(p):
+                free_ports.append(p)
     return free_ports
 
 
@@ -292,7 +293,7 @@ def add_app(app_code, version=None, page="home", silent=False):
         if app_has_UI:
             if not silent: typer.echo("➡️ assigning port...")
             app_port = app_meta['app_port']
-            free_ports = get_free_ports()
+            free_ports = get_free_ports(silent=silent)
             # if app has UI, but workspace has no free ports - stop here
             if len(free_ports) == 0:
                 typer.echo("😢 Sorry, the limit of 10 applications with UI reached")

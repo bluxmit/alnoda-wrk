@@ -126,7 +126,7 @@ def install(application, page: Optional[str] = typer.Argument("home")):
     """
     Install app from alnoda.org
     """
-    silent = get_bool_env_var("WRK_SILENT", default=True)
+    silent = get_bool_env_var("WRK_SILENT", default=False)
     if '==' in application:
         app_ = application.split('==')
         app_code = app_[0]
