@@ -391,7 +391,9 @@ def add_app(app_code, version=None, page="home", silent=False):
         s_api = AlnodaSignedApi("workspace/history/add/app/")
         success, result = s_api.fetch(data = {'app_data': {app_code:  {'app_code': app_code, 'app_name': app_name, 'version_code': version_code, 'app_version': version}}})
         if not success:
-            error = result['error']
+            error = "Loggin is currenntly unavailable at alnoda.org"
+            try: error = result['error']
+            except: pass
             if not silent: typer.echo(f"❗ Could not update workspace app history at alnoda.org: {error}")
         ### Done!
         refresh_about()
