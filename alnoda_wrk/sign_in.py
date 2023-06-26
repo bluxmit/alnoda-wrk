@@ -46,9 +46,9 @@ def add_token(token):
             if result['verified']:
                 username = result['username']
                 write_auth(token, username)
-                return True
-        except: pass
-        return False
+                return True, username
+        except Exception as E: pass
+    return False, None
 
 def verify_authenticated():
     """ Check if workspace is autheticated """

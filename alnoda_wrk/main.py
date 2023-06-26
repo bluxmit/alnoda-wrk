@@ -25,27 +25,34 @@ def cls():
 
 @app.command()
 def deps():
-    """ Install/Update wrk dependencies """
+    """ Install/Update workspace UI dependencies """
     install_mkdocs_deps()
     return
     
 @app.command()
 def init():
-    """ Initialize workspace folder """
+    """ Initialize workspace UI folder """
     typer.echo("Initializing $HOME/.wrk")
     init_wrk()
     return
 
 @app.command()
+def refresh():
+    """ Force refresh workspace UI"""
+    refresh_from_meta()
+    refresh_about()
+    return
+
+@app.command()
 def delete():
-    """ Delete local .wrk folder """
+    """ Delete workspace UI completely"""
     typer.echo("Deleting $HOME/.wrk")
     delete_wrk()
     return
 
 @app.command()
 def build(folder: str):
-    """ Build workspace (use in docker build) """
+    """ Build workspace (use when building workspace Docker images) """
     typer.echo(f"Building the workspace from {folder} ...")
     build_workspace(folder)
     return
@@ -57,29 +64,19 @@ def id():
     typer.echo(workspace_id)
 
 @app.command()
-def edit(what: str = "description"):
-    """ Edit Workspace meta (description by default) interactively """
-    if what == "description":
-        edit_workspace_description()
-    else:
-        typer.echo(f"Cannot edit {what}")
-    return
+def descr():
+    """ Edit Workspace meta description interactively """
+    edit_workspace_description()
 
 @app.command()
 def update(what, value):
-    """ Update Workspace meta (non-interactive) """
+    """ Update Workspace meta: name, version, author, description """
     if what == "name": update_workspace_name(value)
     elif what == "version": update_workspace_version(value)
     elif what == "author": update_workspace_author(value)
     elif what == "description": update_workspace_description(value)
     else: typer.echo(f"Cannot edit {what}")
-    return
-
-@app.command()
-def refresh():
-    """ Force refresh workspace from meta"""
-    refresh_from_meta()
-    refresh_about()
+    typer.echo("✅ Done!")
     return
 
 @app.command()
@@ -88,6 +85,10 @@ def start(name: str, cmd: str):
     Start application or service as daemon
     """
     create_supervisord_file(name, cmd)
+    refresh_from_meta()
+    refresh_about()
+    typer.echo("✅ Done!")
+    typer.echo("❗ Service activation requires workspace reboot!")
     return
 
 @app.command()
@@ -96,6 +97,10 @@ def stop(name: str):
     Stop daemonnized application or service 
     """
     stop_app(name)
+    refresh_from_meta()
+    refresh_about()
+    typer.echo("✅ Done!")
+    typer.echo("❗ Workspace reboot is required!")
 
 @app.command()
 def admin():
@@ -122,35 +127,43 @@ def apps():
             except: pass
 
 @app.command()
-def install(application, page: Optional[str] = typer.Argument("home")):
+def install(application, tab: Optional[str] = typer.Argument("home")):
     """
-    Install app from alnoda.org
+    Install app from Alnoda Hub
     """
     silent = get_bool_env_var("WRK_SILENT", default=False)
     if '==' in application:
         app_ = application.split('==')
         app_code = app_[0]
         version = app_[1] 
-        add_app(app_code, version=version, page=page, silent=silent)
+        add_app(app_code, version=version, page=tab, silent=silent)
     else:
         app_code = application 
-        add_app(app_code, version=None, page=page, silent=silent)
+        add_app(app_code, version=None, page=tab, silent=silent)
     return
 
 @app.command()
 def setvar(name, value):
     """
-    Set zsh environmental variable name value. Same as 'wrk env'
+    Set terminal shell (zsh) environmental variable. Same as 'wrk env'
     """
     add_user_env_var(name, value)
+    refresh_from_meta()
+    refresh_about()
+    typer.echo("✅ Done!")
+    typer.echo("❗ Terminal reload is required!")
     return
 
 @app.command()
 def env(name, value):
     """
-    Set zsh environmental variable name value. Same as 'wrk setvar'
+    Set terminal shell (setvar) environmental variable. Same as 'wrk env'
     """
     add_user_env_var(name, value)
+    refresh_from_meta()
+    refresh_about()
+    typer.echo("✅ Done!")
+    typer.echo("❗ Terminal reload is required!")
     return
 
 @app.command()
@@ -175,7 +188,12 @@ def signin(token):
     """
     Autheticate workspace at alnoda.org 
     """
-    add_token(token)
+    success, name = add_token(token)
+    if success:  
+        typer.echo(f"✨ Hello {name}!")
+        return
+    typer.echo(f"Could not authenticate")
+    
 
 @app.command()
 def signout():
@@ -183,6 +201,7 @@ def signout():
     Log out workspace from alnoda.org 
     """
     delete_auth()
+    typer.echo("👋 Goodbye!")
 
 @app.command()
 def cheatsec(name):

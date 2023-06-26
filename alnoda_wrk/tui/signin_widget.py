@@ -74,9 +74,10 @@ def get_signin_widget():
         def _SignInBtn(): 
             nonlocal state
             new_token = state['new_token']
-            success = add_token(new_token)
+            success, name = add_token(new_token)
             if success:
                 remove_all_widgets()
+                refresh_state()
                 draw_auth_widgets()
             else:
                 error_lab.visible=True; error_lab.show(); error_lab.update()
