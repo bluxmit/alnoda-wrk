@@ -10,8 +10,8 @@ from .tui.admin import open_admin
 from .install_app import add_app
 from .zsh import add_user_env_var, add_user_alias
 from .sign_in import add_token, delete_auth
-from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command
-from .links import add_links_section, add_links_url
+from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command, refresh_cheatsheet_page
+from .links import add_links_section, add_links_url, refresh_links_page
 from .fileops import read_meta
 from .upgrade import get_wrk_versions, update_wrk_to_latest
 from .globals import get_bool_env_var
@@ -85,8 +85,7 @@ def start(name: str, cmd: str):
     Start application or service as daemon
     """
     create_supervisord_file(name, cmd)
-    refresh_from_meta()
-    refresh_about()
+    refresh_from_meta(); refresh_about()
     typer.echo("✅ Done!")
     typer.echo("❗ Service activation requires workspace reboot!")
     return
@@ -97,8 +96,7 @@ def stop(name: str):
     Stop daemonnized application or service 
     """
     stop_app(name)
-    refresh_from_meta()
-    refresh_about()
+    refresh_from_meta(); refresh_about()
     typer.echo("✅ Done!")
     typer.echo("❗ Workspace reboot is required!")
 
@@ -148,8 +146,7 @@ def setvar(name, value):
     Set terminal shell (zsh) environmental variable. Same as 'wrk env'
     """
     add_user_env_var(name, value)
-    refresh_from_meta()
-    refresh_about()
+    refresh_from_meta(); refresh_about()
     typer.echo("✅ Done!")
     typer.echo("❗ Terminal reload is required!")
     return
@@ -160,8 +157,7 @@ def env(name, value):
     Set terminal shell (setvar) environmental variable. Same as 'wrk env'
     """
     add_user_env_var(name, value)
-    refresh_from_meta()
-    refresh_about()
+    refresh_from_meta(); refresh_about()
     typer.echo("✅ Done!")
     typer.echo("❗ Terminal reload is required!")
     return
@@ -169,19 +165,24 @@ def env(name, value):
 @app.command()
 def addpath(folder):
     """
-    Add folder to PATH. Only applies to zsh
+    Add a folder to PATH, only applies to terminal zsh shell
     """
     varname = "PATH"
     varval = f'$PATH:{folder}'
     add_user_env_var(varname, varval)
+    refresh_from_meta(); refresh_about()
+    typer.echo("✅ Done!")
+    typer.echo("❗ Terminal reload is required!")
     return
 
 @app.command()
 def alias(name, cmd):
     """
-    Set alias for zsh name='value'
+    Set alias for zsh terminal shell (name='value')
     """
     add_user_alias(name, cmd)
+    typer.echo("✅ Done!")
+    typer.echo("❗ Terminal reload is required!")
 
 @app.command()
 def signin(token):
@@ -206,9 +207,11 @@ def signout():
 @app.command()
 def cheatsec(name):
     """
-    Add cheatsheet section 
+    Add a section to the cheatsheet tab.  
     """
     add_cheatsheet_section(name)
+    refresh_cheatsheet_page()
+    typer.echo("✅ Done!")
 
 @app.command()
 def cheat(section, cmd, description):
@@ -216,6 +219,8 @@ def cheat(section, cmd, description):
     Add cheatsheet command to some section
     """
     add_cheatsheet_command(section, cmd, description)
+    refresh_cheatsheet_page()
+    typer.echo("✅ Done!")
 
 @app.command()
 def linksec(name):
@@ -223,13 +228,17 @@ def linksec(name):
     Add links section 
     """
     add_links_section(name)
+    refresh_links_page()
+    typer.echo("✅ Done!")
 
 @app.command()
 def link(section, url, name, description):
     """
-    Add new record to the existing link section  
+    Add new link to the existing link section
     """
     add_links_url(section, url, name, description)
+    refresh_links_page()
+    typer.echo("✅ Done!")
 
 @app.command()
 def kill():
@@ -255,6 +264,6 @@ def upgrade():
             typer.echo(f"✔️ Already latest version {curret_version}")
         else:
             typer.echo(f"Current version {curret_version}")
-            should_continue = typer.confirm("New version available {latest_version}. Do you want to upgrade❓")
+            should_continue = typer.confirm(f"New version available {latest_version}. Do you want to upgrade❓")
             if not should_continue: return
             update_wrk_to_latest()

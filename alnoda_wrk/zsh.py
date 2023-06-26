@@ -22,7 +22,8 @@ def get_user_env_vars():
             evl = line_.split("=")
             var_name = evl[0]
             var_val = evl[1]
-            env_vars[var_name] = var_val
+            if var_name != 'PATH':
+                env_vars[var_name] = var_val
     return env_vars
 
 
