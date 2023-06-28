@@ -248,7 +248,7 @@ def kill():
     typer.echo(f"⚠️ WARNING: this will stop the workspace.")
     should_continue = typer.confirm("Do you want to continue❓")
     if not should_continue: return
-    else: subprocess.Popen("/sbin/killall5", shell=True, stdout=subprocess.PIPE)
+    else: os.system('nohup sudo killall5 -9 &')
 
 
 @app.command()
