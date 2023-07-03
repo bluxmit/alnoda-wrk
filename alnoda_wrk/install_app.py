@@ -296,7 +296,7 @@ def add_app(app_code, version=None, page="home", silent=False):
             free_ports = get_free_ports(silent=silent)
             # if app has UI, but workspace has no free ports - stop here
             if len(free_ports) == 0:
-                typer.echo("😢 Sorry, the limit of 10 applications with UI reached")
+                typer.echo("😢 Sorry, the limit of applications with UI is reached")
                 return False, "✋ Limit of applications with UI reached"
             # prescribe first free port to the app
             prescribed_port = free_ports[0]
