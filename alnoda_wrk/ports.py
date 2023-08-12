@@ -5,8 +5,40 @@ import atexit
 import time
 import json
 import typer
-
+import re
+import ipaddress
+from urllib.parse import urlparse
 from .globals import *
+
+def is_hostname(s):
+    """ Check if string looks like a proper host name"""
+    if len(s) > 255:
+        return False
+    if s[-1] == ".":
+        s = s[:-1]
+    allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    return all(allowed.match(x) for x in s.split("."))
+
+def is_ip(s):
+    try:
+        ipaddress.ip_address(s)
+        return True
+    except ValueError:
+        return False
+
+def is_url(s):
+    try:
+        result = urlparse(s)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
+
+def check_valid_host(s):
+    """ Check if app input host is either valid hostname, ip or url"""
+    if is_hostname(s): return True, 'hostname'
+    if is_ip(s): return True, 'ip'
+    if is_url(s): return True, 'url'
+    return False, f'{s} is neither valid host name, nor IP or URL'
 
 def kill_process(p):
     try:
@@ -70,71 +102,3 @@ def forward_port(from_port, to_port):
             while True: 
                 time.sleep(1)
              
-        
-
-
-
-
-
-
-
-
-'''
-#### PM2 Processes are deprecated
-PM2CMD = "cd /home/abc/apps/node && . env/bin/activate && pm2"
-
-def get_processes():
-    """ ->> [{},{},..]
-    List pm2 processes
-    
-    :return: list of pm2 processes
-    :rtype: list
-    """
-    cmd = f"{PM2CMD} jlist"
-    res = subprocess.check_output(cmd, shell=True, text=True)
-    jres = json.loads(res)
-    proc_names = ['vadym ttyd', 'vadym ttyd']
-    return jres, proc_names
-
-def start_process(name, cmd, flags=""):
-    """ str, str ->> 
-    Start proces with PM2 
-
-    :param name: process name
-    :type name: str
-    :param cmd: command that launches the process
-    :type cmd: str
-    :param flags: command additional flags
-    :type cmd: str
-    :return: list of pm2 processes
-    :rtype: list
-    """
-    pm2_cmd = f'{PM2CMD} start {cmd} --name \"{name}\"'
-    if len(flags) > 0:
-        pm2_cmd = f"{pm2_cmd} -- {flags}"
-    process = subprocess.Popen(pm2_cmd, shell=True, stdout=subprocess.PIPE)
-    time.sleep(2)
-    poll = process.poll()
-    if poll is not None: 
-        return False, "Failed"
-    return True, "Started"
-
-def stop_process(name):
-    """ str ->> bool
-    Stop pm2 process
-
-    :param name: process name
-    :type name: str
-    """
-    procs, pnames = get_processes()
-    if name not in pnames:
-        return False, "There is no process with this name"
-    pm2_cmd = f'{PM2CMD} stop \"{name}\"'
-    res = subprocess.check_output(pm2_cmd, shell=True, text=True)
-    lres = res.splitlines()
-    if lres[1].endswith("✓"):
-        return True, ""
-    else:
-        return False, "Could not stop this process"
-
-'''

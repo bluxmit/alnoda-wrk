@@ -13,7 +13,7 @@ from .sign_in import add_token, delete_auth
 from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command, refresh_cheatsheet_page
 from .links import add_links_section, add_links_url, refresh_links_page
 from .fileops import read_meta
-from .processes import make_port_forward_cmd, forward_port
+from .ports import make_port_forward_cmd, forward_port
 from .upgrade import get_wrk_versions, update_wrk_to_latest
 from .globals import get_bool_env_var
 
@@ -283,7 +283,7 @@ def fwd(from_port, to_port):
     Permanently forward traffic from [host:]from_port to to_port. Argument 'from_port' can be either port on localhost by default or address [host:port] 
     """
     success, cmd = make_port_forward_cmd(from_port, to_port)
-    name = f"fwd-{from_port}-{to_port}"
+    name = f"fwd{from_port}{to_port}"
     create_supervisord_file(name, cmd)
     typer.echo("🔀 Done!")
     typer.echo("❗ To start forwarding workspace reboot is required!")

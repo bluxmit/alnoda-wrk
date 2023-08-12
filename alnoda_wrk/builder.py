@@ -114,9 +114,12 @@ def build_workspace(conf_dir_path):
         description = wrk_params['description']
     )
     # Create UI
-    build_wrk_ui(wrk_params, conf_dir_path)
+    required_port_forwarding = build_wrk_ui(wrk_params, conf_dir_path)
     # Create supervisord files for applications to start up
     create_startup_applications(wrk_params)
+    # if additional port-forwarding is required 
+    for app, fwd_cmd in required_port_forwarding.items():
+        create_supervisord_file(name=app, cmd=fwd_cmd) 
     # Add this workspace to the lineage
     tags = ""
     if 'tags' in wrk_params:

@@ -16,6 +16,9 @@ WORKSPACE_PAGES_ODER = {"Home": 1, "My apps": 2, "Admin": 3, "About": 7, "Cheats
 TEXT_EDITOR = "mcedit"
 ALNODA_API_DOMAIN = "https://api.alnoda.org"
 ALNODA_API_VERSION = 'v1'
+ALLOWED_FREE_PORT_RANGE_MIN = 8029
+ALLOWED_FREE_PORT_RANGE_MAX = 8040
+WRK_RESERVED_PORTS = [8022, 8023, 8024, 8025]
 
 
 def safestring(s, length=15):

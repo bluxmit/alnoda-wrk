@@ -20,7 +20,7 @@ def open_admin():
     from .my_notes_widget import get_my_notes_widget
 
     # temporary exclude : "PM2 processes"
-    options = ["Home", "Sign In", "Share", "Meta", "Description", "Appearance", "Intrerface", "Apps & Services", "Terminal", "Notes"]
+    options = ["Home", "Sign In", "Share", "Meta", "Description", "Appearance", "Apps & Services", "Intrerface", "Terminal", "Notes"]
 
 
     def AlnodaAdminTUI(root= None):

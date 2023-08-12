@@ -7,7 +7,7 @@ import subprocess
 from packaging import version as Version
 import typer
 from rich.progress import Progress, SpinnerColumn, TextColumn
-from .globals import clnstr, WORKSPACE_DIR, WORKSPACE_HOME_PAGES
+from .globals import clnstr, WORKSPACE_DIR, WORKSPACE_HOME_PAGES, ALLOWED_FREE_PORT_RANGE_MIN, ALLOWED_FREE_PORT_RANGE_MAX
 from .fileops import read_ui_conf, update_ui_conf, read_lineage
 from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi, AlnodaSignedApi
@@ -19,8 +19,6 @@ from .versioning import parse_version, check_semantic_compatibility, check_range
 
 INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
-ALLOWED_FREE_PORT_RANGE_MIN = 8029
-ALLOWED_FREE_PORT_RANGE_MAX = 8040
 
 
 class AlnodaApiApp(AlnodaApi):
@@ -50,7 +48,7 @@ def get_free_ports(silent):
     free_ports = []
     for p in range(ALLOWED_FREE_PORT_RANGE_MIN, ALLOWED_FREE_PORT_RANGE_MAX+1):
         if p not in taken_ports:
-            if not silent and not is_os_port_in_use(p):
+            if not is_os_port_in_use(p):
                 free_ports.append(p)
     return free_ports
 
@@ -179,8 +177,11 @@ def install_app(app_meta, install_temp_dir):
 
 def is_os_port_in_use(port):
     """ Simply check if port is free """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('0.0.0.0', port)) == 0
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('0.0.0.0', port)) == 0
+    except:
+        return False
 
 
 def add_app_tags_to_wrk(app_meta):

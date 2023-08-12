@@ -9,7 +9,7 @@ from ..ui_builder import copy_pageapp_image
 from ..meta_about import refresh_from_meta
 
 CREATE_NEW = "CREATE NEW"
-
+DEFAULT_HOST = "localhost"
 
 def find_title_in_dict(dic, title):
     """
@@ -49,7 +49,11 @@ def get_tab_widgets(tab, ui_conf):
     inp_descr = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
     scrollArea.viewport().addWidget(inp_descr_lab); scrollArea.viewport().addWidget(inp_descr)
 
-    row+=2; inp_port_lab = ttk.TTkLabel(text='Port (range 8021-8040)', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    row+=2; inp_host_lab = ttk.TTkLabel(text='Host', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
+    inp_host = ttk.TTkLineEdit(text=DEFAULT_HOST, pos=(r,row), size=(rs,1), visible=False)
+    scrollArea.viewport().addWidget(inp_host_lab); scrollArea.viewport().addWidget(inp_host)
+
+    row+=2; inp_port_lab = ttk.TTkLabel(text='Port', color=LABEL_COLOR, pos=(l,row), size=(ls,1), visible=False)
     inp_port = ttk.TTkLineEdit(text="", pos=(r,row), size=(rs,1), visible=False)
     scrollArea.viewport().addWidget(inp_port_lab); scrollArea.viewport().addWidget(inp_port)
 
@@ -66,7 +70,7 @@ def get_tab_widgets(tab, ui_conf):
     # Buttons
     row+=2; btn_delete = ttk.TTkButton(text='Delete', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_delete.setBorderColor(TTkColor.fg('#f20e0a'))
-    row+=6; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
+    row+=4; btn_cancel = ttk.TTkButton(text='Cancel', pos=(l,row), size=(ls,1), parent=scrollArea.viewport(), visible=False)
     btn_save = ttk.TTkButton(text='Save', pos=(r,row), size=(rs,1), parent=scrollArea.viewport(), visible=False)
         
     # App Selection handling
@@ -80,6 +84,8 @@ def get_tab_widgets(tab, ui_conf):
         inp_title.visible=True; inp_title.show(); inp_title.update()
         inp_descr_lab.visible=True; inp_descr_lab.show(); inp_descr_lab.update()
         inp_descr.visible=True; inp_descr.show(); inp_descr.update()
+        inp_host_lab.visible=True; inp_host_lab.show(); inp_host_lab.update()
+        inp_host.visible=True; inp_host.show(); inp_host.update()
         inp_port_lab.visible=True; inp_port_lab.show(); inp_port_lab.update()
         inp_port.visible=True; inp_port.show(); inp_port.update()
         inp_img_lab.visible=True; inp_img_lab.show(); inp_img_lab.update()
@@ -92,7 +98,9 @@ def get_tab_widgets(tab, ui_conf):
             if "path" not in appd: appd['path'] = ""
             inp_title._text = appd['title']; inp_title.update()
             inp_descr._text = appd['description']; inp_descr.update()
-            inp_port._text = str(appd['port']); inp_port.update()
+            try: inp_host._text = str(appd['host']); inp_port.update()
+            except: inp_host._text = 'localhost'
+            inp_port._text = str(appd['real_port']); inp_port.update()
             inp_img._text = TTkString(appd['image']); inp_img.update()
             inp_path._text = str(appd['path']); inp_path.update()
             # Show delete, cancel and save buttons

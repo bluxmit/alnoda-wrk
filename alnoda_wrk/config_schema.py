@@ -155,8 +155,13 @@
                     {
                         'required': True,
                         'type': 'integer',
-                        'min': 8020,
-                        'max': 8040,
+                        'min': 0,
+                        'max': 65535,
+                    },
+                    'host': 
+                    {
+                        'required': False,
+                        'type': 'string',
                     },
                     'path': 
                     {

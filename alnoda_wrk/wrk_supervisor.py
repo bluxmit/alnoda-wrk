@@ -11,6 +11,7 @@ from .globals import *
 from .templates import supervisord_template
 from .fileops import *
 
+BADGE_PREFIX = 'badge'
 
 def init_supervisord():
     """ ->> bool
@@ -83,21 +84,21 @@ def get_app_command(name):
     return cmd
 
 
-def get_started_apps(exclude=True):
+def get_started_apps(exclude=True, badges=False):
     """ ->> [str]
     Return the list of supervisord files
 
     :return: list of app names
     :rtype: list[str]
     """
-    excluded = ['supervisord', 'unified-supervisord', 'mkdocs']
+    excluded = ['supervisord', 'unified-supervisord', 'mkdocs', 'workspaceui', 'admin']
     files = os.listdir(SUPERVISORD_FOLDER)
     lapps = [ap.replace(".conf","") for ap in files]
     # Create return dict of app and command
     apps = {}
     for app in lapps:
-        if app not in excluded:
-            apps[app] = get_app_command(app)
+        if app not in excluded and not app.startswith(BADGE_PREFIX):
+            apps[app] = get_app_command(app)  
     return apps
 
 

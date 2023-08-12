@@ -11,7 +11,9 @@ from distutils.dir_util import copy_tree
 from .globals import *
 from .fileops import * 
 from .templates import app_page_str
-from .meta_about import update_meta, refresh_about
+from .meta_about import update_meta, refresh_about, is_port_in_app_use
+from .ports import check_valid_host, make_port_forward_cmd
+from .install_app import get_free_ports, make_port_forward_cmd
 
 MKDOCS_ASSETS_DIR = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_home_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
@@ -200,8 +202,43 @@ def update_ui_page_from_wrk_params(ui_apps, wrk_params, page):
     # if ui_apps does not have this page yet, add it
     if page not in ui_apps.keys():
         ui_apps[page] = {}
+    # loop through the pdict, and check ports, hosts and identify if it is necessary to start port forwarding 
+    required_port_forwarding = {}
+    for app, v in pdict.items():
+        # deal with host
+        msg = None
+        if 'host' not in v: v['host'] = '0.0.0.0'
+        elif v['host'] == 'localhost': v['host'] = '0.0.0.0'
+        else:
+            valid, msg = check_valid_host(v['host'])
+            if not valid: raise Exception(msg)
+        # deal with port
+        if 'port' not in v:
+            if msg=='url': 
+                if 'https' in v['host']: v['port'] = 443
+                elif 'http' in v['host']: v['port'] = 80
+            else:  
+                raise Exception(f"Missing port for {v['title']}")
+        port = v['port']
+        # if host is localhost (0.0.0.0) we need to find the free port in the UI port range, and create port-mapping
+        if v['host'] in ['0.0.0.0', 'localhost']:
+            if is_port_in_app_use(port): raise Exception(f"Port {port} for {v['title']} is already in use")
+            if port not in WRK_RESERVED_PORTS:
+                free_ports = get_free_ports(silent=True)
+                if len(free_ports) == 0: raise Exception(f"Reached limits of applications with UI")
+                prescribed_port = free_ports[0]
+                if port in free_ports: prescribed_port = port
+                if v['port'] == prescribed_port:    
+                    v['real_port'] = port
+                else:
+                    v['real_port'] = port
+                    v['port'] = prescribed_port
+                    pf_succsess, pfw_cmd = make_port_forward_cmd(port, prescribed_port)
+                    if not pf_succsess: raise Exception(pfw_cmd)
+                    required_port_forwarding[app] = pfw_cmd
+    # update existing workspace ui config for this page
     ui_apps[page].update(pdict)
-    return ui_apps
+    return ui_apps, required_port_forwarding
 
 
 def move_page_assets(wrk_params, conf_dir_path, page, page_assets_dir):
@@ -237,6 +274,8 @@ def update_home_page(wrk_params, conf_dir_path):
     :type wrk_params: dict
     :param conf_dir_path: path to the user's workspace config folder
     :type conf_dir_path: str
+    :return: dict of extra port forwarding required
+    :rtype: dict
     """
     # Check if wrk_params have additions to the home page
     if 'pages' in wrk_params and 'home' in wrk_params['pages']:
@@ -248,10 +287,10 @@ def update_home_page(wrk_params, conf_dir_path):
             app['image'] = os.path.join("assets", "home", app['image'])
         # update and owerwrite ui_apps
         ui_apps = read_ui_conf() 
-        ui_apps = update_ui_page_from_wrk_params(ui_apps, wrk_params, 'home')
+        ui_apps, required_port_forwarding = update_ui_page_from_wrk_params(ui_apps, wrk_params, 'home')
         ui_apps['home'] = dict(sorted(ui_apps['home'].items(), key=lambda x: x[1]['port']))
         update_ui_conf(ui_apps)
-    return
+    return required_port_forwarding
 
 
 def update_other_pages(wrk_params, conf_dir_path):
@@ -262,14 +301,18 @@ def update_other_pages(wrk_params, conf_dir_path):
     :type wrk_params: dict
     :param conf_dir_path: path to the user's workspace config folder
     :type conf_dir_path: str
+    :return: dict of extra port forwarding required
+    :rtype: dict
     """
+    required_port_forwarding
     if 'pages' in wrk_params:
         other_pages = set(wrk_params['pages'].keys()) - {'home'}
         for another_page in other_pages:
             logging.info(f"Updating {another_page} page with {','.join([p['name'] for p in wrk_params['pages'][another_page]])}")
             # update ui_apps
             ui_apps = read_ui_conf() 
-            ui_apps = update_ui_page_from_wrk_params(ui_apps, wrk_params, another_page)
+            ui_apps, page_port_forwarding = update_ui_page_from_wrk_params(ui_apps, wrk_params, another_page)
+            required_port_forwarding.update(page_port_forwarding)
             update_ui_conf(ui_apps)
             # move image assets into the proper page asset folder
             move_page_assets(wrk_params, conf_dir_path, another_page, mkdocs_other_page_assets_dir)
@@ -286,7 +329,7 @@ def update_other_pages(wrk_params, conf_dir_path):
                 mkdocs_dict['nav'].append(page_entry)
                 mkdocs_dict['nav'] = sorted(mkdocs_dict['nav'], key=lambda x: WORKSPACE_PAGES_ODER.get(list(x.keys())[0],8))
             update_mkdocs_yml(mkdocs_dict)
-    return
+    return required_port_forwarding
 
 
 def build_wrk_ui(wrk_params, conf_dir_path):
@@ -308,9 +351,10 @@ def build_wrk_ui(wrk_params, conf_dir_path):
     # styles
     update_ui_styles(wrk_params)
     # pages
-    update_home_page(wrk_params, conf_dir_path)
-    update_other_pages(wrk_params, conf_dir_path)
-    return
+    required_port_forwarding = update_home_page(wrk_params, conf_dir_path)
+    required_port_forwarding_other = update_other_pages(wrk_params, conf_dir_path)
+    required_port_forwarding.update(required_port_forwarding_other)
+    return required_port_forwarding
 
 
 def update_logo_favicon(image, what):
