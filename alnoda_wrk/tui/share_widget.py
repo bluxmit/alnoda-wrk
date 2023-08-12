@@ -161,7 +161,7 @@ def get_tab_widgets(tab, ui_conf):
             msg_lab_1._text = f"Application is shared over Internet. Share this link with your peer"; msg_lab_1.update()
             msg_lab_2._color = LABEL_COLOR; msg_lab_2._text = full_url; msg_lab_2.update()
             msg_lab_3._text = f"Session {session_duration_min} min, badwidth {bandwidth_limit}"; msg_lab_3.update()
-            msg_lab_4._color = ERROR_COLOR; msg_lab_4._text = f"Close admin window to stop sharing"; msg_lab_4.update()
+            msg_lab_4._color = ERROR_COLOR; msg_lab_4._text = f"Close (or reload) admin window to stop sharing"; msg_lab_4.update()
         return
     btn_share.clicked.connect(_btnShareHandler)
 

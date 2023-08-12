@@ -13,6 +13,7 @@ from .sign_in import add_token, delete_auth
 from .cheatsheet import add_cheatsheet_section, add_cheatsheet_command, refresh_cheatsheet_page
 from .links import add_links_section, add_links_url, refresh_links_page
 from .fileops import read_meta
+from .processes import forward_port
 from .upgrade import get_wrk_versions, update_wrk_to_latest
 from .globals import get_bool_env_var
 
@@ -267,3 +268,11 @@ def upgrade():
             should_continue = typer.confirm(f"New version available {latest_version}. Do you want to upgrade❓")
             if not should_continue: return
             update_wrk_to_latest()
+
+
+@app.command()
+def fwd(from_port, to_port):
+    """
+    Froward traffic from [host:]from_port to to_port. Argument 'from_port' can be either port on localhost by default or address [host:port] 
+    """
+    process, msg = forward_port(from_port, to_port)

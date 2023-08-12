@@ -119,7 +119,7 @@ def expose_port(port):
     server_port, suffix = choose_frp_server()
     # check connectivity 
     if not can_connect_frp_server(server_port):
-        return False, f'Cannot connect to the server. No Internet connection? Firewall blocking?'
+        return False, f'Can not connect to the server. No Internet connection? Firewall blocking?'
     # get defaul values for session 
     session_duration_min = SESSION_DURATION_MIN
     max_num_frp_processes = MAX_FRP_PROCESSES
@@ -135,17 +135,17 @@ def expose_port(port):
     cmd = f"timelimit -t{timelimit} {frpcmd}"
     # make sure frp folder initialized
     init_frp_dir()
-    # check nnumber of parallel processes is nnot exceeding the limit
+    # check number of parallel processes is not exceeding the limit
     scm = f'ps axf | grep "\\_ {frpcmd}" | grep -v "grep"'
     try:
         res = subprocess.check_output(scm, shell=True, text=True)
         procs = res.split("\n")
         if len(procs) > max_num_frp_processes:
-            return False, f'You cannot share more than {max_num_frp_processes} application(s) at a time.'
+            return False, f'You can not share more than {max_num_frp_processes} application(s) at a time.'
     except: pass
     # write frpc.ini file 
     subdomain = write_frpc_ini(port, server_port, suffix, frp_bandwidth_limit)
-    # create thread that kills frpc thread after session expires
+    # start sharing process
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     time.sleep(2)
     poll = process.poll()
