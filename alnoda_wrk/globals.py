@@ -68,3 +68,14 @@ def get_bool_env_var(var_name, default=False):
         return False
     else:
         return default
+
+def kill_process(p):
+    """ If you need to start system process that will be killed when python process terminates 
+    Example:
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        atexit.register(kill_process, process) 
+    """
+    try:
+        p.kill()  # This sends a SIGKILL, which cannot be caught or ignored
+    except ProcessLookupError:
+        pass  # Process might have already terminated

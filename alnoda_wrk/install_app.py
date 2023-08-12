@@ -7,15 +7,15 @@ import subprocess
 from packaging import version as Version
 import typer
 from rich.progress import Progress, SpinnerColumn, TextColumn
-from .globals import clnstr, WORKSPACE_DIR, WORKSPACE_HOME_PAGES, ALLOWED_FREE_PORT_RANGE_MIN, ALLOWED_FREE_PORT_RANGE_MAX
-from .fileops import read_ui_conf, update_ui_conf, read_lineage
+from .globals import clnstr, WORKSPACE_DIR, WORKSPACE_HOME_PAGES
+from .fileops import read_ui_conf, update_ui_conf, read_lineage, read_meta
 from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi, AlnodaSignedApi
 from .wrk_supervisor import create_supervisord_file
-from .fileops import read_ui_conf, update_ui_conf, read_meta
 from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use, refresh_about
 from .links import add_links_section, add_links_url
 from .versioning import parse_version, check_semantic_compatibility, check_range_compatible
+from .ports import get_free_ports, is_os_port_in_use
 
 INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'
@@ -33,24 +33,6 @@ class AlnodaApiApp(AlnodaApi):
             version_code = kwargs['version_code']
             path = f'app/{app_code}/{version_code}/compat/'
         super().__init__(path)
-
-
-def get_free_ports(silent):
-    """ Check if workspace has free ports, and return one of them """
-    ui_conf = read_ui_conf()
-    # what ports are already taken:
-    taken_ports = []
-    for page in ui_conf.keys():
-        page_data = ui_conf[page]
-        for app,adic in page_data.items():
-            if 'port' in adic: taken_ports.append(adic['port'])
-    # determine free ports
-    free_ports = []
-    for p in range(ALLOWED_FREE_PORT_RANGE_MIN, ALLOWED_FREE_PORT_RANGE_MAX+1):
-        if p not in taken_ports:
-            if not is_os_port_in_use(p):
-                free_ports.append(p)
-    return free_ports
 
 
 def check_workspace_compatibility(workspaces_compatibility):
@@ -175,15 +157,6 @@ def install_app(app_meta, install_temp_dir):
     return result, require_terminal_restart
 
 
-def is_os_port_in_use(port):
-    """ Simply check if port is free """
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('0.0.0.0', port)) == 0
-    except:
-        return False
-
-
 def add_app_tags_to_wrk(app_meta):
     """ Add application tags to the workspace tags """
     try:
@@ -294,7 +267,7 @@ def add_app(app_code, version=None, page="home", silent=False):
         if app_has_UI:
             if not silent: typer.echo("➡️ assigning port...")
             app_port = app_meta['app_port']
-            free_ports = get_free_ports(silent=silent)
+            free_ports = get_free_ports()
             # if app has UI, but workspace has no free ports - stop here
             if len(free_ports) == 0:
                 typer.echo("😢 Sorry, the limit of applications with UI is reached")

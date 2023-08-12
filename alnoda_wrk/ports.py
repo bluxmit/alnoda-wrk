@@ -8,7 +8,9 @@ import typer
 import re
 import ipaddress
 from urllib.parse import urlparse
+from .fileops import read_ui_conf
 from .globals import *
+
 
 def is_hostname(s):
     """ Check if string looks like a proper host name"""
@@ -19,12 +21,14 @@ def is_hostname(s):
     allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in s.split("."))
 
+
 def is_ip(s):
     try:
         ipaddress.ip_address(s)
         return True
     except ValueError:
         return False
+
 
 def is_url(s):
     try:
@@ -33,6 +37,7 @@ def is_url(s):
     except ValueError:
         return False
 
+
 def check_valid_host(s):
     """ Check if app input host is either valid hostname, ip or url"""
     if is_hostname(s): return True, 'hostname'
@@ -40,11 +45,37 @@ def check_valid_host(s):
     if is_url(s): return True, 'url'
     return False, f'{s} is neither valid host name, nor IP or URL'
 
-def kill_process(p):
+
+def get_free_ports():
+    """ Check if workspace has free ports, and return one of them """
+    ui_conf = read_ui_conf()
+    # what ports are already taken:
+    taken_ports = []
+    for page in ui_conf.keys():
+        page_data = ui_conf[page]
+        for app,adic in page_data.items():
+            if 'port' in adic: taken_ports.append(adic['port'])
+    # determine free ports
+    free_ports = []
+    for p in range(ALLOWED_FREE_PORT_RANGE_MIN, ALLOWED_FREE_PORT_RANGE_MAX+1):
+        if p not in taken_ports:
+            if not is_os_port_in_use(p):
+                free_ports.append(p)
+    return free_ports
+
+
+def assign_port():
+    """ """
+    pass
+
+
+def is_os_port_in_use(port):
+    """ Simply check if port is not used by other running processes (irrelevant during docker build) """
     try:
-        p.kill()  # This sends a SIGKILL, which cannot be caught or ignored
-    except ProcessLookupError:
-        pass  # Process might have already terminated
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('0.0.0.0', port)) == 0
+    except:
+        return False
 
 
 def make_port_forward_cmd(from_port_, to_port_):
@@ -70,8 +101,10 @@ def make_port_forward_cmd(from_port_, to_port_):
         from_port = from_parts[1]
     else:
         return False, f"Invalid input for the source. Use one of options: 1. host:port 2. port"
-    # check ports are indeed correct 
+    # check ports are indeed correct, are numeric and fall into the Linux range 
     # ...
+    # check target port is not taken 
+    # ... 
     # create traffic forwarding command
     fwd_cmd = f'socat tcp-listen:{to_port},reuseaddr,fork tcp:{from_host}:{from_port}'
     return True, fwd_cmd

@@ -224,7 +224,7 @@ def update_ui_page_from_wrk_params(ui_apps, wrk_params, page):
         if v['host'] in ['0.0.0.0', 'localhost']:
             if is_port_in_app_use(port): raise Exception(f"Port {port} for {v['title']} is already in use")
             if port not in WRK_RESERVED_PORTS:
-                free_ports = get_free_ports(silent=True)
+                free_ports = get_free_ports()
                 if len(free_ports) == 0: raise Exception(f"Reached limits of applications with UI")
                 prescribed_port = free_ports[0]
                 if port in free_ports: prescribed_port = port
