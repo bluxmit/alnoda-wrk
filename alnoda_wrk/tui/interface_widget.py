@@ -39,7 +39,7 @@ def get_tab_widgets(tab, ui_conf):
     l = 2; ls = 50
     r = 55; rs = 60 
     row = 1
-    debt = ttk.TTkLabel(text='Chose app', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
+    debt = ttk.TTkLabel(text='Options', color=LABEL_COLOR, pos=(l,row), size=(ls,1), parent=scrollArea.viewport())
     app_select = ttk.TTkComboBox(list=apps_list, pos=(r,row), size=(rs,1))
     scrollArea.viewport().addWidget(app_select)
 
@@ -142,7 +142,7 @@ def get_tab_widgets(tab, ui_conf):
     # Bind text inputs
     inp_title.textEdited.connect(lambda n: _processMetaInput('title', n))
     inp_descr.textEdited.connect(lambda n: _processMetaInput('description', n))
-    inp_port.textEdited.connect(lambda n: _processMetaInput('host', n))
+    inp_host.textEdited.connect(lambda n: _processMetaInput('host', n))
     inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
     inp_path.textEdited.connect(lambda n: _processMetaInput('path', n))
 
@@ -294,8 +294,8 @@ def get_tab_widgets(tab, ui_conf):
                 msg_lab._color = ERROR_COLOR; msg_lab._text = "Please choose image"; msg_lab.update()
                 return
             # check host 
-            if new_app['host']=="" or new_app['host']=="localhost": 
-                new_app['0.0.0.0']
+            if 'host' not in new_app or new_app['host']=="" or new_app['host']=="localhost": 
+                new_app['host'] = '0.0.0.0'
             else:
                 valid_host, msg = check_valid_host(new_app['host'])
                 if not valid_host:

@@ -128,7 +128,7 @@ def build_workspace(conf_dir_path):
     create_startup_applications(wrk_params)
     # if additional port-forwarding is required 
     for app, fwd_cmd in required_port_forwarding.items():
-        create_supervisord_file(name=app, cmd=fwd_cmd) 
+        create_supervisord_file(name=AUTO_PORT_FWD_PREFIX+app, cmd=fwd_cmd) 
     # Add this workspace to the lineage
     tags = ""
     if 'tags' in wrk_params:

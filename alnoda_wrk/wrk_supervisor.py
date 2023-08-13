@@ -11,7 +11,6 @@ from .globals import *
 from .templates import supervisord_template
 from .fileops import *
 
-BADGE_PREFIX = 'badge'
 
 def init_supervisord():
     """ ->> bool
@@ -97,7 +96,7 @@ def get_started_apps(exclude=True, badges=False):
     # Create return dict of app and command
     apps = {}
     for app in lapps:
-        if app not in excluded and not app.startswith(BADGE_PREFIX):
+        if app not in excluded and not any([app.startswith(prefix) for prefix in excluded]):
             apps[app] = get_app_command(app)  
     return apps
 
