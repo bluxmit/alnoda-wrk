@@ -7,6 +7,8 @@ from ..globals import *
 from ..fileops import read_ui_conf, update_ui_conf
 from ..ui_builder import copy_pageapp_image
 from ..meta_about import refresh_from_meta
+from ..ports import check_valid_host, check_port_and_assign_target, make_port_forward_cmd
+from ..wrk_supervisor import get_started_apps, create_supervisord_file, stop_app
 
 CREATE_NEW = "CREATE NEW"
 DEFAULT_HOST = "localhost"
@@ -19,7 +21,7 @@ def find_title_in_dict(dic, title):
             return v
     # if not found
     app_name = safestring(title)
-    new = {'title': "", 'description': "", 'port': "", 'image': "", 'path': ""}
+    new = {'title': "", 'description': "", 'host': "", 'port': "", 'image': "", 'path': ""}
     dic[app_name] = new
     return new
 
@@ -140,7 +142,7 @@ def get_tab_widgets(tab, ui_conf):
     # Bind text inputs
     inp_title.textEdited.connect(lambda n: _processMetaInput('title', n))
     inp_descr.textEdited.connect(lambda n: _processMetaInput('description', n))
-    inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
+    inp_port.textEdited.connect(lambda n: _processMetaInput('host', n))
     inp_port.textEdited.connect(lambda n: _processMetaInput('port', n))
     inp_path.textEdited.connect(lambda n: _processMetaInput('path', n))
 
@@ -168,6 +170,13 @@ def get_tab_widgets(tab, ui_conf):
         nonlocal ui_conf; nonlocal new_ui_conf; nonlocal extra; nonlocal new_app 
         # Remove the entry from the new_ui_conf
         choice =  extra['choice']
+        # delete port forwarding just in case
+        fwd_name = safestring(AUTO_PORT_FWD_PREFIX+state['title'])
+        try: 
+            stop_app(fwd_name)
+            # Show need workspace restart
+            msg_lab._color = WAIT_COLOR; msg_lab._text = "Restart workspace for changes to take place"; msg_lab.update()
+        # delete from ui_conf and update meta
         del new_ui_conf[tab][choice]
         update_ui_conf(new_ui_conf)
         ui_conf[tab] = copy.deepcopy(new_ui_conf[tab])
@@ -177,6 +186,7 @@ def get_tab_widgets(tab, ui_conf):
         app_select.setCurrentIndex(-1)
         inp_title._text = ""; inp_title.update()
         inp_descr._text = ""; inp_descr.update()
+        inp_host._text = DEFAULT_HOST; inp_host.update()
         inp_port._text = ""; inp_port.update()
         inp_path._text = ""; inp_path.update()
         inp_img._text = TTkString(""); inp_img.update()
@@ -193,13 +203,16 @@ def get_tab_widgets(tab, ui_conf):
             if "path" not in appd: appd['path'] = ""
             inp_title._text = str(appd["title"]); inp_title.update()
             inp_descr._text = str(appd["description"]); inp_descr.update()
-            inp_port._text = str(appd["port"]); inp_port.update()
+            inp_port._text = str(appd["real_port"]); inp_port.update()
             inp_img._text = TTkString(appd["image"]); inp_img.update()
             inp_path._text = str(appd["path"]); inp_path.update()
             new_ui_conf = copy.deepcopy(ui_conf)
+            try: inp_host._text = str(appd["host"]); inp_host.update()
+            except: inp_host._text = str(appd["localhost"]); inp_host.update()
         else:
             inp_title._text = ""; inp_title.update()
             inp_descr._text = ""; inp_descr.update()
+            inp_host._text = DEFAULT_HOST; inp_host.update()
             inp_port._text = ""; inp_port.update()
             inp_path._text = ""; inp_path.update()
             inp_img._text = TTkString(""); inp_img.update()
@@ -224,13 +237,41 @@ def get_tab_widgets(tab, ui_conf):
             if not str(new_ui_conf[tab][choice]['port']).isnumeric():
                 msg_lab._color = ERROR_COLOR; msg_lab._text = "Port must be nnumeric"; msg_lab.update()
                 return
+            # check host 
+            if new_ui_conf[tab][choice]['host']=="" or new_ui_conf[tab][choice]['host']=="localhost": 
+                new_ui_conf[tab][choice]['host'] = '0.0.0.0'
+            else:
+                valid_host, msg = check_valid_host(new_ui_conf[tab][choice]['host'])
+                if not valid_host:
+                    msg_lab._color = ERROR_COLOR; msg_lab._text = msg; msg_lab.update()
+                    return 
+            # check and assign port (if localhost) 
+            new_ui_conf[tab][choice]['port'] = int(new_ui_conf[tab][choice]['port'])
+            port = new_ui_conf[tab][choice]['port']
+            host = new_ui_conf[tab][choice]['host'] 
+            prescribed_port = port; msg=""
+            if host == '0.0.0.0':
+                prescribed_port, msg = check_port_and_assign_target(port)
+            if prescribed_port is None:
+                msg_lab._color = ERROR_COLOR; msg_lab._text = msg; msg_lab.update()
+                return 
+            # if needed create port forwarding 
+            if (host != '0.0.0.0') or (port != prescribed_port):
+                fwd_name = safestring(AUTO_PORT_FWD_PREFIX+state['title'])
+                fwd_cmd = make_port_forward_cmd(port, prescribed_port, from_host=host)
+                # if real_port has changed, we need to delete old port forwarding 
+                if ui_conf[tab][choice]['real_port'] != port:
+                    stop_app(fwd_name)
+                    create_supervisord_file(name=fwd_name, cmd=fwd_cmd)
+                    # Show need workspace restart
+                    msg_lab._color = WAIT_COLOR; msg_lab._text = "Restart workspace for changes to take place"; msg_lab.update()
+            new_ui_conf[tab][choice]['real_port'] = port
+            new_ui_conf[tab][choice]['port'] = prescribed_port
             # copy image file physically (if changed)
             if new_ui_conf[tab][choice]['image'] != ui_conf[tab][choice]['image']:
                 new_img_path = copy_pageapp_image(tab, new_ui_conf[tab][choice]['image'])
                 new_ui_conf[tab][choice]['image'] = new_img_path
                 inp_img._text = TTkString(new_img_path); inp_img.update()
-            # Make port int
-            new_ui_conf[tab][choice]['port'] = int(new_ui_conf[tab][choice]['port'])
             # Save new configuration
             update_ui_conf(new_ui_conf)
             ui_conf[tab] = new_ui_conf[tab]
@@ -251,10 +292,36 @@ def get_tab_widgets(tab, ui_conf):
             if 'image' not in new_app or new_app['image'] == "": 
                 msg_lab._color = ERROR_COLOR; msg_lab._text = "Please choose image"; msg_lab.update()
                 return
+            # check host 
+            if new_app['host']=="" or new_app['host']=="localhost": 
+                new_app['0.0.0.0']
+            else:
+                valid_host, msg = check_valid_host(new_app['host'])
+                if not valid_host:
+                    msg_lab._color = ERROR_COLOR; msg_lab._text = msg; msg_lab.update()
+                    return 
+            # check and assign port (if localhost)             
+            new_app["port"] = int(new_app["port"])
+            port = new_app["port"]
+            host = new_app['host']
+            prescribed_port = port; msg=""
+            if host == '0.0.0.0':
+                prescribed_port, msg = check_port_and_assign_target(port)
+            if prescribed_port is None:
+                msg_lab._color = ERROR_COLOR; msg_lab._text = msg; msg_lab.update()
+                return 
+            # if needed create port forwarding 
+            if (host != '0.0.0.0') or (port != prescribed_port):
+                fwd_name = safestring(AUTO_PORT_FWD_PREFIX+state['title'])
+                fwd_cmd = make_port_forward_cmd(port, prescribed_port, from_host=host)
+                create_supervisord_file(name=fwd_name, cmd=fwd_cmd)
+                # Show need workspace restart
+                msg_lab._color = WAIT_COLOR; msg_lab._text = "Restart workspace for changes to take place"; msg_lab.update()
+            new_app["real_port"] = port 
+            new_app["port"] = prescribed_port
             # copy new image physically
             new_img_path = copy_pageapp_image(tab, new_app["image"])
             new_app["image"] = new_img_path
-            new_app["port"] = int(new_app["port"])
             inp_img._text = TTkString(new_img_path); inp_img.update()
             # create new entry in the new_ui_conf
             newtitle = safestring(new_app['title'])

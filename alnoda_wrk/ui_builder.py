@@ -218,17 +218,17 @@ def update_ui_page_from_wrk_params(ui_apps, wrk_params, page):
                 elif 'http' in v['host']: v['port'] = 80
             else:  
                 raise Exception(f"Missing port for {v['title']}")
-        port = v['port']
-        # if host is localhost (0.0.0.0) we need to find the free port in the UI port range, and create port-mapping
+        port = v['port']; prescribed_port = port
+        # do we need port forwarding? (another host or different ports)
         if v['host'] in ['0.0.0.0', 'localhost']:
             prescribed_port, msg = check_port_and_assign_target(port)
             if prescribed_port is None: raise Exception(msg)
-            v['real_port'] = port 
-            v['port'] == prescribed_port 
-            if port != prescribed_port: 
-                pf_succsess, pfw_cmd = make_port_forward_cmd(port, prescribed_port)
+        if (v['host'] not in ['0.0.0.0', 'localhost']) or (port != prescribed_port):
+            pf_succsess, pfw_cmd = make_port_forward_cmd(port, prescribed_port)
                 if not pf_succsess: raise Exception(pfw_cmd)
                 required_port_forwarding[app] = pfw_cmd
+        v['real_port'] = port 
+        v['port'] == prescribed_port 
     # update existing workspace ui config for this page
     ui_apps[page].update(pdict)
     return ui_apps, required_port_forwarding

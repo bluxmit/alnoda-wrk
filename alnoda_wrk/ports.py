@@ -106,7 +106,7 @@ def check_port_and_assign_target(port):
     return prescribed_port, ""
 
 
-def make_port_forward_cmd(from_port_, to_port_):
+def make_port_forward_cmd(from_port_, to_port_, from_host = "0.0.0.0"):
     """ int/str, int/str ->>
     Check validity of inputs and create command to forward traffic. 
     
@@ -121,7 +121,6 @@ def make_port_forward_cmd(from_port_, to_port_):
     to_port = str(to_port_)
     # if from_port_ has host, split it
     from_parts = from_port_str.split(':')
-    from_host = "localhost"
     if len(from_parts) == 1:
         from_port = from_parts[0]
     elif len(from_parts) == 2:
