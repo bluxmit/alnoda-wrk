@@ -3,7 +3,7 @@
         "TERMINAL": {
             "port": 8021,
             "real_port": 8021,
-            "host": "localhost",
+            "host": "0.0.0.0",
             "title": "Terminal",
             "description": "Full-fledged WEB-based Command Line Interface",
             "image": "assets/home/terminal.png"
@@ -13,7 +13,7 @@
         "PORT_8026": {
             "port": 8026,
             "real_port": 8026,
-            "host": "localhost",
+            "host": "0.0.0.0",
             "title": "My app on port 8026",
             "description": "Start any app or service that listens on port 8026. Use this link for quick access",
             "image": "port-8026.png"
@@ -21,7 +21,7 @@
         "PORT_8027": {
             "port": 8027,
             "real_port": 8027,
-            "host": "localhost",
+            "host": "0.0.0.0",
             "title": "My app on port 8027",
             "description": "Start any app or service that listens on port 8027. Use this link for quick access",
             "image": "port-8027.png"
@@ -29,10 +29,29 @@
         "PORT_8028": {
             "port": 8028,
             "real_port": 8028,
-            "host": "localhost",
+            "host": "0.0.0.0",
             "title": "My app on port 8028",
             "description": "Start any app or service that listens on port 8028. Use this link for quick access",
             "image": "port-8028.png"
+        }
+    },
+    "admin": {
+        "Termianl": {
+            "host": "0.0.0.0",
+            "port": 8021,
+            "real_port": 8021,
+            "path": "/",
+            "title": "Terminal",
+            "description": "Full-fledged WEB-based Command Line Interface",
+            "image": "terminal.png"
+        },
+        "Workspace admin": {
+            "host": "0.0.0.0",
+            "port": 8022,
+            "real_port": 8022,
+            "title": "Workspace admin",
+            "description": "Configure workspace. Start new applicatios and services. Share workspace.",
+            "image": "admin.png"
         }
     }
 }

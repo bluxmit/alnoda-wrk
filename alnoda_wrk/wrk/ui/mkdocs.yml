@@ -3,12 +3,13 @@
 # ===========================================================
 
 nav:
-  - Home: README.md
-  - My apps: pages/my_apps.md
-  - About: about.md
-  - My cheatsheet: cheatsheet.md
-  - My links: links.md
-  - Docs: https://docs.alnoda.org/
+  - 🏠 Home: README.md
+  - 💾 My apps: pages/my_apps.md
+  - 🛠️ Admin: pages/admin.md
+  - ❔ About: about.md
+  - 📄 My cheatsheet: cheatsheet.md
+  - 🔗 My links: links.md
+  - 📘 Docs: https://docs.alnoda.org/
 
 # ===========================================================
 # CONFIGURATION

@@ -38,6 +38,14 @@ def install_mkdocs_deps():
     return
 
 
+def create_required_wrk_services():
+    """ Creates supervisord files for the wrk-required services """
+    # wrk-admin
+    admin_cmd = "TERM=xterm ttyd -p 8022 -P 15 /bin/zsh -c 'alnoda-wrk admin'"
+    create_supervisord_file(name='wrk-admin', cmd=admin_cmd) 
+    return
+
+
 def init_wrk():
     """  ->> bool
     Check if this workspace has UI folder. If not copy the 
@@ -60,6 +68,7 @@ def init_wrk():
         logging.warning(f"Something went wrong. Is workspace folder deleted? Error: {e}")
         return False
     install_mkdocs_deps() #<- install all dependencies for mkdocs
+    create_required_wrk_services()
     return True
 
 
