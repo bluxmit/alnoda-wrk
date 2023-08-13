@@ -86,17 +86,18 @@ def get_free_ports():
     return free_ports
 
 
-def check_port_and_assign_target(port):
+def check_port_and_assign_target(port, source_check=True):
     """ Check if port is available, and find the port to map to """
     # check port is even valid
-    try: port = int(port)
-    except: 
-        return None, 'port must be a number'
-    if port <= 0 or port >= 65535: 
-        return None, 'port must be in range [0, 65535]'
-    # first check original port is not in use 
-    if is_port_in_app_use(port) or is_os_port_in_use(port):
-        return None, 'port is already used'
+    if source_check:
+        try: port = int(port)
+        except: 
+            return None, 'port must be a number'
+        if port <= 0 or port >= 65535: 
+            return None, 'port must be in range [0, 65535]'
+        # first check original port is not in use 
+        if is_port_in_app_use(port) or is_os_port_in_use(port):
+            return None, 'port is already used'
     if port in WRK_RESERVED_PORTS: return port, ""
     free_ports = get_free_ports()
     if len(free_ports) == 0: return None, 'Reached limits of applications with UI'

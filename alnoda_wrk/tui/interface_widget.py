@@ -252,7 +252,7 @@ def get_tab_widgets(tab, ui_conf):
             host = new_ui_conf[tab][choice]['host'] 
             prescribed_port = port; msg=""
             if host == '0.0.0.0':
-                prescribed_port, msg = check_port_and_assign_target(port)
+                prescribed_port, msg = check_port_and_assign_target(port, source_check=False)
             if prescribed_port is None:
                 msg_lab._color = ERROR_COLOR; msg_lab._text = msg; msg_lab.update()
                 return 
@@ -307,7 +307,7 @@ def get_tab_widgets(tab, ui_conf):
             host = new_app['host']
             prescribed_port = port; msg=""
             if host == '0.0.0.0':
-                prescribed_port, msg = check_port_and_assign_target(port)
+                prescribed_port, msg = check_port_and_assign_target(port, source_check=False)
             if prescribed_port is None:
                 msg_lab._color = ERROR_COLOR; msg_lab._text = msg; msg_lab.update()
                 return 
