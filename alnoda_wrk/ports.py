@@ -9,7 +9,8 @@ import re
 import ipaddress
 from urllib.parse import urlparse
 from .fileops import read_ui_conf
-from .globals import *
+from .meta_about import read_meta
+from .globals import * 
 
 
 def is_hostname(s):
@@ -46,6 +47,27 @@ def check_valid_host(s):
     return False, f'{s} is neither valid host name, nor IP or URL'
 
 
+def is_port_in_app_use(port):
+    """ Check if alnoda apps do not use this port """
+    meta_dict = read_meta()
+    if "alnoda.org.apps" not in meta_dict: return False
+    for k,v in meta_dict['alnoda.org.apps'].items():
+        if "app_port" in v: 
+            try:
+                if int(v['app_port']) == int(port): return True
+            except: pass
+    return False
+
+
+def is_os_port_in_use(port):
+    """ Simply check if port is not used by other running processes (irrelevant during docker build) """
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('0.0.0.0', port)) == 0
+    except:
+        return False
+
+
 def get_free_ports():
     """ Check if workspace has free ports, and return one of them """
     ui_conf = read_ui_conf()
@@ -64,18 +86,24 @@ def get_free_ports():
     return free_ports
 
 
-def assign_port():
-    """ """
-    pass
-
-
-def is_os_port_in_use(port):
-    """ Simply check if port is not used by other running processes (irrelevant during docker build) """
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('0.0.0.0', port)) == 0
-    except:
-        return False
+def check_port_and_assign_target(port):
+    """ Check if port is available, and find the port to map to """
+    # check port is even valid
+    try: port = int(port)
+    except: 
+        return None, 'port must be a number'
+    if port <= 0 or port >= 65535: 
+        return None, 'port must be in range [0, 65535]'
+    # first check original port is not in use 
+    if is_port_in_app_use(port) or is_os_port_in_use(port):
+        return None, 'port is already used'
+    if port in WRK_RESERVED_PORTS: return port, ""
+    free_ports = get_free_ports()
+    if len(free_ports) == 0: return None, 'Reached limits of applications with UI'
+    else:
+        prescribed_port = free_ports[0]
+        if port in free_ports: prescribed_port = port
+    return prescribed_port, ""
 
 
 def make_port_forward_cmd(from_port_, to_port_):
@@ -101,10 +129,6 @@ def make_port_forward_cmd(from_port_, to_port_):
         from_port = from_parts[1]
     else:
         return False, f"Invalid input for the source. Use one of options: 1. host:port 2. port"
-    # check ports are indeed correct, are numeric and fall into the Linux range 
-    # ...
-    # check target port is not taken 
-    # ... 
     # create traffic forwarding command
     fwd_cmd = f'socat tcp-listen:{to_port},reuseaddr,fork tcp:{from_host}:{from_port}'
     return True, fwd_cmd

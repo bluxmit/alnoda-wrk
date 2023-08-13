@@ -12,10 +12,10 @@ from .fileops import read_ui_conf, update_ui_conf, read_lineage, read_meta
 from .ui_builder import copy_pageapp_image
 from .alnoda_api import AlnodaApi, AlnodaSignedApi
 from .wrk_supervisor import create_supervisord_file
-from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, is_port_in_app_use, refresh_about
+from .meta_about import update_meta, refresh_from_meta, app_already_installed, log_app_installed, get_workspace_id, refresh_about
 from .links import add_links_section, add_links_url
 from .versioning import parse_version, check_semantic_compatibility, check_range_compatible
-from .ports import get_free_ports, is_os_port_in_use
+from .ports import get_free_ports, is_os_port_in_use, is_port_in_app_use
 
 INSTALL_PID_FILE = '/tmp/app-install.pid'
 APP_INSTALL_TEMP_LOC = '/tmp/instl'

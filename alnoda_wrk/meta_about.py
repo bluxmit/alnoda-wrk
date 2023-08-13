@@ -325,18 +325,6 @@ def app_already_installed(app_code):
     return False
 
 
-def is_port_in_app_use(port):
-    """ Check if alnoda apps do not use this port """
-    meta_dict = read_meta()
-    if "alnoda.org.apps" not in meta_dict: return False
-    for k,v in meta_dict['alnoda.org.apps'].items():
-        if "app_port" in v: 
-            try:
-                if int(v['app_port']) == int(port): return True
-            except: pass
-    return False
-
-
 def log_app_installed(app_code, name, version, description, app_port=None):
     """  ->> str
     Log in meta that some app is installed

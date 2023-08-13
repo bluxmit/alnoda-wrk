@@ -11,8 +11,8 @@ from distutils.dir_util import copy_tree
 from .globals import *
 from .fileops import * 
 from .templates import app_page_str
-from .meta_about import update_meta, refresh_about, is_port_in_app_use
-from .ports import check_valid_host, make_port_forward_cmd
+from .meta_about import update_meta, refresh_about
+from .ports import check_valid_host, make_port_forward_cmd, check_port_and_assign_target
 from .install_app import get_free_ports, make_port_forward_cmd
 
 MKDOCS_ASSETS_DIR = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
@@ -222,20 +222,14 @@ def update_ui_page_from_wrk_params(ui_apps, wrk_params, page):
         port = v['port']
         # if host is localhost (0.0.0.0) we need to find the free port in the UI port range, and create port-mapping
         if v['host'] in ['0.0.0.0', 'localhost']:
-            if is_port_in_app_use(port): raise Exception(f"Port {port} for {v['title']} is already in use")
-            if port not in WRK_RESERVED_PORTS:
-                free_ports = get_free_ports()
-                if len(free_ports) == 0: raise Exception(f"Reached limits of applications with UI")
-                prescribed_port = free_ports[0]
-                if port in free_ports: prescribed_port = port
-                if v['port'] == prescribed_port:    
-                    v['real_port'] = port
-                else:
-                    v['real_port'] = port
-                    v['port'] = prescribed_port
-                    pf_succsess, pfw_cmd = make_port_forward_cmd(port, prescribed_port)
-                    if not pf_succsess: raise Exception(pfw_cmd)
-                    required_port_forwarding[app] = pfw_cmd
+            prescribed_port, msg = check_port_and_assign_target(port)
+            if prescribed_port is None: raise Exception(msg)
+            v['real_port'] = port 
+            v['port'] == prescribed_port 
+            if port != prescribed_port: 
+                pf_succsess, pfw_cmd = make_port_forward_cmd(port, prescribed_port)
+                if not pf_succsess: raise Exception(pfw_cmd)
+                required_port_forwarding[app] = pfw_cmd
     # update existing workspace ui config for this page
     ui_apps[page].update(pdict)
     return ui_apps, required_port_forwarding
