@@ -3,6 +3,7 @@ import logging
 import json, yaml
 from pathlib import Path
 import shutil
+import subprocess
 from .meta_about import update_meta, refresh_about, add_wrk_to_lineage, refresh_from_meta
 from .conf_parser import read_conf_dir
 from .globals import *
@@ -59,6 +60,13 @@ def init_wrk():
         if not Path(WORKSPACE_DIR).is_dir():
             this_path = os.path.dirname(os.path.realpath(__file__))
             shutil.copytree(os.path.join(this_path, 'wrk'), WORKSPACE_DIR)
+            # create workspace logs dir
+            wrk_logs_path = '/var/log/workspace'
+            if not os.path.exists(wrk_logs_path):
+                create_cmd = ['sudo', 'mkdir', '-p', wrk_logs_path]
+                subprocess.run(create_cmd)
+                chown_cmd = ['sudo', 'chown', 'abc', wrk_logs_path]
+                subprocess.run(chown_cmd)
             # update meta 
             update_meta()   #<- generate workspace ID and save created date
             refresh_about() #<- and update about page with the new date
