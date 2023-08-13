@@ -90,7 +90,7 @@ def get_started_apps(exclude=True, badges=False):
     :return: list of app names
     :rtype: list[str]
     """
-    excluded = ['supervisord', 'unified-supervisord', 'mkdocs', 'workspaceui', 'admin', AUTO_PORT_FWD_PREFIX]
+    excluded = ['supervisord', 'unified-supervisord', AUTO_PORT_FWD_PREFIX, SYSTEM_APP_PREFIX]
     files = os.listdir(SUPERVISORD_FOLDER)
     lapps = [ap.replace(".conf","") for ap in files]
     # Create return dict of app and command

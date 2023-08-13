@@ -42,8 +42,10 @@ def install_mkdocs_deps():
 def create_required_wrk_services():
     """ Creates supervisord files for the wrk-required services """
     # wrk-admin
+    wrk_ui_cmd = "cd /home/abc/.wrk/ui && mkdocs serve -a 0.0.0.0:8020"
+    create_supervisord_file(name=SYSTEM_APP_PREFIX+'wrkui', cmd=wrk_ui_cmd) 
     admin_cmd = "TERM=xterm ttyd -p 8022 -P 15 /bin/zsh -c 'alnoda-wrk admin'"
-    create_supervisord_file(name='wrk-admin', cmd=admin_cmd) 
+    create_supervisord_file(name=SYSTEM_APP_PREFIX+'wrkadmin', cmd=admin_cmd) 
     return
 
 
