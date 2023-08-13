@@ -62,13 +62,13 @@ def init_wrk():
             # update meta 
             update_meta()   #<- generate workspace ID and save created date
             refresh_about() #<- and update about page with the new date
+            create_required_wrk_services()
         else:
             logging.info(f'Workspace initialized in {WORKSPACE_DIR}')
     except Exception as e:
         logging.warning(f"Something went wrong. Is workspace folder deleted? Error: {e}")
         return False
     install_mkdocs_deps() #<- install all dependencies for mkdocs
-    create_required_wrk_services()
     return True
 
 

@@ -13,7 +13,6 @@ from .fileops import *
 from .templates import app_page_str
 from .meta_about import update_meta, refresh_about
 from .ports import check_valid_host, make_port_forward_cmd, check_port_and_assign_target
-from .install_app import get_free_ports, make_port_forward_cmd
 
 MKDOCS_ASSETS_DIR = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
 mkdocs_home_page_assets_dir = os.path.join(WORKSPACE_UI_DIR, 'docs', 'assets')
@@ -298,7 +297,7 @@ def update_other_pages(wrk_params, conf_dir_path):
     :return: dict of extra port forwarding required
     :rtype: dict
     """
-    required_port_forwarding
+    required_port_forwarding = {}
     if 'pages' in wrk_params:
         other_pages = set(wrk_params['pages'].keys()) - {'home'}
         for another_page in other_pages:
@@ -312,13 +311,14 @@ def update_other_pages(wrk_params, conf_dir_path):
             move_page_assets(wrk_params, conf_dir_path, another_page, mkdocs_other_page_assets_dir)
             # make sure .md file exists
             app_page_md_file = os.path.join(mkdocs_other_page_assets_dir, f'{another_page}.md')
-            with open(app_page_md_file, "w") as md_file:
-                md_file.write(app_page_str.replace('PAGE_NAME_REPLACE', another_page))
+            if not os.path.exists(app_page_md_file):
+                with open(app_page_md_file, "w") as md_file:
+                    md_file.write(app_page_str.replace('PAGE_NAME_REPLACE', another_page))
             # make sure mkdocs.yml has an entry for the page
             mkdocs_dict = get_mkdocs_yml()
             ptitle = another_page.replace("_"," ").capitalize()
             page_entry = {ptitle: os.path.join('pages', f'{another_page}.md')}
-            pd = [p for p in mkdocs_dict['nav'] if ptitle in p.keys()]  #<- does workspace has this page already?
+            pd = [p for p in mkdocs_dict['nav'] if ptitle in list(p.keys())[0]]  #<- does workspace has this page already?
             if len(pd) == 0: 
                 mkdocs_dict['nav'].append(page_entry)
                 mkdocs_dict['nav'] = sorted(mkdocs_dict['nav'], key=lambda x: WORKSPACE_PAGES_ODER.get(list(x.keys())[0],8))
