@@ -37,7 +37,7 @@ class AlnodaApiApp(AlnodaApi):
 
 def check_workspace_compatibility(workspaces_compatibility):
     """  Check if app requirement for the workspaces_compatibility is satisfied """
-    wrk_compatible = False; wrk_compatibility_message = f"Could not find workspace in the lineage, which is compatible with this app"
+    wrk_compatible = False; wrk_compatibility_message = f"Could not find workspace in the lineage, which is compatible with this app."
     if len(workspaces_compatibility) == 0: #<- compatible with all workspaces
         return True, "app is compatible with all workspaces"
     else:

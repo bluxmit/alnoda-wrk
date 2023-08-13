@@ -12,7 +12,7 @@ from .sign_in import verify_authenticated
 
 FRP_FOLDER = os.path.join(HOME_DIR, '.frp')
 FRPC_INI_FILE = os.path.join(FRP_FOLDER, 'frpc.ini')
-FRPC_BINARY = "/home/abc/apps/frp/frpc"
+FRPC_BINARY = "/etc/frp/frpc"
 FRP_SERVERS = {
     'fkpakr': {'port': 7000},
     'dcjdhx': {'port': 7001},
