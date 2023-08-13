@@ -171,7 +171,7 @@ def get_tab_widgets(tab, ui_conf):
         # Remove the entry from the new_ui_conf
         choice =  extra['choice']
         # delete port forwarding just in case
-        fwd_name = safestring(AUTO_PORT_FWD_PREFIX+state['title'])
+        fwd_name = safestring(AUTO_PORT_FWD_PREFIX+ui_conf[tab][choice]['title'])
         try: 
             stop_app(fwd_name)
             # Show need workspace restart
@@ -258,7 +258,7 @@ def get_tab_widgets(tab, ui_conf):
                 return 
             # if needed create port forwarding 
             if (host != '0.0.0.0') or (port != prescribed_port):
-                fwd_name = safestring(AUTO_PORT_FWD_PREFIX+state['title'])
+                fwd_name = safestring(AUTO_PORT_FWD_PREFIX+new_ui_conf[tab][choice]['title'])
                 fwd_cmd = make_port_forward_cmd(port, prescribed_port, from_host=host)
                 # if real_port has changed, we need to delete old port forwarding 
                 if ui_conf[tab][choice]['real_port'] != port:
@@ -313,7 +313,7 @@ def get_tab_widgets(tab, ui_conf):
                 return 
             # if needed create port forwarding 
             if (host != '0.0.0.0') or (port != prescribed_port):
-                fwd_name = safestring(AUTO_PORT_FWD_PREFIX+state['title'])
+                fwd_name = safestring(AUTO_PORT_FWD_PREFIX+new_app['title'])
                 fwd_cmd = make_port_forward_cmd(port, prescribed_port, from_host=host)
                 create_supervisord_file(name=fwd_name, cmd=fwd_cmd)
                 # Show need workspace restart

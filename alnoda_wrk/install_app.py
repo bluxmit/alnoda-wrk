@@ -330,6 +330,8 @@ def add_app(app_code, version=None, page="home", silent=False):
             ui_dict = {
                 'title': app_meta['name'],
                 'port': prescribed_port,
+                'real_port': app_port,
+                "host": "0.0.0.0",
                 'description': app_meta['description'],
                 'image': f'{img_loc_prefix}{img_name}'
             }

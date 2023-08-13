@@ -225,8 +225,8 @@ def update_ui_page_from_wrk_params(ui_apps, wrk_params, page):
             if prescribed_port is None: raise Exception(msg)
         if (v['host'] not in ['0.0.0.0', 'localhost']) or (port != prescribed_port):
             pf_succsess, pfw_cmd = make_port_forward_cmd(port, prescribed_port)
-                if not pf_succsess: raise Exception(pfw_cmd)
-                required_port_forwarding[app] = pfw_cmd
+            if not pf_succsess: raise Exception(pfw_cmd)
+            required_port_forwarding[app] = pfw_cmd
         v['real_port'] = port 
         v['port'] == prescribed_port 
     # update existing workspace ui config for this page
