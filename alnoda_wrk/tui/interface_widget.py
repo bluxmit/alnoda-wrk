@@ -176,6 +176,7 @@ def get_tab_widgets(tab, ui_conf):
             stop_app(fwd_name)
             # Show need workspace restart
             msg_lab._color = WAIT_COLOR; msg_lab._text = "Restart workspace for changes to take place"; msg_lab.update()
+        except: pass
         # delete from ui_conf and update meta
         del new_ui_conf[tab][choice]
         update_ui_conf(new_ui_conf)
