@@ -270,6 +270,7 @@ def update_home_page(wrk_params, conf_dir_path):
     :return: dict of extra port forwarding required
     :rtype: dict
     """
+    required_port_forwarding = {}
     # Check if wrk_params have additions to the home page
     if 'pages' in wrk_params and 'home' in wrk_params['pages']:
         logging.info(f"Updating Home page with {','.join([p['name'] for p in wrk_params['pages']['home']])}")
