@@ -290,8 +290,17 @@ def fwd(from_port, to_port):
     typer.echo("❗ To start forwarding workspace reboot is required!")
 
 @app.command()
-def srv(port: int = typer.Argument(8026)):
+def srv(port: int = typer.Argument(8026), folder: str = typer.Argument(None)):
     """
-    Serve current directory with a static web server on [port]. Allowed ports are 8026, 8027, 8028, default is 8026 if port is not specified. 
+    Serve current directory with a static web server on [port]. Default is 8026 if port is not specified. 
     """
-    session_serve_static(port)
+    session_serve_static(port, folder) 
+
+@app.command()
+def srvr(name, folder, port):
+    """
+    Start a permanent static web server in a specific folder on the defined workspace port. 
+    """
+    service_cmd = f'cd {folder} && python -m http.server {port}'
+    create_supervisord_file(name, service_cmd)
+    typer.echo("⚠️ Workspace restart is required! To restart execute 'wrk kill'")
