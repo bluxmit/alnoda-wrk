@@ -1,6 +1,6 @@
 import os
-from typing import Optional
 import typer
+from typing import Optional
 import subprocess
 from .builder import init_wrk, build_workspace, delete_wrk, install_mkdocs_deps
 from .ui_builder import get_mkdocs_yml, update_mkdocs_yml
@@ -16,6 +16,7 @@ from .fileops import read_meta
 from .ports import make_port_forward_cmd, forward_port
 from .upgrade import get_wrk_versions, update_wrk_to_latest
 from .globals import get_bool_env_var
+from .services import session_serve_static
 
 app = typer.Typer()
 
@@ -287,3 +288,10 @@ def fwd(from_port, to_port):
     create_supervisord_file(name, cmd)
     typer.echo("🔀 Done!")
     typer.echo("❗ To start forwarding workspace reboot is required!")
+
+@app.command()
+def srv(port: int = typer.Argument(8026)):
+    """
+    Serve current directory with a static web server on [port]. Allowed ports are 8026, 8027, 8028, default is 8026 if port is not specified. 
+    """
+    session_serve_static(port)
